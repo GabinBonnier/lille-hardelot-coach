@@ -1,0 +1,14 @@
+# Confidentialité & Sécurité (JAMAIS sur GitHub)
+strava_config.json
+.env
+data/raw_activities.json
+data/streams/
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+
+# OS
+.DS_Store
+Thumbs.db

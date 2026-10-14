@@ -1,0 +1,14 @@
+{
+  "race_name": "Lille - Hardelot",
+  "race_date": "2027-05-30",
+  "race_distance_km": 160,
+  "race_elevation_m": 1450,
+  "athlete_name": "Gabin",
+  "bike": "Trek",
+  "current_level": {
+    "base_ride_km": 55,
+    "base_ride_elev_m": 250,
+    "current_weekly_km": 60,
+    "rides_per_week": 2
+  }
+}

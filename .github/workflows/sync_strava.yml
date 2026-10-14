@@ -1,0 +1,49 @@
+name: Sync Strava & Update Lille-Hardelot Plan
+
+on:
+  schedule:
+    # Exécution automatique 2 fois par jour (6h00 et 18h00 UTC)
+    - cron: '0 6,18 * * *'
+  workflow_dispatch: # Permet de déclencher la mise à jour manuellement en 1 clic
+  push:
+    branches:
+      - main
+    paths-ignore:
+      - 'README.md'
+      - '.gitignore'
+
+permissions:
+  contents: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Synchroniser Strava & Adapter le Plan
+        env:
+          STRAVA_CLIENT_ID: ${{ secrets.STRAVA_CLIENT_ID }}
+          STRAVA_CLIENT_SECRET: ${{ secrets.STRAVA_CLIENT_SECRET }}
+          STRAVA_REFRESH_TOKEN: ${{ secrets.STRAVA_REFRESH_TOKEN }}
+        run: |
+          python core/sync_and_update.py
+
+      - name: Commit et Push des Données Mises à Jour
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/dashboard_data.json data/master_plan.json
+          if git diff --staged --quiet; then
+            echo "Aucune nouvelle activité ou modification détectée."
+          else
+            git commit -m "Auto-update : Synchronisation Strava & ajustements Lille-Hardelot"
+            git push
+          fi
