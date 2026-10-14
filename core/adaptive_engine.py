@@ -175,8 +175,56 @@ def evaluate_and_adapt_plan(master_plan, strava_activities):
     days_remaining = (race_date - today).days
 
     current_week_data = master_plan[current_week_idx] if current_week_idx < len(master_plan) else master_plan[0]
-    next_dist = next_planned_workout.get("distance_km", 55) if next_planned_workout else 55
-    next_elev = next_planned_workout.get("elevation_m", 200) if next_planned_workout else 200
+    # Build sequential list of upcoming rides (one by one)
+    upcoming_sequence = []
+    step_num = 1
+
+    # 1. Uncompleted rides from current week
+    current_rides = current_week_data["target"]["rides"]
+    for r in current_rides:
+        if r.get("status") != "completed":
+            is_immediate = (step_num == 1)
+            timing = "Ce week-end (Samedi / Dimanche)" if "Week-end" in r["name"] or "Samedi" in r["name"] else "Cette semaine (Jeudi / Vendredi)"
+            upcoming_sequence.append({
+                "step": step_num,
+                "week_number": current_week_data["week_number"],
+                "week_theme": current_week_data["theme"],
+                "name": r["name"],
+                "distance_km": r["distance_km"],
+                "elevation_m": r["elevation_m"],
+                "type": r["type"],
+                "timing": timing,
+                "role": r["role"],
+                "is_immediate": is_immediate
+            })
+            step_num += 1
+
+    # 2. Add rides from the next 4 weeks
+    for w in master_plan[current_week_idx + 1 : current_week_idx + 5]:
+        for r_idx, r in enumerate(w["target"]["rides"]):
+            if r_idx == 0:
+                timing = f"Semaine {w['week_number']} (Mardi / Mercredi)"
+            elif r_idx == 1:
+                timing = f"Semaine {w['week_number']} (Jeudi / Vendredi)"
+            else:
+                timing = f"Semaine {w['week_number']} (Week-end)"
+
+            upcoming_sequence.append({
+                "step": step_num,
+                "week_number": w["week_number"],
+                "week_theme": w["theme"],
+                "name": r["name"],
+                "distance_km": r["distance_km"],
+                "elevation_m": r["elevation_m"],
+                "type": r["type"],
+                "timing": timing,
+                "role": r["role"],
+                "is_immediate": False
+            })
+            step_num += 1
+
+    next_dist = next_planned_workout.get("distance_km", 40) if next_planned_workout else 40
+    next_elev = next_planned_workout.get("elevation_m", 120) if next_planned_workout else 120
 
     coach_advice = {
         "days_to_race": days_remaining,
@@ -184,6 +232,7 @@ def evaluate_and_adapt_plan(master_plan, strava_activities):
         "current_week_theme": current_week_data["theme"],
         "current_week_rides_plan": current_week_data["target"]["rides"],
         "current_week_realized_rides": current_week_data["realized"]["rides"],
+        "upcoming_rides_sequence": upcoming_sequence,
         "max_distance_achieved_km": max_ride_km,
         "max_elevation_achieved_m": max_ride_elev,
         "progress_distance_pct": progress_distance_pct,
@@ -193,8 +242,8 @@ def evaluate_and_adapt_plan(master_plan, strava_activities):
             "distance_km": next_dist,
             "elevation_m": next_elev,
             "role": next_planned_workout.get("role", "Endurance"),
-            "context": next_planned_workout.get("context", "À réaliser d'ici dimanche"),
-            "briefing": f"Séance de {next_dist} km et {next_elev}m D+. Pédalez au ressenti sans regarder la fréquence cardiaque. Emportez 1 bidon et 1 barre par heure d'effort."
+            "context": next_planned_workout.get("context", "À réaliser maintenant"),
+            "briefing": f"Séance immédiate : {next_dist} km et {next_elev}m D+. Pédalez au ressenti sans regarder la fréquence cardiaque. Emportez 1 bidon et 1 barre."
         },
         "recent_alerts": coach_alerts[-3:] if coach_alerts else []
     }

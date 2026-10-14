@@ -95,16 +95,111 @@
       </div>
     </header>
 
-    <!-- NOUVEL ENCADRÉ DÉDIÉ : PROGRAMMATION DES 3 SORTIES DE LA SEMAINE -->
-    <section class="bg-slate-900/90 border-2 border-orange-500/50 rounded-2xl p-6 shadow-2xl relative">
+    <!-- SECTION PRIORITAIRE : SORTIE À FAIRE MAINTENANT -->
+    <section class="bg-gradient-to-br from-slate-900 via-slate-900 to-orange-950/30 border-2 border-orange-500 rounded-2xl p-6 shadow-2xl relative">
+      <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-slate-800">
+        <div class="flex items-center gap-3">
+          <span class="p-2.5 bg-orange-500 text-white rounded-xl text-2xl font-black animate-pulse">⚡</span>
+          <div>
+            <div class="flex items-center gap-2">
+              <h2 class="text-xl md:text-2xl font-black text-white" id="next-action-title">VOTRE PROCHAINE SORTIE À FAIRE MAINTENANT</h2>
+              <span id="next-context-badge" class="px-2.5 py-0.5 bg-orange-500/20 text-orange-400 border border-orange-500/40 rounded-full text-xs font-bold">Sortie 2/3</span>
+            </div>
+            <p class="text-xs text-slate-300 mt-0.5" id="next-week-theme">
+              Étape immédiate : Sortie 2 (Jeudi / Vendredi) — et non la sortie du week-end !
+            </p>
+          </div>
+        </div>
+
+        <!-- Cibles immédiates -->
+        <div class="flex items-center gap-4 bg-slate-950 px-5 py-3 rounded-xl border border-orange-500/40 shadow-inner">
+          <div>
+            <span class="text-[10px] text-slate-400 block font-semibold uppercase tracking-wider">DISTANCE CIBLE</span>
+            <span class="text-3xl font-black text-orange-400" id="next-dist-target">-- <span class="text-sm font-normal text-slate-300">km</span></span>
+          </div>
+          <div class="h-8 w-px bg-slate-800"></div>
+          <div>
+            <span class="text-[10px] text-slate-400 block font-semibold uppercase tracking-wider">DÉNIVELÉ CIBLE</span>
+            <span class="text-3xl font-black text-emerald-400" id="next-elev-target">-- <span class="text-sm font-normal text-slate-300">m D+</span></span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Briefing et conseils concrets -->
+      <div class="mt-4 grid grid-cols-1 lg:grid-cols-12 gap-4 items-center">
+        <div class="lg:col-span-8 bg-slate-950/60 p-4 rounded-xl border border-slate-800">
+          <h3 class="text-xs font-bold uppercase tracking-wider text-orange-400 mb-1 flex items-center gap-1.5">
+            <span>💡</span> Consigne pour cette sortie précise
+          </h3>
+          <p class="text-sm text-slate-200 leading-relaxed font-medium" id="next-briefing-text">
+            Chargement...
+          </p>
+        </div>
+
+        <div class="lg:col-span-4 bg-slate-950/60 p-4 rounded-xl border border-slate-800 space-y-2 text-xs">
+          <div class="flex items-center gap-2 text-slate-300">
+            <span class="text-orange-400 font-bold">🥐 Ravitaillement :</span>
+            <span>1 bidon d'eau + 1 barre par heure</span>
+          </div>
+          <div class="flex items-center gap-2 text-slate-300">
+            <span class="text-emerald-400 font-bold">⚙️ Format :</span>
+            <span>Semaine ≤ 55 km (jambes souples)</span>
+          </div>
+          <div class="flex items-center gap-2 text-slate-300">
+            <span class="text-blue-400 font-bold">🔄 Séquence :</span>
+            <span>Dès qu'elle est sur Strava, la sortie week-end se débloque !</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- NOUVELLE SECTION DEMANDÉE : ORDRE DES SORTIES À FAIRE (UNE PAR UNE) -->
+    <section class="bg-slate-900/90 border border-slate-800 rounded-2xl p-6 shadow-xl space-y-4">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-slate-800">
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="text-2xl">📋</span>
+            <h2 class="text-xl font-extrabold text-white uppercase tracking-tight">MES PROCHAINES SORTIES À VENIR (UNE PAR UNE)</h2>
+          </div>
+          <p class="text-xs text-slate-400 mt-0.5">
+            Ordre chronologique exact de vos prochains entraînements avec les distances et D+ précis à respecter.
+          </p>
+        </div>
+        <span class="text-xs text-slate-400 bg-slate-950 px-3 py-1.5 rounded-lg border border-slate-800">
+          Progression séquentielle
+        </span>
+      </div>
+
+      <div class="overflow-x-auto custom-scrollbar">
+        <table class="w-full text-left text-xs text-slate-300">
+          <thead class="bg-slate-950 text-slate-400 uppercase tracking-wider text-[11px]">
+            <tr>
+              <th class="p-3 text-center">Étape</th>
+              <th class="p-3">Quand la faire (Créneau)</th>
+              <th class="p-3">Séance & Type</th>
+              <th class="p-3 text-center font-bold text-orange-400">Distance</th>
+              <th class="p-3 text-center font-bold text-emerald-400">Dénivelé D+</th>
+              <th class="p-3">Rôle & Consigne</th>
+              <th class="p-3 text-center">Statut d'Exécution</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-800/80" id="upcoming-rides-tbody">
+            <!-- Rempli dynamiquement en JS -->
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- SECTION : PROGRAMMATION DES 3 SORTIES DE LA SEMAINE EN COURS -->
+    <section class="bg-slate-900/90 border border-slate-800 rounded-2xl p-6 shadow-xl space-y-4">
       <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-slate-800">
         <div>
           <div class="flex items-center gap-2">
             <span class="text-2xl">📅</span>
-            <h2 class="text-xl font-extrabold text-white uppercase tracking-tight">PROGRAMME DE LA SEMAINE EN COURS (3 SORTIES)</h2>
+            <h2 class="text-xl font-extrabold text-white uppercase tracking-tight">VOTRE SEMAINE EN COURS EN DÉTAIL (3 SORTIES)</h2>
           </div>
           <p class="text-xs text-slate-400 mt-0.5" id="current-week-header-subtitle">
-            Semaine 1 · Thème : Reprise & Régularité · 2 sorties semaine (max 55 km) + 1 sortie clé week-end (sans limite)
+            Semaine 1 · 2 sorties semaine (max 55 km) + 1 sortie clé week-end (sans limite)
           </p>
         </div>
         <div class="flex items-center gap-2 text-xs bg-slate-950 px-3 py-1.5 rounded-lg border border-slate-800">
@@ -116,31 +211,19 @@
       </div>
 
       <!-- Les 3 cartes de sorties -->
-      <div class="mt-5 grid grid-cols-1 md:grid-cols-3 gap-5" id="weekly-3-rides-container">
+      <div class="mt-4 grid grid-cols-1 md:grid-cols-3 gap-5" id="weekly-3-rides-container">
         <!-- Rempli dynamiquement en JS -->
-      </div>
-
-      <!-- Consigne coach & alimentation en bas de l'encadré -->
-      <div class="mt-5 pt-4 border-t border-slate-800/80 bg-slate-950/60 p-4 rounded-xl flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div class="text-xs text-slate-300 flex-1">
-          <strong class="text-orange-400 block font-bold mb-0.5">💡 Consigne d'effort pour vos sorties :</strong>
-          <span id="weekly-summary-advice">Pédalez au ressenti. Les sorties semaine servent à faire tourner les jambes et garder le rythme. La sortie du week-end prépare l'estomac et les jambes à la distance de Lille-Hardelot.</span>
-        </div>
-        <div class="flex items-center gap-3 text-xs text-slate-400 shrink-0">
-          <span class="bg-slate-900 px-3 py-1.5 rounded-lg border border-slate-800">🥐 1 barre/heure</span>
-          <span class="bg-slate-900 px-3 py-1.5 rounded-lg border border-slate-800">💧 1 bidon/heure</span>
-        </div>
       </div>
     </section>
 
-    <!-- SECTION : CALENDRIER DES 33 SEMAINES -->
+    <!-- SECTION : CALENDRIER GLOBAL DES 33 SEMAINES -->
     <section class="bg-slate-900/90 border border-slate-800 rounded-2xl p-6 shadow-xl space-y-4">
       <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-800">
         <div>
           <h2 class="text-xl font-bold text-white flex items-center gap-2">
-            <span>📊</span> Calendrier Complet des 33 Semaines (Montée en Charge)
+            <span>📊</span> Calendrier Global des 33 Semaines (Vers les 160 km)
           </h2>
-          <p class="text-xs text-slate-400 mt-0.5">3 semaines de montée progressive + 1 semaine d'assimilation (Deload) pour franchir les 160 km</p>
+          <p class="text-xs text-slate-400 mt-0.5">3 semaines de montée progressive + 1 semaine d'assimilation (Deload)</p>
         </div>
         <div class="flex items-center gap-2 text-xs">
           <span class="flex items-center gap-1 text-emerald-400"><span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span> Validée</span>
@@ -233,7 +316,52 @@
       document.getElementById('max-elev-pct').textContent = `${elevPct}%`;
       document.getElementById('bar-elev').style.width = `${elevPct}%`;
 
-      // 3. Encadré Spécifique des 3 Sorties de la semaine en cours
+      // 3. Prochaine sortie immédiate (Section du haut)
+      const nw = data.coach_advice.next_workout;
+      document.getElementById('next-action-title').textContent = nw.title ? nw.title.toUpperCase() : "PROCHAINE SORTIE À FAIRE";
+      document.getElementById('next-context-badge').textContent = nw.context || "À faire";
+      document.getElementById('next-dist-target').innerHTML = `${nw.distance_km} <span class="text-sm font-normal text-slate-300">km</span>`;
+      document.getElementById('next-elev-target').innerHTML = `${nw.elevation_m} <span class="text-sm font-normal text-slate-300">m D+</span>`;
+      document.getElementById('next-briefing-text').textContent = nw.briefing;
+      document.getElementById('next-week-theme').textContent = `Objectif immédiat : ${nw.title} (${nw.distance_km} km · ${nw.elevation_m}m D+) — ${nw.role}`;
+
+      // 4. NOUVEAU TABLEAU DEMANDÉ : Sorties à faire une par une
+      const upcoming = data.coach_advice.upcoming_rides_sequence || [];
+      const upcomingTbody = document.getElementById('upcoming-rides-tbody');
+      upcomingTbody.innerHTML = upcoming.map(r => {
+        const isImmediate = r.is_immediate;
+        const rowBg = isImmediate ? 'bg-orange-950/20 font-semibold border-l-4 border-orange-500' : 'hover:bg-slate-800/40';
+        
+        let statusBadge = '';
+        if (isImmediate) {
+          statusBadge = '<span class="px-3 py-1 rounded-full text-xs font-black bg-orange-500 text-white shadow-lg animate-pulse inline-block">👉 À FAIRE MAINTENANT</span>';
+        } else if (r.step === 2) {
+          statusBadge = '<span class="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-blue-500/20 text-blue-400 border border-blue-500/30">⏳ Ensuite</span>';
+        } else {
+          statusBadge = '<span class="px-2 py-0.5 rounded text-[11px] font-medium bg-slate-800 text-slate-400">📅 En attente</span>';
+        }
+
+        const typeTag = r.type.includes('max 55km') 
+          ? '<span class="text-[10px] font-semibold px-2 py-0.5 bg-slate-800 text-emerald-400 rounded">Semaine (max 55km)</span>' 
+          : '<span class="text-[10px] font-bold px-2 py-0.5 bg-orange-500/20 text-orange-400 rounded">Week-end (Sans limite)</span>';
+
+        return `
+          <tr class="${rowBg} transition">
+            <td class="p-3 text-center font-bold text-slate-400">#${r.step}</td>
+            <td class="p-3 font-semibold text-slate-100">${r.timing}</td>
+            <td class="p-3">
+              <span class="font-bold text-white block">${r.name}</span>
+              ${typeTag}
+            </td>
+            <td class="p-3 text-center font-extrabold text-orange-400 text-sm">${r.distance_km} km</td>
+            <td class="p-3 text-center font-extrabold text-emerald-400 text-sm">${r.elevation_m} m D+</td>
+            <td class="p-3 text-slate-300 italic">${r.role}</td>
+            <td class="p-3 text-center">${statusBadge}</td>
+          </tr>
+        `;
+      }).join('');
+
+      // 5. Encadré Spécifique des 3 Sorties de la semaine en cours
       const currentWeekNum = data.coach_advice.current_week_number;
       const currentTheme = data.coach_advice.current_week_theme;
       document.getElementById('current-week-header-subtitle').textContent = `Semaine ${currentWeekNum} · Thème : ${currentTheme} · 2 sorties semaine (max 55 km) + 1 sortie clé week-end (sans limite)`;
@@ -250,17 +378,27 @@
         const status = r.status;
         const doneInfo = r.done_info;
 
-        let badge = '<span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-slate-800 text-slate-400">À faire ⏳</span>';
+        let badge = '';
+        let borderClass = 'border-slate-800 bg-slate-950/70';
+
         if (status === 'completed') {
           badge = `<span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/40">Faite (${doneInfo.distance_km} km) ✅</span>`;
+        } else if (i === 1) {
+          // Sortie 2 : C'est la sortie à faire maintenant !
+          badge = `<span class="px-3 py-1 rounded-full text-[10px] font-black bg-orange-500 text-white shadow animate-pulse">👉 À FAIRE MAINTENANT</span>`;
+          borderClass = 'border-2 border-orange-500 bg-gradient-to-br from-slate-950 via-slate-900 to-orange-950/20';
+        } else if (isWeekend) {
+          badge = `<span class="px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-blue-500/20 text-blue-400 border border-blue-500/30">⏳ Après la Sortie 2</span>`;
+          borderClass = 'border border-slate-700 bg-slate-950/70';
+        } else {
+          badge = '<span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-slate-800 text-slate-400">À faire ⏳</span>';
         }
 
-        const borderClass = isWeekend ? 'border-orange-500/60 bg-gradient-to-br from-slate-950 via-slate-900 to-orange-950/20' : 'border-slate-800 bg-slate-950/70';
         const icon = isWeekend ? '🏔️' : (i === 0 ? '🚴‍♂️' : '⚡');
         const tag = isWeekend ? '<span class="text-[10px] font-bold px-2 py-0.5 bg-orange-500/20 text-orange-400 rounded">SANS LIMITE (CLÉ)</span>' : '<span class="text-[10px] font-semibold px-2 py-0.5 bg-slate-800 text-slate-400">MAX 55 KM</span>';
 
         return `
-          <div class="rounded-xl border ${borderClass} p-5 shadow-lg flex flex-col justify-between hover:border-slate-700 transition">
+          <div class="rounded-xl border ${borderClass} p-5 shadow-lg flex flex-col justify-between hover:border-slate-600 transition">
             <div>
               <div class="flex items-center justify-between gap-2 pb-2 border-b border-slate-800/80">
                 <div class="flex items-center gap-2">
@@ -294,7 +432,7 @@
         `;
       }).join('');
 
-      // 4. Tableau des 33 semaines
+      // 6. Tableau des 33 semaines
       const tbody = document.getElementById('plan-tbody');
       tbody.innerHTML = data.weeks.map(w => {
         let statusBadge = '';
@@ -339,7 +477,7 @@
         `;
       }).join('');
 
-      // 5. Dernières sorties
+      // 7. Dernières sorties
       const grid = document.getElementById('recent-rides-grid');
       grid.innerHTML = data.recent_rides.map(r => `
         <div class="bg-slate-950/70 border border-slate-800 rounded-xl p-4 hover:border-slate-700 transition space-y-2">
