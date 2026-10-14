@@ -13,17 +13,66 @@
   "coach_advice": {
     "days_to_race": 228,
     "current_week_number": 1,
-    "current_week_theme": "Reprise & R\u00e9gularit\u00e9",
+    "current_week_theme": "Reprise & R\u00e9gularit\u00e9 3 sorties",
+    "current_week_rides_plan": [
+      {
+        "id": 1,
+        "name": "Sortie 1 (Mardi / Mercredi)",
+        "type": "Semaine (max 55km)",
+        "distance_km": 35,
+        "elevation_m": 100,
+        "role": "Rythme & Cadence (jambes souples)",
+        "status": "completed",
+        "done_info": {
+          "distance_km": 53.6,
+          "elevation_m": 109,
+          "date": "2026-10-12"
+        }
+      },
+      {
+        "id": 2,
+        "name": "Sortie 2 (Jeudi / Vendredi)",
+        "type": "Semaine (max 55km)",
+        "distance_km": 40,
+        "elevation_m": 120,
+        "role": "Endurance & Faux-plats",
+        "status": "pending",
+        "done_info": null,
+        "context": "Sortie 2/3 de la semaine"
+      },
+      {
+        "id": 3,
+        "name": "Sortie 3 (Samedi / Dimanche)",
+        "type": "Week-end (Sans limite)",
+        "distance_km": 55,
+        "elevation_m": 200,
+        "role": "Sortie Cl\u00e9 Lille-Hardelot (Volume & D+)",
+        "status": "pending",
+        "done_info": null
+      }
+    ],
+    "current_week_realized_rides": [
+      {
+        "id": 20555608422,
+        "name": "Afternoon Ride",
+        "date": "2026-10-12",
+        "distance_km": 53.6,
+        "elevation_m": 109,
+        "moving_time_min": 117,
+        "speed_kmh": 27.6
+      }
+    ],
     "max_distance_achieved_km": 84.6,
     "max_elevation_achieved_m": 469,
     "progress_distance_pct": 52.9,
     "progress_elev_pct": 32.3,
     "next_workout": {
-      "title": "Sortie Longue Cl\u00e9 (Week-end)",
-      "distance_km": 55,
-      "elevation_m": 200,
-      "context": "Sortie cl\u00e9 du week-end",
-      "briefing": "Objectif simple et sans cardio : couvrir 55 km avec environ 200 m de D+. G\u00e9rez votre allure au ressenti, braquet souple dans les mont\u00e9es. Emportez 1 bidon et 1 barre par heure d'effort."
+      "title": "Sortie 2 (Jeudi / Vendredi)",
+      "distance_km": 40,
+      "elevation_m": 120,
+      "role": "Endurance & Faux-plats",
+      "context": "Sortie 2/3 de la semaine",
+      "briefing": "S\u00e9ance de 40 km et 120m D+. P\u00e9dalez au ressenti sans regarder la fr\u00e9quence cardiaque. Emportez 1 bidon et 1 barre par heure d'effort."
     },
     "recent_alerts": []
   },
@@ -132,22 +181,48 @@
       "year": 2026,
       "start_date": "2026-10-12",
       "end_date": "2026-10-18",
-      "theme": "Reprise & R\u00e9gularit\u00e9",
+      "theme": "Reprise & R\u00e9gularit\u00e9 3 sorties",
       "is_deload": false,
       "target": {
-        "total_km": 90,
-        "total_dplus": 300,
-        "long_ride": {
-          "distance_km": 55,
-          "elevation_m": 200,
-          "label": "Sortie Longue Cl\u00e9 (Week-end)",
-          "context": "Sortie cl\u00e9 du week-end"
-        },
-        "mid_week_ride": {
-          "distance_km": 35,
-          "elevation_m": 100,
-          "label": "Sortie Rythme Semaine"
-        }
+        "total_km": 130,
+        "total_dplus": 420,
+        "rides": [
+          {
+            "id": 1,
+            "name": "Sortie 1 (Mardi / Mercredi)",
+            "type": "Semaine (max 55km)",
+            "distance_km": 35,
+            "elevation_m": 100,
+            "role": "Rythme & Cadence (jambes souples)",
+            "status": "completed",
+            "done_info": {
+              "distance_km": 53.6,
+              "elevation_m": 109,
+              "date": "2026-10-12"
+            }
+          },
+          {
+            "id": 2,
+            "name": "Sortie 2 (Jeudi / Vendredi)",
+            "type": "Semaine (max 55km)",
+            "distance_km": 40,
+            "elevation_m": 120,
+            "role": "Endurance & Faux-plats",
+            "status": "pending",
+            "done_info": null,
+            "context": "Sortie 2/3 de la semaine"
+          },
+          {
+            "id": 3,
+            "name": "Sortie 3 (Samedi / Dimanche)",
+            "type": "Week-end (Sans limite)",
+            "distance_km": 55,
+            "elevation_m": 200,
+            "role": "Sortie Cl\u00e9 Lille-Hardelot (Volume & D+)",
+            "status": "pending",
+            "done_info": null
+          }
+        ]
       },
       "realized": {
         "total_km": 53.6,
@@ -168,8 +243,8 @@
       },
       "adjustment": {
         "active": false,
-        "original_target_km": 90,
-        "adjusted_target_km": 90,
+        "original_target_km": 130,
+        "adjusted_target_km": 130,
         "reason": null
       }
     },
@@ -179,21 +254,43 @@
       "year": 2026,
       "start_date": "2026-10-19",
       "end_date": "2026-10-25",
-      "theme": "Mont\u00e9e en distance 60 km",
+      "theme": "Mont\u00e9e en distance 60 km le W-E",
       "is_deload": false,
       "target": {
-        "total_km": 100,
-        "total_dplus": 370,
-        "long_ride": {
-          "distance_km": 60,
-          "elevation_m": 250,
-          "label": "Sortie Longue Cl\u00e9 (Week-end)"
-        },
-        "mid_week_ride": {
-          "distance_km": 40,
-          "elevation_m": 120,
-          "label": "Sortie Rythme Semaine"
-        }
+        "total_km": 140,
+        "total_dplus": 490,
+        "rides": [
+          {
+            "id": 1,
+            "name": "Sortie 1 (Mardi / Mercredi)",
+            "type": "Semaine (max 55km)",
+            "distance_km": 38,
+            "elevation_m": 110,
+            "role": "Rythme & Cadence (jambes souples)",
+            "status": "pending",
+            "done_info": null
+          },
+          {
+            "id": 2,
+            "name": "Sortie 2 (Jeudi / Vendredi)",
+            "type": "Semaine (max 55km)",
+            "distance_km": 42,
+            "elevation_m": 130,
+            "role": "Endurance & Faux-plats",
+            "status": "pending",
+            "done_info": null
+          },
+          {
+            "id": 3,
+            "name": "Sortie 3 (Samedi / Dimanche)",
+            "type": "Week-end (Sans limite)",
+            "distance_km": 60,
+            "elevation_m": 250,
+            "role": "Sortie Cl\u00e9 Lille-Hardelot (Volume & D+)",
+            "status": "pending",
+            "done_info": null
+          }
+        ]
       },
       "realized": {
         "total_km": 0,
@@ -204,8 +301,8 @@
       },
       "adjustment": {
         "active": false,
-        "original_target_km": 100,
-        "adjusted_target_km": 100,
+        "original_target_km": 140,
+        "adjusted_target_km": 140,
         "reason": null
       }
     },
@@ -215,525 +312,43 @@
       "year": 2026,
       "start_date": "2026-10-26",
       "end_date": "2026-11-01",
-      "theme": "Cap des 65 km",
-      "is_deload": false,
-      "target": {
-        "total_km": 105,
-        "total_dplus": 450,
-        "long_ride": {
-          "distance_km": 65,
-          "elevation_m": 300,
-          "label": "Sortie Longue Cl\u00e9 (Week-end)"
-        },
-        "mid_week_ride": {
-          "distance_km": 40,
-          "elevation_m": 150,
-          "label": "Sortie Rythme Semaine"
-        }
-      },
-      "realized": {
-        "total_km": 0,
-        "total_dplus": 0,
-        "rides_count": 0,
-        "status": "future",
-        "rides": []
-      },
-      "adjustment": {
-        "active": false,
-        "original_target_km": 105,
-        "adjusted_target_km": 105,
-        "reason": null
-      }
-    },
-    {
-      "week_number": 4,
-      "iso_week": 45,
-      "year": 2026,
-      "start_date": "2026-11-02",
-      "end_date": "2026-11-08",
-      "theme": "Semaine d'assimilation (Deload)",
-      "is_deload": true,
-      "target": {
-        "total_km": 80,
-        "total_dplus": 280,
-        "long_ride": {
-          "distance_km": 50,
-          "elevation_m": 200,
-          "label": "Sortie Longue Cl\u00e9 (Week-end)"
-        },
-        "mid_week_ride": {
-          "distance_km": 30,
-          "elevation_m": 80,
-          "label": "Sortie Rythme Semaine"
-        }
-      },
-      "realized": {
-        "total_km": 0,
-        "total_dplus": 0,
-        "rides_count": 0,
-        "status": "future",
-        "rides": []
-      },
-      "adjustment": {
-        "active": false,
-        "original_target_km": 80,
-        "adjusted_target_km": 80,
-        "reason": null
-      }
-    },
-    {
-      "week_number": 5,
-      "iso_week": 46,
-      "year": 2026,
-      "start_date": "2026-11-09",
-      "end_date": "2026-11-15",
-      "theme": "Entr\u00e9e sur les 70 km",
-      "is_deload": false,
-      "target": {
-        "total_km": 112,
-        "total_dplus": 500,
-        "long_ride": {
-          "distance_km": 70,
-          "elevation_m": 350,
-          "label": "Sortie Longue Cl\u00e9 (Week-end)"
-        },
-        "mid_week_ride": {
-          "distance_km": 42,
-          "elevation_m": 150,
-          "label": "Sortie Rythme Semaine"
-        }
-      },
-      "realized": {
-        "total_km": 0,
-        "total_dplus": 0,
-        "rides_count": 0,
-        "status": "future",
-        "rides": []
-      },
-      "adjustment": {
-        "active": false,
-        "original_target_km": 112,
-        "adjusted_target_km": 112,
-        "reason": null
-      }
-    },
-    {
-      "week_number": 6,
-      "iso_week": 47,
-      "year": 2026,
-      "start_date": "2026-11-16",
-      "end_date": "2026-11-22",
-      "theme": "D\u00e9nivel\u00e9 progressif (400m D+)",
-      "is_deload": false,
-      "target": {
-        "total_km": 120,
-        "total_dplus": 580,
-        "long_ride": {
-          "distance_km": 75,
-          "elevation_m": 400,
-          "label": "Sortie Longue Cl\u00e9 (Week-end)"
-        },
-        "mid_week_ride": {
-          "distance_km": 45,
-          "elevation_m": 180,
-          "label": "Sortie Rythme Semaine"
-        }
-      },
-      "realized": {
-        "total_km": 0,
-        "total_dplus": 0,
-        "rides_count": 0,
-        "status": "future",
-        "rides": []
-      },
-      "adjustment": {
-        "active": false,
-        "original_target_km": 120,
-        "adjusted_target_km": 120,
-        "reason": null
-      }
-    },
-    {
-      "week_number": 7,
-      "iso_week": 48,
-      "year": 2026,
-      "start_date": "2026-11-23",
-      "end_date": "2026-11-29",
-      "theme": "Cap des 80 km",
-      "is_deload": false,
-      "target": {
-        "total_km": 125,
-        "total_dplus": 650,
-        "long_ride": {
-          "distance_km": 80,
-          "elevation_m": 450,
-          "label": "Sortie Longue Cl\u00e9 (Week-end)"
-        },
-        "mid_week_ride": {
-          "distance_km": 45,
-          "elevation_m": 200,
-          "label": "Sortie Rythme Semaine"
-        }
-      },
-      "realized": {
-        "total_km": 0,
-        "total_dplus": 0,
-        "rides_count": 0,
-        "status": "future",
-        "rides": []
-      },
-      "adjustment": {
-        "active": false,
-        "original_target_km": 125,
-        "adjusted_target_km": 125,
-        "reason": null
-      }
-    },
-    {
-      "week_number": 8,
-      "iso_week": 49,
-      "year": 2026,
-      "start_date": "2026-11-30",
-      "end_date": "2026-12-06",
-      "theme": "Semaine de d\u00e9charge active",
-      "is_deload": true,
-      "target": {
-        "total_km": 95,
-        "total_dplus": 350,
-        "long_ride": {
-          "distance_km": 60,
-          "elevation_m": 250,
-          "label": "Sortie Longue Cl\u00e9 (Week-end)"
-        },
-        "mid_week_ride": {
-          "distance_km": 35,
-          "elevation_m": 100,
-          "label": "Sortie Rythme Semaine"
-        }
-      },
-      "realized": {
-        "total_km": 0,
-        "total_dplus": 0,
-        "rides_count": 0,
-        "status": "future",
-        "rides": []
-      },
-      "adjustment": {
-        "active": false,
-        "original_target_km": 95,
-        "adjusted_target_km": 95,
-        "reason": null
-      }
-    },
-    {
-      "week_number": 9,
-      "iso_week": 50,
-      "year": 2026,
-      "start_date": "2026-12-07",
-      "end_date": "2026-12-13",
-      "theme": "Maintien du rythme hivernal",
-      "is_deload": false,
-      "target": {
-        "total_km": 125,
-        "total_dplus": 630,
-        "long_ride": {
-          "distance_km": 80,
-          "elevation_m": 450,
-          "label": "Sortie Longue Cl\u00e9 (Week-end)"
-        },
-        "mid_week_ride": {
-          "distance_km": 45,
-          "elevation_m": 180,
-          "label": "Sortie Rythme Semaine"
-        }
-      },
-      "realized": {
-        "total_km": 0,
-        "total_dplus": 0,
-        "rides_count": 0,
-        "status": "future",
-        "rides": []
-      },
-      "adjustment": {
-        "active": false,
-        "original_target_km": 125,
-        "adjusted_target_km": 125,
-        "reason": null
-      }
-    },
-    {
-      "week_number": 10,
-      "iso_week": 51,
-      "year": 2026,
-      "start_date": "2026-12-14",
-      "end_date": "2026-12-20",
-      "theme": "Monts & faux-plats (500m D+)",
-      "is_deload": false,
-      "target": {
-        "total_km": 130,
-        "total_dplus": 700,
-        "long_ride": {
-          "distance_km": 85,
-          "elevation_m": 500,
-          "label": "Sortie Longue Cl\u00e9 (Week-end)"
-        },
-        "mid_week_ride": {
-          "distance_km": 45,
-          "elevation_m": 200,
-          "label": "Sortie Rythme Semaine"
-        }
-      },
-      "realized": {
-        "total_km": 0,
-        "total_dplus": 0,
-        "rides_count": 0,
-        "status": "future",
-        "rides": []
-      },
-      "adjustment": {
-        "active": false,
-        "original_target_km": 130,
-        "adjusted_target_km": 130,
-        "reason": null
-      }
-    },
-    {
-      "week_number": 11,
-      "iso_week": 52,
-      "year": 2026,
-      "start_date": "2026-12-21",
-      "end_date": "2026-12-27",
-      "theme": "Cap des 90 km",
-      "is_deload": false,
-      "target": {
-        "total_km": 138,
-        "total_dplus": 770,
-        "long_ride": {
-          "distance_km": 90,
-          "elevation_m": 550,
-          "label": "Sortie Longue Cl\u00e9 (Week-end)"
-        },
-        "mid_week_ride": {
-          "distance_km": 48,
-          "elevation_m": 220,
-          "label": "Sortie Rythme Semaine"
-        }
-      },
-      "realized": {
-        "total_km": 0,
-        "total_dplus": 0,
-        "rides_count": 0,
-        "status": "future",
-        "rides": []
-      },
-      "adjustment": {
-        "active": false,
-        "original_target_km": 138,
-        "adjusted_target_km": 138,
-        "reason": null
-      }
-    },
-    {
-      "week_number": 12,
-      "iso_week": 53,
-      "year": 2026,
-      "start_date": "2026-12-28",
-      "end_date": "2027-01-03",
-      "theme": "Tr\u00eave des f\u00eates (R\u00e9g\u00e9n\u00e9ration)",
-      "is_deload": true,
-      "target": {
-        "total_km": 100,
-        "total_dplus": 420,
-        "long_ride": {
-          "distance_km": 65,
-          "elevation_m": 300,
-          "label": "Sortie Longue Cl\u00e9 (Week-end)"
-        },
-        "mid_week_ride": {
-          "distance_km": 35,
-          "elevation_m": 120,
-          "label": "Sortie Rythme Semaine"
-        }
-      },
-      "realized": {
-        "total_km": 0,
-        "total_dplus": 0,
-        "rides_count": 0,
-        "status": "future",
-        "rides": []
-      },
-      "adjustment": {
-        "active": false,
-        "original_target_km": 100,
-        "adjusted_target_km": 100,
-        "reason": null
-      }
-    },
-    {
-      "week_number": 13,
-      "iso_week": 1,
-      "year": 2027,
-      "start_date": "2027-01-04",
-      "end_date": "2027-01-10",
-      "theme": "Reprise post-f\u00eates",
-      "is_deload": false,
-      "target": {
-        "total_km": 130,
-        "total_dplus": 630,
-        "long_ride": {
-          "distance_km": 85,
-          "elevation_m": 450,
-          "label": "Sortie Longue Cl\u00e9 (Week-end)"
-        },
-        "mid_week_ride": {
-          "distance_km": 45,
-          "elevation_m": 180,
-          "label": "Sortie Rythme Semaine"
-        }
-      },
-      "realized": {
-        "total_km": 0,
-        "total_dplus": 0,
-        "rides_count": 0,
-        "status": "future",
-        "rides": []
-      },
-      "adjustment": {
-        "active": false,
-        "original_target_km": 130,
-        "adjusted_target_km": 130,
-        "reason": null
-      }
-    },
-    {
-      "week_number": 14,
-      "iso_week": 2,
-      "year": 2027,
-      "start_date": "2027-01-11",
-      "end_date": "2027-01-17",
-      "theme": "Stabilisation 90 km",
-      "is_deload": false,
-      "target": {
-        "total_km": 138,
-        "total_dplus": 770,
-        "long_ride": {
-          "distance_km": 90,
-          "elevation_m": 550,
-          "label": "Sortie Longue Cl\u00e9 (Week-end)"
-        },
-        "mid_week_ride": {
-          "distance_km": 48,
-          "elevation_m": 220,
-          "label": "Sortie Rythme Semaine"
-        }
-      },
-      "realized": {
-        "total_km": 0,
-        "total_dplus": 0,
-        "rides_count": 0,
-        "status": "future",
-        "rides": []
-      },
-      "adjustment": {
-        "active": false,
-        "original_target_km": 138,
-        "adjusted_target_km": 138,
-        "reason": null
-      }
-    },
-    {
-      "week_number": 15,
-      "iso_week": 3,
-      "year": 2027,
-      "start_date": "2027-01-18",
-      "end_date": "2027-01-24",
-      "theme": "Approche des 100 km",
-      "is_deload": false,
-      "target": {
-        "total_km": 145,
-        "total_dplus": 850,
-        "long_ride": {
-          "distance_km": 95,
-          "elevation_m": 600,
-          "label": "Sortie Longue Cl\u00e9 (Week-end)"
-        },
-        "mid_week_ride": {
-          "distance_km": 50,
-          "elevation_m": 250,
-          "label": "Sortie Rythme Semaine"
-        }
-      },
-      "realized": {
-        "total_km": 0,
-        "total_dplus": 0,
-        "rides_count": 0,
-        "status": "future",
-        "rides": []
-      },
-      "adjustment": {
-        "active": false,
-        "original_target_km": 145,
-        "adjusted_target_km": 145,
-        "reason": null
-      }
-    },
-    {
-      "week_number": 16,
-      "iso_week": 4,
-      "year": 2027,
-      "start_date": "2027-01-25",
-      "end_date": "2027-01-31",
-      "theme": "Assimilation hivernale",
-      "is_deload": true,
-      "target": {
-        "total_km": 108,
-        "total_dplus": 500,
-        "long_ride": {
-          "distance_km": 70,
-          "elevation_m": 350,
-          "label": "Sortie Longue Cl\u00e9 (Week-end)"
-        },
-        "mid_week_ride": {
-          "distance_km": 38,
-          "elevation_m": 150,
-          "label": "Sortie Rythme Semaine"
-        }
-      },
-      "realized": {
-        "total_km": 0,
-        "total_dplus": 0,
-        "rides_count": 0,
-        "status": "future",
-        "rides": []
-      },
-      "adjustment": {
-        "active": false,
-        "original_target_km": 108,
-        "adjusted_target_km": 108,
-        "reason": null
-      }
-    },
-    {
-      "week_number": 17,
-      "iso_week": 5,
-      "year": 2027,
-      "start_date": "2027-02-01",
-      "end_date": "2027-02-07",
-      "theme": "Le cap mythique : 100 km !",
+      "theme": "Cap des 65 km le W-E",
       "is_deload": false,
       "target": {
         "total_km": 150,
-        "total_dplus": 900,
-        "long_ride": {
-          "distance_km": 100,
-          "elevation_m": 650,
-          "label": "Sortie Longue Cl\u00e9 (Week-end)"
-        },
-        "mid_week_ride": {
-          "distance_km": 50,
-          "elevation_m": 250,
-          "label": "Sortie Rythme Semaine"
-        }
+        "total_dplus": 570,
+        "rides": [
+          {
+            "id": 1,
+            "name": "Sortie 1 (Mardi / Mercredi)",
+            "type": "Semaine (max 55km)",
+            "distance_km": 40,
+            "elevation_m": 120,
+            "role": "Rythme & Cadence (jambes souples)",
+            "status": "pending",
+            "done_info": null
+          },
+          {
+            "id": 2,
+            "name": "Sortie 2 (Jeudi / Vendredi)",
+            "type": "Semaine (max 55km)",
+            "distance_km": 45,
+            "elevation_m": 150,
+            "role": "Endurance & Faux-plats",
+            "status": "pending",
+            "done_info": null
+          },
+          {
+            "id": 3,
+            "name": "Sortie 3 (Samedi / Dimanche)",
+            "type": "Week-end (Sans limite)",
+            "distance_km": 65,
+            "elevation_m": 300,
+            "role": "Sortie Cl\u00e9 Lille-Hardelot (Volume & D+)",
+            "status": "pending",
+            "done_info": null
+          }
+        ]
       },
       "realized": {
         "total_km": 0,
@@ -750,98 +365,48 @@
       }
     },
     {
-      "week_number": 18,
-      "iso_week": 6,
-      "year": 2027,
-      "start_date": "2027-02-08",
-      "end_date": "2027-02-14",
-      "theme": "Endurance 105 km & D+",
-      "is_deload": false,
-      "target": {
-        "total_km": 157,
-        "total_dplus": 980,
-        "long_ride": {
-          "distance_km": 105,
-          "elevation_m": 700,
-          "label": "Sortie Longue Cl\u00e9 (Week-end)"
-        },
-        "mid_week_ride": {
-          "distance_km": 52,
-          "elevation_m": 280,
-          "label": "Sortie Rythme Semaine"
-        }
-      },
-      "realized": {
-        "total_km": 0,
-        "total_dplus": 0,
-        "rides_count": 0,
-        "status": "future",
-        "rides": []
-      },
-      "adjustment": {
-        "active": false,
-        "original_target_km": 157,
-        "adjusted_target_km": 157,
-        "reason": null
-      }
-    },
-    {
-      "week_number": 19,
-      "iso_week": 7,
-      "year": 2027,
-      "start_date": "2027-02-15",
-      "end_date": "2027-02-21",
-      "theme": "Chantier d\u00e9nivel\u00e9 800m D+",
-      "is_deload": false,
-      "target": {
-        "total_km": 165,
-        "total_dplus": 1100,
-        "long_ride": {
-          "distance_km": 110,
-          "elevation_m": 800,
-          "label": "Sortie Longue Cl\u00e9 (Week-end)"
-        },
-        "mid_week_ride": {
-          "distance_km": 55,
-          "elevation_m": 300,
-          "label": "Sortie Rythme Semaine"
-        }
-      },
-      "realized": {
-        "total_km": 0,
-        "total_dplus": 0,
-        "rides_count": 0,
-        "status": "future",
-        "rides": []
-      },
-      "adjustment": {
-        "active": false,
-        "original_target_km": 165,
-        "adjusted_target_km": 165,
-        "reason": null
-      }
-    },
-    {
-      "week_number": 20,
-      "iso_week": 8,
-      "year": 2027,
-      "start_date": "2027-02-22",
-      "end_date": "2027-02-28",
-      "theme": "R\u00e9cup\u00e9ration & recharge",
+      "week_number": 4,
+      "iso_week": 45,
+      "year": 2026,
+      "start_date": "2026-11-02",
+      "end_date": "2026-11-08",
+      "theme": "Semaine d'assimilation (Deload)",
       "is_deload": true,
       "target": {
         "total_km": 115,
-        "total_dplus": 550,
-        "long_ride": {
-          "distance_km": 75,
-          "elevation_m": 400,
-          "label": "Sortie Longue Cl\u00e9 (Week-end)"
-        },
-        "mid_week_ride": {
-          "distance_km": 40,
-          "elevation_m": 150,
-          "label": "Sortie Rythme Semaine"
-        }
+        "total_dplus": 380,
+        "rides": [
+          {
+            "id": 1,
+            "name": "Sortie 1 (Mardi / Mercredi)",
+            "type": "Semaine (max 55km)",
+            "distance_km": 30,
+            "elevation_m": 80,
+            "role": "Rythme & Cadence (jambes souples)",
+            "status": "pending",
+            "done_info": null
+          },
+          {
+            "id": 2,
+            "name": "Sortie 2 (Jeudi / Vendredi)",
+            "type": "Semaine (max 55km)",
+            "distance_km": 35,
+            "elevation_m": 100,
+            "role": "Endurance & Faux-plats",
+            "status": "pending",
+            "done_info": null
+          },
+          {
+            "id": 3,
+            "name": "Sortie 3 (Samedi / Dimanche)",
+            "type": "Week-end (Sans limite)",
+            "distance_km": 50,
+            "elevation_m": 200,
+            "role": "Sortie Cl\u00e9 Lille-Hardelot (Volume & D+)",
+            "status": "pending",
+            "done_info": null
+          }
+        ]
       },
       "realized": {
         "total_km": 0,
@@ -858,26 +423,48 @@
       }
     },
     {
-      "week_number": 21,
-      "iso_week": 9,
-      "year": 2027,
-      "start_date": "2027-03-01",
-      "end_date": "2027-03-07",
-      "theme": "Rythme de printemps",
+      "week_number": 5,
+      "iso_week": 46,
+      "year": 2026,
+      "start_date": "2026-11-09",
+      "end_date": "2026-11-15",
+      "theme": "Entr\u00e9e sur les 70 km le W-E",
       "is_deload": false,
       "target": {
-        "total_km": 162,
-        "total_dplus": 1080,
-        "long_ride": {
-          "distance_km": 110,
-          "elevation_m": 800,
-          "label": "Sortie Longue Cl\u00e9 (Week-end)"
-        },
-        "mid_week_ride": {
-          "distance_km": 52,
-          "elevation_m": 280,
-          "label": "Sortie Rythme Semaine"
-        }
+        "total_km": 157,
+        "total_dplus": 630,
+        "rides": [
+          {
+            "id": 1,
+            "name": "Sortie 1 (Mardi / Mercredi)",
+            "type": "Semaine (max 55km)",
+            "distance_km": 42,
+            "elevation_m": 130,
+            "role": "Rythme & Cadence (jambes souples)",
+            "status": "pending",
+            "done_info": null
+          },
+          {
+            "id": 2,
+            "name": "Sortie 2 (Jeudi / Vendredi)",
+            "type": "Semaine (max 55km)",
+            "distance_km": 45,
+            "elevation_m": 150,
+            "role": "Endurance & Faux-plats",
+            "status": "pending",
+            "done_info": null
+          },
+          {
+            "id": 3,
+            "name": "Sortie 3 (Samedi / Dimanche)",
+            "type": "Week-end (Sans limite)",
+            "distance_km": 70,
+            "elevation_m": 350,
+            "role": "Sortie Cl\u00e9 Lille-Hardelot (Volume & D+)",
+            "status": "pending",
+            "done_info": null
+          }
+        ]
       },
       "realized": {
         "total_km": 0,
@@ -888,32 +475,54 @@
       },
       "adjustment": {
         "active": false,
-        "original_target_km": 162,
-        "adjusted_target_km": 162,
+        "original_target_km": 157,
+        "adjusted_target_km": 157,
         "reason": null
       }
     },
     {
-      "week_number": 22,
-      "iso_week": 10,
-      "year": 2027,
-      "start_date": "2027-03-08",
-      "end_date": "2027-03-14",
-      "theme": "Sortie longue 115 km",
+      "week_number": 6,
+      "iso_week": 47,
+      "year": 2026,
+      "start_date": "2026-11-16",
+      "end_date": "2026-11-22",
+      "theme": "D\u00e9nivel\u00e9 progressif (400m D+)",
       "is_deload": false,
       "target": {
-        "total_km": 170,
-        "total_dplus": 1170,
-        "long_ride": {
-          "distance_km": 115,
-          "elevation_m": 850,
-          "label": "Sortie Longue Cl\u00e9 (Week-end)"
-        },
-        "mid_week_ride": {
-          "distance_km": 55,
-          "elevation_m": 320,
-          "label": "Sortie Rythme Semaine"
-        }
+        "total_km": 168,
+        "total_dplus": 710,
+        "rides": [
+          {
+            "id": 1,
+            "name": "Sortie 1 (Mardi / Mercredi)",
+            "type": "Semaine (max 55km)",
+            "distance_km": 45,
+            "elevation_m": 150,
+            "role": "Rythme & Cadence (jambes souples)",
+            "status": "pending",
+            "done_info": null
+          },
+          {
+            "id": 2,
+            "name": "Sortie 2 (Jeudi / Vendredi)",
+            "type": "Semaine (max 55km)",
+            "distance_km": 48,
+            "elevation_m": 160,
+            "role": "Endurance & Faux-plats",
+            "status": "pending",
+            "done_info": null
+          },
+          {
+            "id": 3,
+            "name": "Sortie 3 (Samedi / Dimanche)",
+            "type": "Week-end (Sans limite)",
+            "distance_km": 75,
+            "elevation_m": 400,
+            "role": "Sortie Cl\u00e9 Lille-Hardelot (Volume & D+)",
+            "status": "pending",
+            "done_info": null
+          }
+        ]
       },
       "realized": {
         "total_km": 0,
@@ -924,32 +533,54 @@
       },
       "adjustment": {
         "active": false,
-        "original_target_km": 170,
-        "adjusted_target_km": 170,
+        "original_target_km": 168,
+        "adjusted_target_km": 168,
         "reason": null
       }
     },
     {
-      "week_number": 23,
-      "iso_week": 11,
-      "year": 2027,
-      "start_date": "2027-03-15",
-      "end_date": "2027-03-21",
-      "theme": "Cap des 120 km (Cassel / Flandres)",
+      "week_number": 7,
+      "iso_week": 48,
+      "year": 2026,
+      "start_date": "2026-11-23",
+      "end_date": "2026-11-29",
+      "theme": "Cap des 80 km le W-E",
       "is_deload": false,
       "target": {
-        "total_km": 178,
-        "total_dplus": 1300,
-        "long_ride": {
-          "distance_km": 120,
-          "elevation_m": 950,
-          "label": "Sortie Longue Cl\u00e9 (Week-end)"
-        },
-        "mid_week_ride": {
-          "distance_km": 58,
-          "elevation_m": 350,
-          "label": "Sortie Rythme Semaine"
-        }
+        "total_km": 175,
+        "total_dplus": 780,
+        "rides": [
+          {
+            "id": 1,
+            "name": "Sortie 1 (Mardi / Mercredi)",
+            "type": "Semaine (max 55km)",
+            "distance_km": 45,
+            "elevation_m": 150,
+            "role": "Rythme & Cadence (jambes souples)",
+            "status": "pending",
+            "done_info": null
+          },
+          {
+            "id": 2,
+            "name": "Sortie 2 (Jeudi / Vendredi)",
+            "type": "Semaine (max 55km)",
+            "distance_km": 50,
+            "elevation_m": 180,
+            "role": "Endurance & Faux-plats",
+            "status": "pending",
+            "done_info": null
+          },
+          {
+            "id": 3,
+            "name": "Sortie 3 (Samedi / Dimanche)",
+            "type": "Week-end (Sans limite)",
+            "distance_km": 80,
+            "elevation_m": 450,
+            "role": "Sortie Cl\u00e9 Lille-Hardelot (Volume & D+)",
+            "status": "pending",
+            "done_info": null
+          }
+        ]
       },
       "realized": {
         "total_km": 0,
@@ -960,32 +591,54 @@
       },
       "adjustment": {
         "active": false,
-        "original_target_km": 178,
-        "adjusted_target_km": 178,
+        "original_target_km": 175,
+        "adjusted_target_km": 175,
         "reason": null
       }
     },
     {
-      "week_number": 24,
-      "iso_week": 12,
-      "year": 2027,
-      "start_date": "2027-03-22",
-      "end_date": "2027-03-28",
-      "theme": "Assimilation pr\u00e9-avril",
+      "week_number": 8,
+      "iso_week": 49,
+      "year": 2026,
+      "start_date": "2026-11-30",
+      "end_date": "2026-12-06",
+      "theme": "Semaine de d\u00e9charge active",
       "is_deload": true,
       "target": {
-        "total_km": 120,
-        "total_dplus": 630,
-        "long_ride": {
-          "distance_km": 80,
-          "elevation_m": 450,
-          "label": "Sortie Longue Cl\u00e9 (Week-end)"
-        },
-        "mid_week_ride": {
-          "distance_km": 40,
-          "elevation_m": 180,
-          "label": "Sortie Rythme Semaine"
-        }
+        "total_km": 133,
+        "total_dplus": 460,
+        "rides": [
+          {
+            "id": 1,
+            "name": "Sortie 1 (Mardi / Mercredi)",
+            "type": "Semaine (max 55km)",
+            "distance_km": 35,
+            "elevation_m": 100,
+            "role": "Rythme & Cadence (jambes souples)",
+            "status": "pending",
+            "done_info": null
+          },
+          {
+            "id": 2,
+            "name": "Sortie 2 (Jeudi / Vendredi)",
+            "type": "Semaine (max 55km)",
+            "distance_km": 38,
+            "elevation_m": 110,
+            "role": "Endurance & Faux-plats",
+            "status": "pending",
+            "done_info": null
+          },
+          {
+            "id": 3,
+            "name": "Sortie 3 (Samedi / Dimanche)",
+            "type": "Week-end (Sans limite)",
+            "distance_km": 60,
+            "elevation_m": 250,
+            "role": "Sortie Cl\u00e9 Lille-Hardelot (Volume & D+)",
+            "status": "pending",
+            "done_info": null
+          }
+        ]
       },
       "realized": {
         "total_km": 0,
@@ -996,32 +649,112 @@
       },
       "adjustment": {
         "active": false,
-        "original_target_km": 120,
-        "adjusted_target_km": 120,
+        "original_target_km": 133,
+        "adjusted_target_km": 133,
         "reason": null
       }
     },
     {
-      "week_number": 25,
-      "iso_week": 13,
-      "year": 2027,
-      "start_date": "2027-03-29",
-      "end_date": "2027-04-04",
-      "theme": "Sp\u00e9cifique D+ : 1000m franchis",
+      "week_number": 9,
+      "iso_week": 50,
+      "year": 2026,
+      "start_date": "2026-12-07",
+      "end_date": "2026-12-13",
+      "theme": "Maintien du rythme hivernal",
+      "is_deload": false,
+      "target": {
+        "total_km": 175,
+        "total_dplus": 760,
+        "rides": [
+          {
+            "id": 1,
+            "name": "Sortie 1 (Mardi / Mercredi)",
+            "type": "Semaine (max 55km)",
+            "distance_km": 45,
+            "elevation_m": 140,
+            "role": "Rythme & Cadence (jambes souples)",
+            "status": "pending",
+            "done_info": null
+          },
+          {
+            "id": 2,
+            "name": "Sortie 2 (Jeudi / Vendredi)",
+            "type": "Semaine (max 55km)",
+            "distance_km": 50,
+            "elevation_m": 170,
+            "role": "Endurance & Faux-plats",
+            "status": "pending",
+            "done_info": null
+          },
+          {
+            "id": 3,
+            "name": "Sortie 3 (Samedi / Dimanche)",
+            "type": "Week-end (Sans limite)",
+            "distance_km": 80,
+            "elevation_m": 450,
+            "role": "Sortie Cl\u00e9 Lille-Hardelot (Volume & D+)",
+            "status": "pending",
+            "done_info": null
+          }
+        ]
+      },
+      "realized": {
+        "total_km": 0,
+        "total_dplus": 0,
+        "rides_count": 0,
+        "status": "future",
+        "rides": []
+      },
+      "adjustment": {
+        "active": false,
+        "original_target_km": 175,
+        "adjusted_target_km": 175,
+        "reason": null
+      }
+    },
+    {
+      "week_number": 10,
+      "iso_week": 51,
+      "year": 2026,
+      "start_date": "2026-12-14",
+      "end_date": "2026-12-20",
+      "theme": "Monts & faux-plats (500m D+)",
       "is_deload": false,
       "target": {
         "total_km": 180,
-        "total_dplus": 1320,
-        "long_ride": {
-          "distance_km": 125,
-          "elevation_m": 1000,
-          "label": "Sortie Longue Cl\u00e9 (Week-end)"
-        },
-        "mid_week_ride": {
-          "distance_km": 55,
-          "elevation_m": 320,
-          "label": "Sortie Rythme Semaine"
-        }
+        "total_dplus": 830,
+        "rides": [
+          {
+            "id": 1,
+            "name": "Sortie 1 (Mardi / Mercredi)",
+            "type": "Semaine (max 55km)",
+            "distance_km": 45,
+            "elevation_m": 150,
+            "role": "Rythme & Cadence (jambes souples)",
+            "status": "pending",
+            "done_info": null
+          },
+          {
+            "id": 2,
+            "name": "Sortie 2 (Jeudi / Vendredi)",
+            "type": "Semaine (max 55km)",
+            "distance_km": 50,
+            "elevation_m": 180,
+            "role": "Endurance & Faux-plats",
+            "status": "pending",
+            "done_info": null
+          },
+          {
+            "id": 3,
+            "name": "Sortie 3 (Samedi / Dimanche)",
+            "type": "Week-end (Sans limite)",
+            "distance_km": 85,
+            "elevation_m": 500,
+            "role": "Sortie Cl\u00e9 Lille-Hardelot (Volume & D+)",
+            "status": "pending",
+            "done_info": null
+          }
+        ]
       },
       "realized": {
         "total_km": 0,
@@ -1038,26 +771,48 @@
       }
     },
     {
-      "week_number": 26,
-      "iso_week": 14,
-      "year": 2027,
-      "start_date": "2027-04-05",
-      "end_date": "2027-04-11",
-      "theme": "La barre des 130 km",
+      "week_number": 11,
+      "iso_week": 52,
+      "year": 2026,
+      "start_date": "2026-12-21",
+      "end_date": "2026-12-27",
+      "theme": "Cap des 90 km le W-E",
       "is_deload": false,
       "target": {
-        "total_km": 188,
-        "total_dplus": 1450,
-        "long_ride": {
-          "distance_km": 130,
-          "elevation_m": 1100,
-          "label": "Sortie Longue Cl\u00e9 (Week-end)"
-        },
-        "mid_week_ride": {
-          "distance_km": 58,
-          "elevation_m": 350,
-          "label": "Sortie Rythme Semaine"
-        }
+        "total_km": 190,
+        "total_dplus": 900,
+        "rides": [
+          {
+            "id": 1,
+            "name": "Sortie 1 (Mardi / Mercredi)",
+            "type": "Semaine (max 55km)",
+            "distance_km": 48,
+            "elevation_m": 160,
+            "role": "Rythme & Cadence (jambes souples)",
+            "status": "pending",
+            "done_info": null
+          },
+          {
+            "id": 2,
+            "name": "Sortie 2 (Jeudi / Vendredi)",
+            "type": "Semaine (max 55km)",
+            "distance_km": 52,
+            "elevation_m": 190,
+            "role": "Endurance & Faux-plats",
+            "status": "pending",
+            "done_info": null
+          },
+          {
+            "id": 3,
+            "name": "Sortie 3 (Samedi / Dimanche)",
+            "type": "Week-end (Sans limite)",
+            "distance_km": 90,
+            "elevation_m": 550,
+            "role": "Sortie Cl\u00e9 Lille-Hardelot (Volume & D+)",
+            "status": "pending",
+            "done_info": null
+          }
+        ]
       },
       "realized": {
         "total_km": 0,
@@ -1068,68 +823,54 @@
       },
       "adjustment": {
         "active": false,
-        "original_target_km": 188,
-        "adjusted_target_km": 188,
+        "original_target_km": 190,
+        "adjusted_target_km": 190,
         "reason": null
       }
     },
     {
-      "week_number": 27,
-      "iso_week": 15,
-      "year": 2027,
-      "start_date": "2027-04-12",
-      "end_date": "2027-04-18",
-      "theme": "Grosse r\u00e9p\u00e9tition 138 km",
-      "is_deload": false,
-      "target": {
-        "total_km": 198,
-        "total_dplus": 1580,
-        "long_ride": {
-          "distance_km": 138,
-          "elevation_m": 1200,
-          "label": "Sortie Longue Cl\u00e9 (Week-end)"
-        },
-        "mid_week_ride": {
-          "distance_km": 60,
-          "elevation_m": 380,
-          "label": "Sortie Rythme Semaine"
-        }
-      },
-      "realized": {
-        "total_km": 0,
-        "total_dplus": 0,
-        "rides_count": 0,
-        "status": "future",
-        "rides": []
-      },
-      "adjustment": {
-        "active": false,
-        "original_target_km": 198,
-        "adjusted_target_km": 198,
-        "reason": null
-      }
-    },
-    {
-      "week_number": 28,
-      "iso_week": 16,
-      "year": 2027,
-      "start_date": "2027-04-19",
-      "end_date": "2027-04-25",
-      "theme": "D\u00e9charge avant derni\u00e8re ligne droite",
+      "week_number": 12,
+      "iso_week": 53,
+      "year": 2026,
+      "start_date": "2026-12-28",
+      "end_date": "2027-01-03",
+      "theme": "Tr\u00eave des f\u00eates (R\u00e9g\u00e9n\u00e9ration)",
       "is_deload": true,
       "target": {
-        "total_km": 135,
-        "total_dplus": 700,
-        "long_ride": {
-          "distance_km": 90,
-          "elevation_m": 500,
-          "label": "Sortie Longue Cl\u00e9 (Week-end)"
-        },
-        "mid_week_ride": {
-          "distance_km": 45,
-          "elevation_m": 200,
-          "label": "Sortie Rythme Semaine"
-        }
+        "total_km": 140,
+        "total_dplus": 520,
+        "rides": [
+          {
+            "id": 1,
+            "name": "Sortie 1 (Mardi / Mercredi)",
+            "type": "Semaine (max 55km)",
+            "distance_km": 35,
+            "elevation_m": 100,
+            "role": "Rythme & Cadence (jambes souples)",
+            "status": "pending",
+            "done_info": null
+          },
+          {
+            "id": 2,
+            "name": "Sortie 2 (Jeudi / Vendredi)",
+            "type": "Semaine (max 55km)",
+            "distance_km": 40,
+            "elevation_m": 120,
+            "role": "Endurance & Faux-plats",
+            "status": "pending",
+            "done_info": null
+          },
+          {
+            "id": 3,
+            "name": "Sortie 3 (Samedi / Dimanche)",
+            "type": "Week-end (Sans limite)",
+            "distance_km": 65,
+            "elevation_m": 300,
+            "role": "Sortie Cl\u00e9 Lille-Hardelot (Volume & D+)",
+            "status": "pending",
+            "done_info": null
+          }
+        ]
       },
       "realized": {
         "total_km": 0,
@@ -1140,32 +881,170 @@
       },
       "adjustment": {
         "active": false,
-        "original_target_km": 135,
-        "adjusted_target_km": 135,
+        "original_target_km": 140,
+        "adjusted_target_km": 140,
         "reason": null
       }
     },
     {
-      "week_number": 29,
-      "iso_week": 17,
+      "week_number": 13,
+      "iso_week": 1,
       "year": 2027,
-      "start_date": "2027-04-26",
-      "end_date": "2027-05-02",
-      "theme": "R\u00e9p\u00e9tition G\u00e9n\u00e9rale Lille-Hardelot (145 km)",
+      "start_date": "2027-01-04",
+      "end_date": "2027-01-10",
+      "theme": "Reprise post-f\u00eates",
+      "is_deload": false,
+      "target": {
+        "total_km": 180,
+        "total_dplus": 780,
+        "rides": [
+          {
+            "id": 1,
+            "name": "Sortie 1 (Mardi / Mercredi)",
+            "type": "Semaine (max 55km)",
+            "distance_km": 45,
+            "elevation_m": 150,
+            "role": "Rythme & Cadence (jambes souples)",
+            "status": "pending",
+            "done_info": null
+          },
+          {
+            "id": 2,
+            "name": "Sortie 2 (Jeudi / Vendredi)",
+            "type": "Semaine (max 55km)",
+            "distance_km": 50,
+            "elevation_m": 180,
+            "role": "Endurance & Faux-plats",
+            "status": "pending",
+            "done_info": null
+          },
+          {
+            "id": 3,
+            "name": "Sortie 3 (Samedi / Dimanche)",
+            "type": "Week-end (Sans limite)",
+            "distance_km": 85,
+            "elevation_m": 450,
+            "role": "Sortie Cl\u00e9 Lille-Hardelot (Volume & D+)",
+            "status": "pending",
+            "done_info": null
+          }
+        ]
+      },
+      "realized": {
+        "total_km": 0,
+        "total_dplus": 0,
+        "rides_count": 0,
+        "status": "future",
+        "rides": []
+      },
+      "adjustment": {
+        "active": false,
+        "original_target_km": 180,
+        "adjusted_target_km": 180,
+        "reason": null
+      }
+    },
+    {
+      "week_number": 14,
+      "iso_week": 2,
+      "year": 2027,
+      "start_date": "2027-01-11",
+      "end_date": "2027-01-17",
+      "theme": "Stabilisation 90 km W-E",
+      "is_deload": false,
+      "target": {
+        "total_km": 190,
+        "total_dplus": 900,
+        "rides": [
+          {
+            "id": 1,
+            "name": "Sortie 1 (Mardi / Mercredi)",
+            "type": "Semaine (max 55km)",
+            "distance_km": 48,
+            "elevation_m": 160,
+            "role": "Rythme & Cadence (jambes souples)",
+            "status": "pending",
+            "done_info": null
+          },
+          {
+            "id": 2,
+            "name": "Sortie 2 (Jeudi / Vendredi)",
+            "type": "Semaine (max 55km)",
+            "distance_km": 52,
+            "elevation_m": 190,
+            "role": "Endurance & Faux-plats",
+            "status": "pending",
+            "done_info": null
+          },
+          {
+            "id": 3,
+            "name": "Sortie 3 (Samedi / Dimanche)",
+            "type": "Week-end (Sans limite)",
+            "distance_km": 90,
+            "elevation_m": 550,
+            "role": "Sortie Cl\u00e9 Lille-Hardelot (Volume & D+)",
+            "status": "pending",
+            "done_info": null
+          }
+        ]
+      },
+      "realized": {
+        "total_km": 0,
+        "total_dplus": 0,
+        "rides_count": 0,
+        "status": "future",
+        "rides": []
+      },
+      "adjustment": {
+        "active": false,
+        "original_target_km": 190,
+        "adjusted_target_km": 190,
+        "reason": null
+      }
+    },
+    {
+      "week_number": 15,
+      "iso_week": 3,
+      "year": 2027,
+      "start_date": "2027-01-18",
+      "end_date": "2027-01-24",
+      "theme": "Approche des 100 km le W-E",
       "is_deload": false,
       "target": {
         "total_km": 200,
-        "total_dplus": 1600,
-        "long_ride": {
-          "distance_km": 145,
-          "elevation_m": 1300,
-          "label": "Sortie Longue Cl\u00e9 (Week-end)"
-        },
-        "mid_week_ride": {
-          "distance_km": 55,
-          "elevation_m": 300,
-          "label": "Sortie Rythme Semaine"
-        }
+        "total_dplus": 970,
+        "rides": [
+          {
+            "id": 1,
+            "name": "Sortie 1 (Mardi / Mercredi)",
+            "type": "Semaine (max 55km)",
+            "distance_km": 50,
+            "elevation_m": 170,
+            "role": "Rythme & Cadence (jambes souples)",
+            "status": "pending",
+            "done_info": null
+          },
+          {
+            "id": 2,
+            "name": "Sortie 2 (Jeudi / Vendredi)",
+            "type": "Semaine (max 55km)",
+            "distance_km": 55,
+            "elevation_m": 200,
+            "role": "Endurance & Faux-plats",
+            "status": "pending",
+            "done_info": null
+          },
+          {
+            "id": 3,
+            "name": "Sortie 3 (Samedi / Dimanche)",
+            "type": "Week-end (Sans limite)",
+            "distance_km": 95,
+            "elevation_m": 600,
+            "role": "Sortie Cl\u00e9 Lille-Hardelot (Volume & D+)",
+            "status": "pending",
+            "done_info": null
+          }
+        ]
       },
       "realized": {
         "total_km": 0,
@@ -1182,26 +1061,48 @@
       }
     },
     {
-      "week_number": 30,
-      "iso_week": 18,
+      "week_number": 16,
+      "iso_week": 4,
       "year": 2027,
-      "start_date": "2027-05-03",
-      "end_date": "2027-05-09",
-      "theme": "Derni\u00e8re grosse sortie",
-      "is_deload": false,
+      "start_date": "2027-01-25",
+      "end_date": "2027-01-31",
+      "theme": "Assimilation hivernale",
+      "is_deload": true,
       "target": {
-        "total_km": 170,
-        "total_dplus": 1150,
-        "long_ride": {
-          "distance_km": 120,
-          "elevation_m": 900,
-          "label": "Sortie Longue Cl\u00e9 (Week-end)"
-        },
-        "mid_week_ride": {
-          "distance_km": 50,
-          "elevation_m": 250,
-          "label": "Sortie Rythme Semaine"
-        }
+        "total_km": 150,
+        "total_dplus": 610,
+        "rides": [
+          {
+            "id": 1,
+            "name": "Sortie 1 (Mardi / Mercredi)",
+            "type": "Semaine (max 55km)",
+            "distance_km": 38,
+            "elevation_m": 120,
+            "role": "Rythme & Cadence (jambes souples)",
+            "status": "pending",
+            "done_info": null
+          },
+          {
+            "id": 2,
+            "name": "Sortie 2 (Jeudi / Vendredi)",
+            "type": "Semaine (max 55km)",
+            "distance_km": 42,
+            "elevation_m": 140,
+            "role": "Endurance & Faux-plats",
+            "status": "pending",
+            "done_info": null
+          },
+          {
+            "id": 3,
+            "name": "Sortie 3 (Samedi / Dimanche)",
+            "type": "Week-end (Sans limite)",
+            "distance_km": 70,
+            "elevation_m": 350,
+            "role": "Sortie Cl\u00e9 Lille-Hardelot (Volume & D+)",
+            "status": "pending",
+            "done_info": null
+          }
+        ]
       },
       "realized": {
         "total_km": 0,
@@ -1212,8 +1113,820 @@
       },
       "adjustment": {
         "active": false,
-        "original_target_km": 170,
-        "adjusted_target_km": 170,
+        "original_target_km": 150,
+        "adjusted_target_km": 150,
+        "reason": null
+      }
+    },
+    {
+      "week_number": 17,
+      "iso_week": 5,
+      "year": 2027,
+      "start_date": "2027-02-01",
+      "end_date": "2027-02-07",
+      "theme": "Le cap mythique : 100 km le W-E !",
+      "is_deload": false,
+      "target": {
+        "total_km": 205,
+        "total_dplus": 1020,
+        "rides": [
+          {
+            "id": 1,
+            "name": "Sortie 1 (Mardi / Mercredi)",
+            "type": "Semaine (max 55km)",
+            "distance_km": 50,
+            "elevation_m": 170,
+            "role": "Rythme & Cadence (jambes souples)",
+            "status": "pending",
+            "done_info": null
+          },
+          {
+            "id": 2,
+            "name": "Sortie 2 (Jeudi / Vendredi)",
+            "type": "Semaine (max 55km)",
+            "distance_km": 55,
+            "elevation_m": 200,
+            "role": "Endurance & Faux-plats",
+            "status": "pending",
+            "done_info": null
+          },
+          {
+            "id": 3,
+            "name": "Sortie 3 (Samedi / Dimanche)",
+            "type": "Week-end (Sans limite)",
+            "distance_km": 100,
+            "elevation_m": 650,
+            "role": "Sortie Cl\u00e9 Lille-Hardelot (Volume & D+)",
+            "status": "pending",
+            "done_info": null
+          }
+        ]
+      },
+      "realized": {
+        "total_km": 0,
+        "total_dplus": 0,
+        "rides_count": 0,
+        "status": "future",
+        "rides": []
+      },
+      "adjustment": {
+        "active": false,
+        "original_target_km": 205,
+        "adjusted_target_km": 205,
+        "reason": null
+      }
+    },
+    {
+      "week_number": 18,
+      "iso_week": 6,
+      "year": 2027,
+      "start_date": "2027-02-08",
+      "end_date": "2027-02-14",
+      "theme": "Endurance 105 km & 700m D+",
+      "is_deload": false,
+      "target": {
+        "total_km": 210,
+        "total_dplus": 1090,
+        "rides": [
+          {
+            "id": 1,
+            "name": "Sortie 1 (Mardi / Mercredi)",
+            "type": "Semaine (max 55km)",
+            "distance_km": 50,
+            "elevation_m": 180,
+            "role": "Rythme & Cadence (jambes souples)",
+            "status": "pending",
+            "done_info": null
+          },
+          {
+            "id": 2,
+            "name": "Sortie 2 (Jeudi / Vendredi)",
+            "type": "Semaine (max 55km)",
+            "distance_km": 55,
+            "elevation_m": 210,
+            "role": "Endurance & Faux-plats",
+            "status": "pending",
+            "done_info": null
+          },
+          {
+            "id": 3,
+            "name": "Sortie 3 (Samedi / Dimanche)",
+            "type": "Week-end (Sans limite)",
+            "distance_km": 105,
+            "elevation_m": 700,
+            "role": "Sortie Cl\u00e9 Lille-Hardelot (Volume & D+)",
+            "status": "pending",
+            "done_info": null
+          }
+        ]
+      },
+      "realized": {
+        "total_km": 0,
+        "total_dplus": 0,
+        "rides_count": 0,
+        "status": "future",
+        "rides": []
+      },
+      "adjustment": {
+        "active": false,
+        "original_target_km": 210,
+        "adjusted_target_km": 210,
+        "reason": null
+      }
+    },
+    {
+      "week_number": 19,
+      "iso_week": 7,
+      "year": 2027,
+      "start_date": "2027-02-15",
+      "end_date": "2027-02-21",
+      "theme": "Chantier d\u00e9nivel\u00e9 800m D+",
+      "is_deload": false,
+      "target": {
+        "total_km": 217,
+        "total_dplus": 1210,
+        "rides": [
+          {
+            "id": 1,
+            "name": "Sortie 1 (Mardi / Mercredi)",
+            "type": "Semaine (max 55km)",
+            "distance_km": 52,
+            "elevation_m": 190,
+            "role": "Rythme & Cadence (jambes souples)",
+            "status": "pending",
+            "done_info": null
+          },
+          {
+            "id": 2,
+            "name": "Sortie 2 (Jeudi / Vendredi)",
+            "type": "Semaine (max 55km)",
+            "distance_km": 55,
+            "elevation_m": 220,
+            "role": "Endurance & Faux-plats",
+            "status": "pending",
+            "done_info": null
+          },
+          {
+            "id": 3,
+            "name": "Sortie 3 (Samedi / Dimanche)",
+            "type": "Week-end (Sans limite)",
+            "distance_km": 110,
+            "elevation_m": 800,
+            "role": "Sortie Cl\u00e9 Lille-Hardelot (Volume & D+)",
+            "status": "pending",
+            "done_info": null
+          }
+        ]
+      },
+      "realized": {
+        "total_km": 0,
+        "total_dplus": 0,
+        "rides_count": 0,
+        "status": "future",
+        "rides": []
+      },
+      "adjustment": {
+        "active": false,
+        "original_target_km": 217,
+        "adjusted_target_km": 217,
+        "reason": null
+      }
+    },
+    {
+      "week_number": 20,
+      "iso_week": 8,
+      "year": 2027,
+      "start_date": "2027-02-22",
+      "end_date": "2027-02-28",
+      "theme": "R\u00e9cup\u00e9ration & recharge",
+      "is_deload": true,
+      "target": {
+        "total_km": 160,
+        "total_dplus": 660,
+        "rides": [
+          {
+            "id": 1,
+            "name": "Sortie 1 (Mardi / Mercredi)",
+            "type": "Semaine (max 55km)",
+            "distance_km": 40,
+            "elevation_m": 120,
+            "role": "Rythme & Cadence (jambes souples)",
+            "status": "pending",
+            "done_info": null
+          },
+          {
+            "id": 2,
+            "name": "Sortie 2 (Jeudi / Vendredi)",
+            "type": "Semaine (max 55km)",
+            "distance_km": 45,
+            "elevation_m": 140,
+            "role": "Endurance & Faux-plats",
+            "status": "pending",
+            "done_info": null
+          },
+          {
+            "id": 3,
+            "name": "Sortie 3 (Samedi / Dimanche)",
+            "type": "Week-end (Sans limite)",
+            "distance_km": 75,
+            "elevation_m": 400,
+            "role": "Sortie Cl\u00e9 Lille-Hardelot (Volume & D+)",
+            "status": "pending",
+            "done_info": null
+          }
+        ]
+      },
+      "realized": {
+        "total_km": 0,
+        "total_dplus": 0,
+        "rides_count": 0,
+        "status": "future",
+        "rides": []
+      },
+      "adjustment": {
+        "active": false,
+        "original_target_km": 160,
+        "adjusted_target_km": 160,
+        "reason": null
+      }
+    },
+    {
+      "week_number": 21,
+      "iso_week": 9,
+      "year": 2027,
+      "start_date": "2027-03-01",
+      "end_date": "2027-03-07",
+      "theme": "Rythme de printemps",
+      "is_deload": false,
+      "target": {
+        "total_km": 215,
+        "total_dplus": 1190,
+        "rides": [
+          {
+            "id": 1,
+            "name": "Sortie 1 (Mardi / Mercredi)",
+            "type": "Semaine (max 55km)",
+            "distance_km": 50,
+            "elevation_m": 180,
+            "role": "Rythme & Cadence (jambes souples)",
+            "status": "pending",
+            "done_info": null
+          },
+          {
+            "id": 2,
+            "name": "Sortie 2 (Jeudi / Vendredi)",
+            "type": "Semaine (max 55km)",
+            "distance_km": 55,
+            "elevation_m": 210,
+            "role": "Endurance & Faux-plats",
+            "status": "pending",
+            "done_info": null
+          },
+          {
+            "id": 3,
+            "name": "Sortie 3 (Samedi / Dimanche)",
+            "type": "Week-end (Sans limite)",
+            "distance_km": 110,
+            "elevation_m": 800,
+            "role": "Sortie Cl\u00e9 Lille-Hardelot (Volume & D+)",
+            "status": "pending",
+            "done_info": null
+          }
+        ]
+      },
+      "realized": {
+        "total_km": 0,
+        "total_dplus": 0,
+        "rides_count": 0,
+        "status": "future",
+        "rides": []
+      },
+      "adjustment": {
+        "active": false,
+        "original_target_km": 215,
+        "adjusted_target_km": 215,
+        "reason": null
+      }
+    },
+    {
+      "week_number": 22,
+      "iso_week": 10,
+      "year": 2027,
+      "start_date": "2027-03-08",
+      "end_date": "2027-03-14",
+      "theme": "Sortie longue 115 km",
+      "is_deload": false,
+      "target": {
+        "total_km": 222,
+        "total_dplus": 1260,
+        "rides": [
+          {
+            "id": 1,
+            "name": "Sortie 1 (Mardi / Mercredi)",
+            "type": "Semaine (max 55km)",
+            "distance_km": 52,
+            "elevation_m": 190,
+            "role": "Rythme & Cadence (jambes souples)",
+            "status": "pending",
+            "done_info": null
+          },
+          {
+            "id": 2,
+            "name": "Sortie 2 (Jeudi / Vendredi)",
+            "type": "Semaine (max 55km)",
+            "distance_km": 55,
+            "elevation_m": 220,
+            "role": "Endurance & Faux-plats",
+            "status": "pending",
+            "done_info": null
+          },
+          {
+            "id": 3,
+            "name": "Sortie 3 (Samedi / Dimanche)",
+            "type": "Week-end (Sans limite)",
+            "distance_km": 115,
+            "elevation_m": 850,
+            "role": "Sortie Cl\u00e9 Lille-Hardelot (Volume & D+)",
+            "status": "pending",
+            "done_info": null
+          }
+        ]
+      },
+      "realized": {
+        "total_km": 0,
+        "total_dplus": 0,
+        "rides_count": 0,
+        "status": "future",
+        "rides": []
+      },
+      "adjustment": {
+        "active": false,
+        "original_target_km": 222,
+        "adjusted_target_km": 222,
+        "reason": null
+      }
+    },
+    {
+      "week_number": 23,
+      "iso_week": 11,
+      "year": 2027,
+      "start_date": "2027-03-15",
+      "end_date": "2027-03-21",
+      "theme": "Cap des 120 km (Cassel / Flandres)",
+      "is_deload": false,
+      "target": {
+        "total_km": 230,
+        "total_dplus": 1380,
+        "rides": [
+          {
+            "id": 1,
+            "name": "Sortie 1 (Mardi / Mercredi)",
+            "type": "Semaine (max 55km)",
+            "distance_km": 55,
+            "elevation_m": 200,
+            "role": "Rythme & Cadence (jambes souples)",
+            "status": "pending",
+            "done_info": null
+          },
+          {
+            "id": 2,
+            "name": "Sortie 2 (Jeudi / Vendredi)",
+            "type": "Semaine (max 55km)",
+            "distance_km": 55,
+            "elevation_m": 230,
+            "role": "Endurance & Faux-plats",
+            "status": "pending",
+            "done_info": null
+          },
+          {
+            "id": 3,
+            "name": "Sortie 3 (Samedi / Dimanche)",
+            "type": "Week-end (Sans limite)",
+            "distance_km": 120,
+            "elevation_m": 950,
+            "role": "Sortie Cl\u00e9 Lille-Hardelot (Volume & D+)",
+            "status": "pending",
+            "done_info": null
+          }
+        ]
+      },
+      "realized": {
+        "total_km": 0,
+        "total_dplus": 0,
+        "rides_count": 0,
+        "status": "future",
+        "rides": []
+      },
+      "adjustment": {
+        "active": false,
+        "original_target_km": 230,
+        "adjusted_target_km": 230,
+        "reason": null
+      }
+    },
+    {
+      "week_number": 24,
+      "iso_week": 12,
+      "year": 2027,
+      "start_date": "2027-03-22",
+      "end_date": "2027-03-28",
+      "theme": "Assimilation pr\u00e9-avril",
+      "is_deload": true,
+      "target": {
+        "total_km": 165,
+        "total_dplus": 720,
+        "rides": [
+          {
+            "id": 1,
+            "name": "Sortie 1 (Mardi / Mercredi)",
+            "type": "Semaine (max 55km)",
+            "distance_km": 40,
+            "elevation_m": 120,
+            "role": "Rythme & Cadence (jambes souples)",
+            "status": "pending",
+            "done_info": null
+          },
+          {
+            "id": 2,
+            "name": "Sortie 2 (Jeudi / Vendredi)",
+            "type": "Semaine (max 55km)",
+            "distance_km": 45,
+            "elevation_m": 150,
+            "role": "Endurance & Faux-plats",
+            "status": "pending",
+            "done_info": null
+          },
+          {
+            "id": 3,
+            "name": "Sortie 3 (Samedi / Dimanche)",
+            "type": "Week-end (Sans limite)",
+            "distance_km": 80,
+            "elevation_m": 450,
+            "role": "Sortie Cl\u00e9 Lille-Hardelot (Volume & D+)",
+            "status": "pending",
+            "done_info": null
+          }
+        ]
+      },
+      "realized": {
+        "total_km": 0,
+        "total_dplus": 0,
+        "rides_count": 0,
+        "status": "future",
+        "rides": []
+      },
+      "adjustment": {
+        "active": false,
+        "original_target_km": 165,
+        "adjusted_target_km": 165,
+        "reason": null
+      }
+    },
+    {
+      "week_number": 25,
+      "iso_week": 13,
+      "year": 2027,
+      "start_date": "2027-03-29",
+      "end_date": "2027-04-04",
+      "theme": "Sp\u00e9cifique D+ : 1000m W-E franchis",
+      "is_deload": false,
+      "target": {
+        "total_km": 232,
+        "total_dplus": 1410,
+        "rides": [
+          {
+            "id": 1,
+            "name": "Sortie 1 (Mardi / Mercredi)",
+            "type": "Semaine (max 55km)",
+            "distance_km": 52,
+            "elevation_m": 190,
+            "role": "Rythme & Cadence (jambes souples)",
+            "status": "pending",
+            "done_info": null
+          },
+          {
+            "id": 2,
+            "name": "Sortie 2 (Jeudi / Vendredi)",
+            "type": "Semaine (max 55km)",
+            "distance_km": 55,
+            "elevation_m": 220,
+            "role": "Endurance & Faux-plats",
+            "status": "pending",
+            "done_info": null
+          },
+          {
+            "id": 3,
+            "name": "Sortie 3 (Samedi / Dimanche)",
+            "type": "Week-end (Sans limite)",
+            "distance_km": 125,
+            "elevation_m": 1000,
+            "role": "Sortie Cl\u00e9 Lille-Hardelot (Volume & D+)",
+            "status": "pending",
+            "done_info": null
+          }
+        ]
+      },
+      "realized": {
+        "total_km": 0,
+        "total_dplus": 0,
+        "rides_count": 0,
+        "status": "future",
+        "rides": []
+      },
+      "adjustment": {
+        "active": false,
+        "original_target_km": 232,
+        "adjusted_target_km": 232,
+        "reason": null
+      }
+    },
+    {
+      "week_number": 26,
+      "iso_week": 14,
+      "year": 2027,
+      "start_date": "2027-04-05",
+      "end_date": "2027-04-11",
+      "theme": "La barre des 130 km le W-E",
+      "is_deload": false,
+      "target": {
+        "total_km": 240,
+        "total_dplus": 1530,
+        "rides": [
+          {
+            "id": 1,
+            "name": "Sortie 1 (Mardi / Mercredi)",
+            "type": "Semaine (max 55km)",
+            "distance_km": 55,
+            "elevation_m": 200,
+            "role": "Rythme & Cadence (jambes souples)",
+            "status": "pending",
+            "done_info": null
+          },
+          {
+            "id": 2,
+            "name": "Sortie 2 (Jeudi / Vendredi)",
+            "type": "Semaine (max 55km)",
+            "distance_km": 55,
+            "elevation_m": 230,
+            "role": "Endurance & Faux-plats",
+            "status": "pending",
+            "done_info": null
+          },
+          {
+            "id": 3,
+            "name": "Sortie 3 (Samedi / Dimanche)",
+            "type": "Week-end (Sans limite)",
+            "distance_km": 130,
+            "elevation_m": 1100,
+            "role": "Sortie Cl\u00e9 Lille-Hardelot (Volume & D+)",
+            "status": "pending",
+            "done_info": null
+          }
+        ]
+      },
+      "realized": {
+        "total_km": 0,
+        "total_dplus": 0,
+        "rides_count": 0,
+        "status": "future",
+        "rides": []
+      },
+      "adjustment": {
+        "active": false,
+        "original_target_km": 240,
+        "adjusted_target_km": 240,
+        "reason": null
+      }
+    },
+    {
+      "week_number": 27,
+      "iso_week": 15,
+      "year": 2027,
+      "start_date": "2027-04-12",
+      "end_date": "2027-04-18",
+      "theme": "Grosse r\u00e9p\u00e9tition 138 km W-E",
+      "is_deload": false,
+      "target": {
+        "total_km": 248,
+        "total_dplus": 1650,
+        "rides": [
+          {
+            "id": 1,
+            "name": "Sortie 1 (Mardi / Mercredi)",
+            "type": "Semaine (max 55km)",
+            "distance_km": 55,
+            "elevation_m": 210,
+            "role": "Rythme & Cadence (jambes souples)",
+            "status": "pending",
+            "done_info": null
+          },
+          {
+            "id": 2,
+            "name": "Sortie 2 (Jeudi / Vendredi)",
+            "type": "Semaine (max 55km)",
+            "distance_km": 55,
+            "elevation_m": 240,
+            "role": "Endurance & Faux-plats",
+            "status": "pending",
+            "done_info": null
+          },
+          {
+            "id": 3,
+            "name": "Sortie 3 (Samedi / Dimanche)",
+            "type": "Week-end (Sans limite)",
+            "distance_km": 138,
+            "elevation_m": 1200,
+            "role": "Sortie Cl\u00e9 Lille-Hardelot (Volume & D+)",
+            "status": "pending",
+            "done_info": null
+          }
+        ]
+      },
+      "realized": {
+        "total_km": 0,
+        "total_dplus": 0,
+        "rides_count": 0,
+        "status": "future",
+        "rides": []
+      },
+      "adjustment": {
+        "active": false,
+        "original_target_km": 248,
+        "adjusted_target_km": 248,
+        "reason": null
+      }
+    },
+    {
+      "week_number": 28,
+      "iso_week": 16,
+      "year": 2027,
+      "start_date": "2027-04-19",
+      "end_date": "2027-04-25",
+      "theme": "D\u00e9charge avant derni\u00e8re ligne droite",
+      "is_deload": true,
+      "target": {
+        "total_km": 177,
+        "total_dplus": 790,
+        "rides": [
+          {
+            "id": 1,
+            "name": "Sortie 1 (Mardi / Mercredi)",
+            "type": "Semaine (max 55km)",
+            "distance_km": 42,
+            "elevation_m": 140,
+            "role": "Rythme & Cadence (jambes souples)",
+            "status": "pending",
+            "done_info": null
+          },
+          {
+            "id": 2,
+            "name": "Sortie 2 (Jeudi / Vendredi)",
+            "type": "Semaine (max 55km)",
+            "distance_km": 45,
+            "elevation_m": 150,
+            "role": "Endurance & Faux-plats",
+            "status": "pending",
+            "done_info": null
+          },
+          {
+            "id": 3,
+            "name": "Sortie 3 (Samedi / Dimanche)",
+            "type": "Week-end (Sans limite)",
+            "distance_km": 90,
+            "elevation_m": 500,
+            "role": "Sortie Cl\u00e9 Lille-Hardelot (Volume & D+)",
+            "status": "pending",
+            "done_info": null
+          }
+        ]
+      },
+      "realized": {
+        "total_km": 0,
+        "total_dplus": 0,
+        "rides_count": 0,
+        "status": "future",
+        "rides": []
+      },
+      "adjustment": {
+        "active": false,
+        "original_target_km": 177,
+        "adjusted_target_km": 177,
+        "reason": null
+      }
+    },
+    {
+      "week_number": 29,
+      "iso_week": 17,
+      "year": 2027,
+      "start_date": "2027-04-26",
+      "end_date": "2027-05-02",
+      "theme": "R\u00e9p\u00e9tition G\u00e9n\u00e9rale Lille-Hardelot (145 km)",
+      "is_deload": false,
+      "target": {
+        "total_km": 252,
+        "total_dplus": 1710,
+        "rides": [
+          {
+            "id": 1,
+            "name": "Sortie 1 (Mardi / Mercredi)",
+            "type": "Semaine (max 55km)",
+            "distance_km": 52,
+            "elevation_m": 190,
+            "role": "Rythme & Cadence (jambes souples)",
+            "status": "pending",
+            "done_info": null
+          },
+          {
+            "id": 2,
+            "name": "Sortie 2 (Jeudi / Vendredi)",
+            "type": "Semaine (max 55km)",
+            "distance_km": 55,
+            "elevation_m": 220,
+            "role": "Endurance & Faux-plats",
+            "status": "pending",
+            "done_info": null
+          },
+          {
+            "id": 3,
+            "name": "Sortie 3 (Samedi / Dimanche)",
+            "type": "Week-end (Sans limite)",
+            "distance_km": 145,
+            "elevation_m": 1300,
+            "role": "Sortie Cl\u00e9 Lille-Hardelot (Volume & D+)",
+            "status": "pending",
+            "done_info": null
+          }
+        ]
+      },
+      "realized": {
+        "total_km": 0,
+        "total_dplus": 0,
+        "rides_count": 0,
+        "status": "future",
+        "rides": []
+      },
+      "adjustment": {
+        "active": false,
+        "original_target_km": 252,
+        "adjusted_target_km": 252,
+        "reason": null
+      }
+    },
+    {
+      "week_number": 30,
+      "iso_week": 18,
+      "year": 2027,
+      "start_date": "2027-05-03",
+      "end_date": "2027-05-09",
+      "theme": "Derni\u00e8re grosse sortie longue",
+      "is_deload": false,
+      "target": {
+        "total_km": 220,
+        "total_dplus": 1250,
+        "rides": [
+          {
+            "id": 1,
+            "name": "Sortie 1 (Mardi / Mercredi)",
+            "type": "Semaine (max 55km)",
+            "distance_km": 50,
+            "elevation_m": 170,
+            "role": "Rythme & Cadence (jambes souples)",
+            "status": "pending",
+            "done_info": null
+          },
+          {
+            "id": 2,
+            "name": "Sortie 2 (Jeudi / Vendredi)",
+            "type": "Semaine (max 55km)",
+            "distance_km": 50,
+            "elevation_m": 180,
+            "role": "Endurance & Faux-plats",
+            "status": "pending",
+            "done_info": null
+          },
+          {
+            "id": 3,
+            "name": "Sortie 3 (Samedi / Dimanche)",
+            "type": "Week-end (Sans limite)",
+            "distance_km": 120,
+            "elevation_m": 900,
+            "role": "Sortie Cl\u00e9 Lille-Hardelot (Volume & D+)",
+            "status": "pending",
+            "done_info": null
+          }
+        ]
+      },
+      "realized": {
+        "total_km": 0,
+        "total_dplus": 0,
+        "rides_count": 0,
+        "status": "future",
+        "rides": []
+      },
+      "adjustment": {
+        "active": false,
+        "original_target_km": 220,
+        "adjusted_target_km": 220,
         "reason": null
       }
     },
@@ -1226,18 +1939,98 @@
       "theme": "Aff\u00fbtage (Baisse de volume -35%)",
       "is_deload": true,
       "target": {
+        "total_km": 165,
+        "total_dplus": 770,
+        "rides": [
+          {
+            "id": 1,
+            "name": "Sortie 1 (Mardi / Mercredi)",
+            "type": "Semaine (max 55km)",
+            "distance_km": 40,
+            "elevation_m": 130,
+            "role": "Rythme & Cadence (jambes souples)",
+            "status": "pending",
+            "done_info": null
+          },
+          {
+            "id": 2,
+            "name": "Sortie 2 (Jeudi / Vendredi)",
+            "type": "Semaine (max 55km)",
+            "distance_km": 45,
+            "elevation_m": 140,
+            "role": "Endurance & Faux-plats",
+            "status": "pending",
+            "done_info": null
+          },
+          {
+            "id": 3,
+            "name": "Sortie 3 (Samedi / Dimanche)",
+            "type": "Week-end (Sans limite)",
+            "distance_km": 80,
+            "elevation_m": 500,
+            "role": "Sortie Cl\u00e9 Lille-Hardelot (Volume & D+)",
+            "status": "pending",
+            "done_info": null
+          }
+        ]
+      },
+      "realized": {
+        "total_km": 0,
+        "total_dplus": 0,
+        "rides_count": 0,
+        "status": "future",
+        "rides": []
+      },
+      "adjustment": {
+        "active": false,
+        "original_target_km": 165,
+        "adjusted_target_km": 165,
+        "reason": null
+      }
+    },
+    {
+      "week_number": 32,
+      "iso_week": 20,
+      "year": 2027,
+      "start_date": "2027-05-17",
+      "end_date": "2027-05-23",
+      "theme": "Semaine de course (Jus & Fra\u00eecheur)",
+      "is_deload": true,
+      "target": {
         "total_km": 120,
-        "total_dplus": 680,
-        "long_ride": {
-          "distance_km": 80,
-          "elevation_m": 500,
-          "label": "Sortie Longue Cl\u00e9 (Week-end)"
-        },
-        "mid_week_ride": {
-          "distance_km": 40,
-          "elevation_m": 180,
-          "label": "Sortie Rythme Semaine"
-        }
+        "total_dplus": 450,
+        "rides": [
+          {
+            "id": 1,
+            "name": "Sortie 1 (Mardi / Mercredi)",
+            "type": "Semaine (max 55km)",
+            "distance_km": 35,
+            "elevation_m": 100,
+            "role": "Rythme & Cadence (jambes souples)",
+            "status": "pending",
+            "done_info": null
+          },
+          {
+            "id": 2,
+            "name": "Sortie 2 (Jeudi / Vendredi)",
+            "type": "Semaine (max 55km)",
+            "distance_km": 35,
+            "elevation_m": 100,
+            "role": "Endurance & Faux-plats",
+            "status": "pending",
+            "done_info": null
+          },
+          {
+            "id": 3,
+            "name": "Sortie 3 (Samedi / Dimanche)",
+            "type": "Week-end (Sans limite)",
+            "distance_km": 50,
+            "elevation_m": 250,
+            "role": "Sortie Cl\u00e9 Lille-Hardelot (Volume & D+)",
+            "status": "pending",
+            "done_info": null
+          }
+        ]
       },
       "realized": {
         "total_km": 0,
@@ -1254,42 +2047,6 @@
       }
     },
     {
-      "week_number": 32,
-      "iso_week": 20,
-      "year": 2027,
-      "start_date": "2027-05-17",
-      "end_date": "2027-05-23",
-      "theme": "Semaine de course (Jus & Fra\u00eecheur)",
-      "is_deload": true,
-      "target": {
-        "total_km": 80,
-        "total_dplus": 350,
-        "long_ride": {
-          "distance_km": 50,
-          "elevation_m": 250,
-          "label": "Sortie Longue Cl\u00e9 (Week-end)"
-        },
-        "mid_week_ride": {
-          "distance_km": 30,
-          "elevation_m": 100,
-          "label": "Sortie Rythme Semaine"
-        }
-      },
-      "realized": {
-        "total_km": 0,
-        "total_dplus": 0,
-        "rides_count": 0,
-        "status": "future",
-        "rides": []
-      },
-      "adjustment": {
-        "active": false,
-        "original_target_km": 80,
-        "adjusted_target_km": 80,
-        "reason": null
-      }
-    },
-    {
       "week_number": 33,
       "iso_week": 21,
       "year": 2027,
@@ -1300,12 +2057,38 @@
       "target": {
         "total_km": 160,
         "total_dplus": 1450,
-        "long_ride": {
-          "distance_km": 160,
-          "elevation_m": 1450,
-          "label": "Sortie Longue Cl\u00e9 (Week-end)"
-        },
-        "mid_week_ride": null
+        "rides": [
+          {
+            "id": 1,
+            "name": "Sortie 1 (Mardi / Mercredi)",
+            "type": "Semaine (max 55km)",
+            "distance_km": 0,
+            "elevation_m": 0,
+            "role": "Rythme & Cadence (jambes souples)",
+            "status": "pending",
+            "done_info": null
+          },
+          {
+            "id": 2,
+            "name": "Sortie 2 (Jeudi / Vendredi)",
+            "type": "Semaine (max 55km)",
+            "distance_km": 0,
+            "elevation_m": 0,
+            "role": "Endurance & Faux-plats",
+            "status": "pending",
+            "done_info": null
+          },
+          {
+            "id": 3,
+            "name": "Sortie 3 (Samedi / Dimanche)",
+            "type": "Week-end (Sans limite)",
+            "distance_km": 160,
+            "elevation_m": 1450,
+            "role": "Sortie Cl\u00e9 Lille-Hardelot (Volume & D+)",
+            "status": "pending",
+            "done_info": null
+          }
+        ]
       },
       "realized": {
         "total_km": 0,
@@ -1322,5 +2105,5 @@
       }
     }
   ],
-  "last_sync": "2026-10-14 15:01:26"
+  "last_sync": "2026-10-14 17:18:59"
 }

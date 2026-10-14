@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Lille - Hardelot 2027 · Coach & Planificateur Autonome</title>
+  <title>Lille - Hardelot 2027 · Planificateur 3 Sorties / Semaine</title>
   <script src="https://www.gstatic.com/antigravity/web/dev/tailwindcss.min.js"></script>
   <style>
     body {
@@ -27,7 +27,6 @@
 
     <!-- Header Principal Lille - Hardelot -->
     <header class="bg-slate-900/90 border border-slate-800 rounded-2xl p-6 shadow-2xl backdrop-blur relative overflow-hidden">
-      <!-- Accent bar top -->
       <div class="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-orange-500 via-amber-500 to-emerald-500"></div>
 
       <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
@@ -40,7 +39,7 @@
                 <span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-orange-500/20 text-orange-400 border border-orange-500/40">30 Mai 2027</span>
               </div>
               <p class="text-slate-400 text-sm mt-1">
-                Athlète : <strong class="text-slate-200" id="athlete-name">Gabin</strong> · Vélo : <strong class="text-slate-200" id="bike-name">Trek</strong> · Programmation 100% Distance & D+ (Sans contrainte cardio)
+                Athlète : <strong class="text-slate-200" id="athlete-name">Gabin</strong> · Vélo : <strong class="text-slate-200" id="bike-name">Trek</strong> · Programmation 3 Sorties / Semaine (Distance & D+ uniquement)
               </p>
             </div>
           </div>
@@ -66,7 +65,7 @@
           <div class="bg-slate-950/80 border border-slate-800 rounded-xl px-4 py-3 text-center min-w-[120px]">
             <span class="text-[11px] uppercase tracking-wider text-emerald-400 block font-semibold">Statut Sync</span>
             <span class="text-xs font-bold text-emerald-400 flex items-center justify-center gap-1 mt-1">
-              <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span> Connecté Strava
+              <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span> Auto Strava
             </span>
           </div>
         </div>
@@ -74,7 +73,6 @@
 
       <!-- Progression globale vers les 160 km et 1450m D+ -->
       <div class="mt-6 pt-5 border-t border-slate-800/80 grid grid-cols-1 md:grid-cols-2 gap-4">
-        <!-- Barre Distance -->
         <div>
           <div class="flex justify-between text-xs font-semibold mb-1.5">
             <span class="text-slate-300">Distance Max Réalisée : <strong class="text-white" id="max-dist-val">-- km</strong> / 160 km</span>
@@ -85,7 +83,6 @@
           </div>
         </div>
 
-        <!-- Barre D+ -->
         <div>
           <div class="flex justify-between text-xs font-semibold mb-1.5">
             <span class="text-slate-300">D+ Max Réalisé : <strong class="text-white" id="max-elev-val">-- m</strong> / 1 450 m D+</span>
@@ -98,75 +95,52 @@
       </div>
     </header>
 
-    <!-- SECTION PRIORITAIRE : PROCHAINE SORTIE & DIRECTIVES DU COACH -->
-    <section class="bg-gradient-to-br from-slate-900 via-slate-900 to-slate-950 border-2 border-orange-500/40 rounded-2xl p-6 shadow-xl relative">
-      <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-slate-800">
-        <div class="flex items-center gap-3">
-          <span class="text-3xl">🎯</span>
-          <div>
-            <div class="flex items-center gap-2">
-              <h2 class="text-xl font-extrabold text-white">PROCHAINE SORTIE RECOMMANDÉE</h2>
-              <span id="next-context-badge" class="px-2.5 py-0.5 bg-orange-500/20 text-orange-400 border border-orange-500/40 rounded-full text-xs font-semibold">Week-end</span>
-            </div>
-            <p class="text-xs text-slate-400 mt-0.5" id="next-week-theme">Thème : Chargement en cours...</p>
+    <!-- NOUVEL ENCADRÉ DÉDIÉ : PROGRAMMATION DES 3 SORTIES DE LA SEMAINE -->
+    <section class="bg-slate-900/90 border-2 border-orange-500/50 rounded-2xl p-6 shadow-2xl relative">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-slate-800">
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="text-2xl">📅</span>
+            <h2 class="text-xl font-extrabold text-white uppercase tracking-tight">PROGRAMME DE LA SEMAINE EN COURS (3 SORTIES)</h2>
           </div>
-        </div>
-
-        <!-- Cibles immédiates -->
-        <div class="flex items-center gap-4 bg-slate-950/80 border border-slate-800 px-5 py-3 rounded-xl">
-          <div>
-            <span class="text-[11px] text-slate-400 block font-semibold">OBJECTIF DISTANCE</span>
-            <span class="text-2xl font-black text-orange-400" id="next-dist-target">-- <span class="text-sm font-normal text-slate-300">km</span></span>
-          </div>
-          <div class="h-8 w-px bg-slate-800"></div>
-          <div>
-            <span class="text-[11px] text-slate-400 block font-semibold">OBJECTIF D+</span>
-            <span class="text-2xl font-black text-emerald-400" id="next-elev-target">-- <span class="text-sm font-normal text-slate-300">m D+</span></span>
-          </div>
-        </div>
-      </div>
-
-      <!-- Briefing et conseils concrets -->
-      <div class="mt-4 grid grid-cols-1 lg:grid-cols-12 gap-4 items-center">
-        <div class="lg:col-span-8 bg-slate-950/50 p-4 rounded-xl border border-slate-800/80">
-          <h3 class="text-xs font-bold uppercase tracking-wider text-orange-400 mb-1 flex items-center gap-1.5">
-            <span>💡</span> Consignes du Coach & Correctifs
-          </h3>
-          <p class="text-sm text-slate-200 leading-relaxed font-medium" id="next-briefing-text">
-            Chargement des directives...
+          <p class="text-xs text-slate-400 mt-0.5" id="current-week-header-subtitle">
+            Semaine 1 · Thème : Reprise & Régularité · 2 sorties semaine (max 55 km) + 1 sortie clé week-end (sans limite)
           </p>
         </div>
-
-        <div class="lg:col-span-4 bg-slate-950/50 p-4 rounded-xl border border-slate-800/80 space-y-2 text-xs">
-          <div class="flex items-center gap-2 text-slate-300">
-            <span class="text-orange-400 font-bold">🥐 Ravitaillement :</span>
-            <span>1 bidon d'eau + 1 barre par heure</span>
-          </div>
-          <div class="flex items-center gap-2 text-slate-300">
-            <span class="text-emerald-400 font-bold">⚙️ Braquet conseillé :</span>
-            <span>Tourner souple (85-95 rpm) dans les montées</span>
-          </div>
-          <div class="flex items-center gap-2 text-slate-300">
-            <span class="text-blue-400 font-bold">🔄 Rétroaction :</span>
-            <span>S'ajuste dès détection de votre sortie Strava</span>
-          </div>
+        <div class="flex items-center gap-2 text-xs bg-slate-950 px-3 py-1.5 rounded-lg border border-slate-800">
+          <span class="text-slate-400 font-semibold">Total Cible Semaine :</span>
+          <span class="text-orange-400 font-extrabold" id="week-target-dist-total">-- km</span>
+          <span class="text-slate-600">·</span>
+          <span class="text-emerald-400 font-extrabold" id="week-target-elev-total">-- m D+</span>
         </div>
       </div>
 
-      <!-- Alertes d'ajustement dynamique (si écarts passés) -->
-      <div id="alerts-container" class="mt-4 space-y-2 hidden">
-        <!-- Rempli en JS si alertes de sous-volume ou sur-volume -->
+      <!-- Les 3 cartes de sorties -->
+      <div class="mt-5 grid grid-cols-1 md:grid-cols-3 gap-5" id="weekly-3-rides-container">
+        <!-- Rempli dynamiquement en JS -->
+      </div>
+
+      <!-- Consigne coach & alimentation en bas de l'encadré -->
+      <div class="mt-5 pt-4 border-t border-slate-800/80 bg-slate-950/60 p-4 rounded-xl flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div class="text-xs text-slate-300 flex-1">
+          <strong class="text-orange-400 block font-bold mb-0.5">💡 Consigne d'effort pour vos sorties :</strong>
+          <span id="weekly-summary-advice">Pédalez au ressenti. Les sorties semaine servent à faire tourner les jambes et garder le rythme. La sortie du week-end prépare l'estomac et les jambes à la distance de Lille-Hardelot.</span>
+        </div>
+        <div class="flex items-center gap-3 text-xs text-slate-400 shrink-0">
+          <span class="bg-slate-900 px-3 py-1.5 rounded-lg border border-slate-800">🥐 1 barre/heure</span>
+          <span class="bg-slate-900 px-3 py-1.5 rounded-lg border border-slate-800">💧 1 bidon/heure</span>
+        </div>
       </div>
     </section>
 
-    <!-- SECTION : PROGRAMMATION SEMAINE PAR SEMAINE (PLAN ADAPTATIF) -->
+    <!-- SECTION : CALENDRIER DES 33 SEMAINES -->
     <section class="bg-slate-900/90 border border-slate-800 rounded-2xl p-6 shadow-xl space-y-4">
       <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-800">
         <div>
           <h2 class="text-xl font-bold text-white flex items-center gap-2">
-            <span>📅</span> Calendrier d'Entraînement Adaptatif (33 Semaines)
+            <span>📊</span> Calendrier Complet des 33 Semaines (Montée en Charge)
           </h2>
-          <p class="text-xs text-slate-400 mt-0.5">Progression par blocs de 3 semaines de montée en charge + 1 semaine d'assimilation (Deload)</p>
+          <p class="text-xs text-slate-400 mt-0.5">3 semaines de montée progressive + 1 semaine d'assimilation (Deload) pour franchir les 160 km</p>
         </div>
         <div class="flex items-center gap-2 text-xs">
           <span class="flex items-center gap-1 text-emerald-400"><span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span> Validée</span>
@@ -176,17 +150,17 @@
         </div>
       </div>
 
-      <!-- Tableau des semaines -->
       <div class="overflow-x-auto custom-scrollbar">
         <table class="w-full text-left text-xs text-slate-300">
           <thead class="bg-slate-950 text-slate-400 uppercase tracking-wider text-[11px]">
             <tr>
               <th class="p-3">Sem.</th>
               <th class="p-3">Dates</th>
-              <th class="p-3">Thème & Objectif Clé</th>
-              <th class="p-3 text-center">Distance Cible</th>
-              <th class="p-3 text-center">D+ Cible</th>
-              <th class="p-3 text-center">Sortie Longue (W-E)</th>
+              <th class="p-3">Thème</th>
+              <th class="p-3 text-center">Sortie 1 (Semaine)</th>
+              <th class="p-3 text-center">Sortie 2 (Semaine)</th>
+              <th class="p-3 text-center font-bold text-orange-400">Sortie 3 (Week-end)</th>
+              <th class="p-3 text-center">Total Prévu</th>
               <th class="p-3 text-center">Réalisé (Strava)</th>
               <th class="p-3 text-center">Statut</th>
             </tr>
@@ -227,7 +201,7 @@
   <script>
     async function loadDashboardData() {
       try {
-        const response = await fetch('data/dashboard_data.json');
+        const response = await fetch('data/dashboard_data.json?v=' + Date.now());
         if (!response.ok) {
           throw new Error('Erreur HTTP ' + response.status);
         }
@@ -235,8 +209,6 @@
         renderDashboard(data);
       } catch (err) {
         console.error('Erreur chargement données:', err);
-        // Fallback avec les données déjà générées
-        alert("Chargement des données en local...");
       }
     }
 
@@ -261,29 +233,68 @@
       document.getElementById('max-elev-pct').textContent = `${elevPct}%`;
       document.getElementById('bar-elev').style.width = `${elevPct}%`;
 
-      // 3. Prochaine sortie
-      const nw = data.coach_advice.next_workout;
-      document.getElementById('next-context-badge').textContent = nw.context || "À faire";
-      document.getElementById('next-week-theme').textContent = `Thème : ${data.coach_advice.current_week_theme}`;
-      document.getElementById('next-dist-target').innerHTML = `${nw.distance_km} <span class="text-sm font-normal text-slate-300">km</span>`;
-      document.getElementById('next-elev-target').innerHTML = `${nw.elevation_m} <span class="text-sm font-normal text-slate-300">m D+</span>`;
-      document.getElementById('next-briefing-text').textContent = nw.briefing;
+      // 3. Encadré Spécifique des 3 Sorties de la semaine en cours
+      const currentWeekNum = data.coach_advice.current_week_number;
+      const currentTheme = data.coach_advice.current_week_theme;
+      document.getElementById('current-week-header-subtitle').textContent = `Semaine ${currentWeekNum} · Thème : ${currentTheme} · 2 sorties semaine (max 55 km) + 1 sortie clé week-end (sans limite)`;
 
-      // 4. Alertes d'ajustement
-      const alertsBox = document.getElementById('alerts-container');
-      if (data.coach_advice.recent_alerts && data.coach_advice.recent_alerts.length > 0) {
-        alertsBox.classList.remove('hidden');
-        alertsBox.innerHTML = data.coach_advice.recent_alerts.map(a => `
-          <div class="p-3 bg-amber-500/10 border border-amber-500/30 rounded-xl text-xs text-amber-300 flex items-center gap-2">
-            <span>⚠️</span>
-            <span><strong>Ajustement dynamique appliqué :</strong> ${a.msg}</span>
+      const rides3 = data.coach_advice.current_week_rides_plan || [];
+      const totalKmWeek = rides3.reduce((acc, r) => acc + r.distance_km, 0);
+      const totalElevWeek = rides3.reduce((acc, r) => acc + r.elevation_m, 0);
+      document.getElementById('week-target-dist-total').textContent = `${totalKmWeek} km`;
+      document.getElementById('week-target-elev-total').textContent = `${totalElevWeek} m D+`;
+
+      const container3 = document.getElementById('weekly-3-rides-container');
+      container3.innerHTML = rides3.map((r, i) => {
+        const isWeekend = i === 2;
+        const status = r.status;
+        const doneInfo = r.done_info;
+
+        let badge = '<span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-slate-800 text-slate-400">À faire ⏳</span>';
+        if (status === 'completed') {
+          badge = `<span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/40">Faite (${doneInfo.distance_km} km) ✅</span>`;
+        }
+
+        const borderClass = isWeekend ? 'border-orange-500/60 bg-gradient-to-br from-slate-950 via-slate-900 to-orange-950/20' : 'border-slate-800 bg-slate-950/70';
+        const icon = isWeekend ? '🏔️' : (i === 0 ? '🚴‍♂️' : '⚡');
+        const tag = isWeekend ? '<span class="text-[10px] font-bold px-2 py-0.5 bg-orange-500/20 text-orange-400 rounded">SANS LIMITE (CLÉ)</span>' : '<span class="text-[10px] font-semibold px-2 py-0.5 bg-slate-800 text-slate-400">MAX 55 KM</span>';
+
+        return `
+          <div class="rounded-xl border ${borderClass} p-5 shadow-lg flex flex-col justify-between hover:border-slate-700 transition">
+            <div>
+              <div class="flex items-center justify-between gap-2 pb-2 border-b border-slate-800/80">
+                <div class="flex items-center gap-2">
+                  <span class="text-xl">${icon}</span>
+                  <h3 class="font-bold text-white text-sm">${r.name}</h3>
+                </div>
+                ${badge}
+              </div>
+
+              <div class="mt-2 flex items-center justify-between">
+                <span class="text-[11px] text-slate-400">${r.type}</span>
+                ${tag}
+              </div>
+
+              <div class="mt-4 grid grid-cols-2 gap-3 bg-slate-900/60 p-3 rounded-lg text-center border border-slate-800/60">
+                <div>
+                  <span class="text-[10px] text-slate-400 block font-semibold">DISTANCE CIBLE</span>
+                  <span class="text-xl font-extrabold text-orange-400">${r.distance_km} <span class="text-xs font-normal text-slate-400">km</span></span>
+                </div>
+                <div>
+                  <span class="text-[10px] text-slate-400 block font-semibold">DÉNIVELÉ CIBLE</span>
+                  <span class="text-xl font-extrabold text-emerald-400">${r.elevation_m} <span class="text-xs font-normal text-slate-400">m D+</span></span>
+                </div>
+              </div>
+
+              <p class="text-xs text-slate-300 mt-3 italic leading-relaxed">
+                🎯 <strong>Rôle :</strong> ${r.role}
+              </p>
+            </div>
           </div>
-        `).join('');
-      } else {
-        alertsBox.classList.add('hidden');
-      }
+        `;
+      }).join('');
 
-      // 5. Tableau des 33 semaines
+      // 4. Tableau des 33 semaines
       const tbody = document.getElementById('plan-tbody');
       tbody.innerHTML = data.weeks.map(w => {
         let statusBadge = '';
@@ -304,7 +315,10 @@
 
         const isDeload = w.is_deload;
         const rowBg = s === 'current' ? 'bg-blue-950/20 font-medium' : (isDeload ? 'bg-purple-950/10' : 'hover:bg-slate-800/40');
-        const longRideTxt = w.target.long_ride ? `${w.target.long_ride.distance_km} km (${w.target.long_ride.elevation_m}m D+)` : '—';
+        const rides = w.target.rides || [];
+        const r1Txt = rides[0] ? `${rides[0].distance_km} km (${rides[0].elevation_m}m)` : '—';
+        const r2Txt = rides[1] ? `${rides[1].distance_km} km (${rides[1].elevation_m}m)` : '—';
+        const r3Txt = rides[2] ? `<strong>${rides[2].distance_km} km (${rides[2].elevation_m}m)</strong>` : '—';
         const realizedTxt = w.realized.total_km > 0 ? `<strong>${w.realized.total_km} km</strong> (${w.realized.total_dplus}m D+)` : '<span class="text-slate-600">—</span>';
 
         return `
@@ -315,16 +329,17 @@
               ${isDeload ? '<span class="text-purple-400 font-bold">[Deload]</span>' : ''}
               <span>${w.theme}</span>
             </td>
-            <td class="p-3 text-center font-bold text-orange-400">${w.target.total_km} km</td>
-            <td class="p-3 text-center text-slate-300">${w.target.total_dplus} m</td>
-            <td class="p-3 text-center text-slate-200 font-medium">${longRideTxt}</td>
+            <td class="p-3 text-center text-slate-300">${r1Txt}</td>
+            <td class="p-3 text-center text-slate-300">${r2Txt}</td>
+            <td class="p-3 text-center text-orange-400 font-bold">${r3Txt}</td>
+            <td class="p-3 text-center font-bold text-white">${w.target.total_km} km (${w.target.total_dplus}m)</td>
             <td class="p-3 text-center text-slate-200">${realizedTxt}</td>
             <td class="p-3 text-center">${statusBadge}</td>
           </tr>
         `;
       }).join('');
 
-      // 6. Dernières sorties
+      // 5. Dernières sorties
       const grid = document.getElementById('recent-rides-grid');
       grid.innerHTML = data.recent_rides.map(r => `
         <div class="bg-slate-950/70 border border-slate-800 rounded-xl p-4 hover:border-slate-700 transition space-y-2">
@@ -350,7 +365,6 @@
       `).join('');
     }
 
-    // Chargement automatique au démarrage
     window.addEventListener('DOMContentLoaded', loadDashboardData);
   </script>
 </body>

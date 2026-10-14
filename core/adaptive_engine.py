@@ -2,8 +2,11 @@
 """
 Adaptive Training Engine for Lille - Hardelot
 Evaluates completed rides strictly based on DISTANCE (km) and D+ (m).
+Structures each week into exactly 3 rides:
+1. Mid-week Ride 1 (max 55km)
+2. Mid-week Ride 2 (max 55km)
+3. Weekend Ride 3 (No limit, high D+ build up)
 Automatically adjusts future workouts if targets are missed or exceeded.
-Generates dynamic coach debriefing and next workout directives.
 """
 
 import datetime
@@ -14,10 +17,6 @@ CONFIG_PATH = os.path.join(os.path.dirname(__file__), "..", "config.json")
 
 
 def evaluate_and_adapt_plan(master_plan, strava_activities):
-    """
-    master_plan: list of week dicts
-    strava_activities: list of dicts (from Strava API or local cache)
-    """
     today = datetime.date.today()
 
     # Filter cycling activities only
@@ -43,7 +42,6 @@ def evaluate_and_adapt_plan(master_plan, strava_activities):
     # Sort rides chronologically
     rides = sorted(rides, key=lambda x: x["date"])
 
-    # Map rides to weeks in master_plan
     cumulative_deficit_km = 0.0
     cumulative_excess_km = 0.0
 
@@ -69,9 +67,25 @@ def evaluate_and_adapt_plan(master_plan, strava_activities):
         target_km = week["target"]["total_km"]
         target_dplus = week["target"]["total_dplus"]
 
-        # Is this a past week, current week, or future week?
+        # Tag each of the 3 rides with completion status
+        target_rides = week["target"]["rides"]
+        for r_idx, tr in enumerate(target_rides):
+            if r_idx < len(week_rides):
+                tr["status"] = "completed"
+                tr["done_info"] = {
+                    "distance_km": week_rides[r_idx]["distance_km"],
+                    "elevation_m": week_rides[r_idx]["elevation_m"],
+                    "date": week_rides[r_idx]["date"]
+                }
+            elif w_end < today:
+                tr["status"] = "missed"
+                tr["done_info"] = None
+            else:
+                tr["status"] = "pending"
+                tr["done_info"] = None
+
+        # Past week evaluation
         if w_end < today:
-            # Past week : Evaluate compliance
             if len(week_rides) == 0:
                 week["realized"]["status"] = "missed"
                 deficit = target_km
@@ -79,7 +93,7 @@ def evaluate_and_adapt_plan(master_plan, strava_activities):
                 coach_alerts.append({
                     "week": week["week_number"],
                     "type": "missed",
-                    "msg": f"Semaine {week['week_number']} manquée (0 km sur {target_km} km prévus). Répercussion sur la progression."
+                    "msg": f"Semaine {week['week_number']} manquée (0 km sur {target_km} km prévus)."
                 })
             elif tot_km < 0.70 * target_km:
                 week["realized"]["status"] = "under"
@@ -88,7 +102,7 @@ def evaluate_and_adapt_plan(master_plan, strava_activities):
                 coach_alerts.append({
                     "week": week["week_number"],
                     "type": "under",
-                    "msg": f"Semaine {week['week_number']} sous-dosée ({tot_km} km réalisés vs {target_km} km ciblés, déficit de -{round(deficit, 1)} km)."
+                    "msg": f"Semaine {week['week_number']} incomplète ({tot_km} km réalisés vs {target_km} km ciblés, déficit -{round(deficit, 1)} km)."
                 })
             elif tot_km > 1.35 * target_km:
                 week["realized"]["status"] = "over"
@@ -97,7 +111,7 @@ def evaluate_and_adapt_plan(master_plan, strava_activities):
                 coach_alerts.append({
                     "week": week["week_number"],
                     "type": "over",
-                    "msg": f"Semaine {week['week_number']} en sur-volume ({tot_km} km vs {target_km} km prévus, +{round(excess, 1)} km)."
+                    "msg": f"Semaine {week['week_number']} en sur-volume (+{round(excess, 1)} km)."
                 })
             else:
                 week["realized"]["status"] = "validated"
@@ -107,48 +121,47 @@ def evaluate_and_adapt_plan(master_plan, strava_activities):
             current_week_idx = idx
             week["realized"]["status"] = "current"
 
-            # Apply adaptations to current week based on previous cumulative deficit or excess
+            # Apply adaptations to weekend ride if previous deficit or excess
             if cumulative_deficit_km > 25:
-                # Add moderate compensation to current week long ride (+10% max)
-                boost_km = min(round(cumulative_deficit_km * 0.25, 1), 15.0)
+                boost_km = min(round(cumulative_deficit_km * 0.2, 1), 15.0)
+                target_rides[2]["distance_km"] += boost_km
                 week["adjustment"]["active"] = True
                 week["adjustment"]["adjusted_target_km"] = target_km + boost_km
-                week["adjustment"]["reason"] = f"Compense le déficit passé (+{boost_km} km progressifs)."
+                week["adjustment"]["reason"] = f"Compense le déficit passé (+{boost_km} km sur la sortie week-end)."
                 cumulative_deficit_km -= boost_km
             elif cumulative_excess_km > 30:
-                # Lighten current week to prevent fatigue
-                cut_km = min(round(cumulative_excess_km * 0.3, 1), 20.0)
+                cut_km = min(round(cumulative_excess_km * 0.25, 1), 20.0)
+                target_rides[2]["distance_km"] = max(target_rides[2]["distance_km"] - cut_km, 45.0)
                 week["adjustment"]["active"] = True
-                week["adjustment"]["adjusted_target_km"] = max(target_km - cut_km, 40.0)
-                week["adjustment"]["reason"] = f"Allègement de récupération (-{cut_km} km) suite à la surcharge récente."
+                week["adjustment"]["adjusted_target_km"] = max(target_km - cut_km, 50.0)
+                week["adjustment"]["reason"] = f"Allègement préventif (-{cut_km} km week-end) suite à la surcharge récente."
                 cumulative_excess_km -= cut_km
 
-            # Determine next ride for current week
-            if len(week_rides) == 0:
-                next_planned_workout = week["target"]["mid_week_ride"] or week["target"]["long_ride"]
-                next_planned_workout["context"] = "Première sortie de la semaine"
-            elif len(week_rides) == 1:
-                next_planned_workout = week["target"]["long_ride"]
-                next_planned_workout["context"] = "Sortie clé du week-end"
+            # Determine next ride to do
+            rides_done_count = len(week_rides)
+            if rides_done_count < 3:
+                next_planned_workout = target_rides[rides_done_count]
+                next_planned_workout["context"] = f"Sortie {rides_done_count + 1}/3 de la semaine"
             else:
                 next_planned_workout = {
-                    "distance_km": 40,
-                    "elevation_m": 150,
-                    "label": "Sortie bonus / Récupération active",
-                    "context": "Volume de la semaine déjà bien engagé !"
+                    "name": "Semaine Complétée !",
+                    "distance_km": 0,
+                    "elevation_m": 0,
+                    "role": "Les 3 sorties de la semaine sont bouclées. Repos bien mérité avant la semaine prochaine !",
+                    "context": "Objectif atteint"
                 }
 
         else:
             # Future week
             week["realized"]["status"] = "future"
             if not next_planned_workout and idx == current_week_idx + 1:
-                next_planned_workout = week["target"]["mid_week_ride"] or week["target"]["long_ride"]
+                next_planned_workout = target_rides[0]
+                next_planned_workout["context"] = "Sortie 1/3 de la semaine"
 
     # Compute overall progress towards Lille-Hardelot
     target_race_km = 160.0
     target_race_dplus = 1450
 
-    # Max single ride distance achieved so far
     all_distances = [r["distance_km"] for r in rides]
     max_ride_km = max(all_distances) if all_distances else 0.0
 
@@ -158,29 +171,30 @@ def evaluate_and_adapt_plan(master_plan, strava_activities):
     progress_distance_pct = min(round((max_ride_km / target_race_km) * 100.0, 1), 100.0)
     progress_elev_pct = min(round((max_ride_elev / target_race_dplus) * 100.0, 1), 100.0)
 
-    # Days remaining until race
     race_date = datetime.date(2027, 5, 30)
     days_remaining = (race_date - today).days
 
-    # Formulate Coach Next Advice
     current_week_data = master_plan[current_week_idx] if current_week_idx < len(master_plan) else master_plan[0]
-    next_dist = next_planned_workout["distance_km"] if next_planned_workout else 55
-    next_elev = next_planned_workout["elevation_m"] if next_planned_workout else 250
+    next_dist = next_planned_workout.get("distance_km", 55) if next_planned_workout else 55
+    next_elev = next_planned_workout.get("elevation_m", 200) if next_planned_workout else 200
 
     coach_advice = {
         "days_to_race": days_remaining,
         "current_week_number": current_week_data["week_number"],
         "current_week_theme": current_week_data["theme"],
+        "current_week_rides_plan": current_week_data["target"]["rides"],
+        "current_week_realized_rides": current_week_data["realized"]["rides"],
         "max_distance_achieved_km": max_ride_km,
         "max_elevation_achieved_m": max_ride_elev,
         "progress_distance_pct": progress_distance_pct,
         "progress_elev_pct": progress_elev_pct,
         "next_workout": {
-            "title": next_planned_workout.get("label", "Prochaine Sortie"),
+            "title": next_planned_workout.get("name", "Prochaine Sortie"),
             "distance_km": next_dist,
             "elevation_m": next_elev,
+            "role": next_planned_workout.get("role", "Endurance"),
             "context": next_planned_workout.get("context", "À réaliser d'ici dimanche"),
-            "briefing": f"Objectif simple et sans cardio : couvrir {next_dist} km avec environ {next_elev} m de D+. Gérez votre allure au ressenti, braquet souple dans les montées. Emportez 1 bidon et 1 barre par heure d'effort."
+            "briefing": f"Séance de {next_dist} km et {next_elev}m D+. Pédalez au ressenti sans regarder la fréquence cardiaque. Emportez 1 bidon et 1 barre par heure d'effort."
         },
         "recent_alerts": coach_alerts[-3:] if coach_alerts else []
     }
