@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html lang="fr" class="dark">
+<html lang="fr" class="dark scroll-smooth">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Lille - Hardelot 2027 · Planificateur 3 Sorties & Coach IA</title>
   <script src="https://www.gstatic.com/antigravity/web/dev/tailwindcss.min.js"></script>
   <style>
@@ -10,6 +10,7 @@
       background-color: #0b1120;
       color: #f8fafc;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      -webkit-tap-highlight-color: transparent;
     }
     .custom-scrollbar::-webkit-scrollbar {
       width: 6px;
@@ -28,71 +29,142 @@
     }
   </style>
 </head>
-<body class="min-h-screen p-4 md:p-6 lg:p-8 antialiased selection:bg-orange-500 selection:text-white pb-24">
+<body class="min-h-screen p-3 sm:p-5 md:p-6 lg:p-8 antialiased selection:bg-orange-500 selection:text-white pb-28 md:pb-24">
 
-  <div class="max-w-7xl mx-auto space-y-6">
+  <!-- BARRE DE NAVIGATION MOBILE AVEC MENU HAMBURGER (Visible uniquement sur mobile < md) -->
+  <nav class="md:hidden sticky top-0 z-40 bg-slate-900/95 backdrop-blur border-b border-slate-800 -mx-3 -mt-3 sm:-mx-5 sm:-mt-5 px-4 py-3 mb-4 shadow-xl flex items-center justify-between">
+    <div class="flex items-center gap-2.5">
+      <span class="text-xl">🏁</span>
+      <div>
+        <span class="font-black text-sm text-white tracking-tight block">LILLE - HARDELOT</span>
+        <span class="text-[10px] text-orange-400 font-semibold block -mt-0.5" id="mobile-days-count">-- jours restants</span>
+      </div>
+    </div>
 
-    <!-- Header Principal Lille - Hardelot -->
-    <header class="bg-slate-900/90 border border-slate-800 rounded-2xl p-6 shadow-2xl backdrop-blur relative overflow-hidden">
+    <!-- Bouton Hamburger mobile -->
+    <button onclick="toggleMobileMenu()" aria-label="Menu" class="p-2.5 rounded-xl bg-slate-800 border border-slate-700 text-slate-200 hover:text-white focus:outline-none transition">
+      <svg id="hamburger-icon-open" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+      </svg>
+      <svg id="hamburger-icon-close" class="w-5 h-5 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+      </svg>
+    </button>
+  </nav>
+
+  <!-- MENU DÉROULANT MOBILE (Drawer plein écran / overlay sur téléphone) -->
+  <div id="mobile-menu" class="md:hidden fixed inset-0 z-30 bg-slate-950/90 backdrop-blur-md hidden transition-all duration-300 pt-16 px-4 pb-6 overflow-y-auto">
+    <div class="space-y-3 pt-2">
+      <div class="p-3.5 bg-slate-900 border border-slate-800 rounded-xl mb-4">
+        <span class="text-xs text-slate-400 block font-medium">Athlète : <strong>Gabin</strong> (Vélo Trek)</span>
+        <span class="text-xs text-orange-400 font-bold block mt-0.5">Objectif 160 km & 1 450 m D+ · 30 Mai 2027</span>
+      </div>
+
+      <a href="#sec-next-ride" onclick="toggleMobileMenu()" class="flex items-center justify-between p-3.5 bg-slate-900 border border-slate-800 rounded-xl text-sm font-bold text-white hover:border-orange-500 transition">
+        <span class="flex items-center gap-3"><span>⚡</span> Prochaine Sortie à faire</span>
+        <span class="text-xs text-orange-400 font-black">40 km ➔</span>
+      </a>
+
+      <a href="#sec-upcoming" onclick="toggleMobileMenu()" class="flex items-center justify-between p-3.5 bg-slate-900 border border-slate-800 rounded-xl text-sm font-bold text-white hover:border-orange-500 transition">
+        <span class="flex items-center gap-3"><span>📋</span> Sorties Une par Une</span>
+        <span class="text-xs text-slate-400">Ordre exact ➔</span>
+      </a>
+
+      <a href="#sec-current-week" onclick="toggleMobileMenu()" class="flex items-center justify-between p-3.5 bg-slate-900 border border-slate-800 rounded-xl text-sm font-bold text-white hover:border-orange-500 transition">
+        <span class="flex items-center gap-3"><span>📅</span> Programme Semaine (3 Sorties)</span>
+        <span class="text-xs text-slate-400">Détails ➔</span>
+      </a>
+
+      <a href="#sec-calendar" onclick="toggleMobileMenu()" class="flex items-center justify-between p-3.5 bg-slate-900 border border-slate-800 rounded-xl text-sm font-bold text-white hover:border-orange-500 transition">
+        <span class="flex items-center gap-3"><span>📊</span> Calendrier 33 Semaines</span>
+        <span class="text-xs text-slate-400">Progression ➔</span>
+      </a>
+
+      <a href="#sec-strava" onclick="toggleMobileMenu()" class="flex items-center justify-between p-3.5 bg-slate-900 border border-slate-800 rounded-xl text-sm font-bold text-white hover:border-orange-500 transition">
+        <span class="flex items-center gap-3"><span>🚴</span> Dernières Sorties Strava</span>
+        <span class="text-xs text-slate-400">Historique ➔</span>
+      </a>
+
+      <button onclick="toggleMobileMenu(); toggleCoachChat();" class="w-full mt-4 bg-gradient-to-r from-orange-500 to-amber-600 text-white font-extrabold p-4 rounded-xl text-sm flex items-center justify-center gap-2.5 shadow-xl">
+        <span>🤖</span> Poser une question au Coach IA
+      </button>
+    </div>
+  </div>
+
+  <div class="max-w-7xl mx-auto space-y-5 md:space-y-6">
+
+    <!-- Header Principal Lille - Hardelot (Optimisé Mobile & Desktop) -->
+    <header class="bg-slate-900/90 border border-slate-800 rounded-2xl p-4 sm:p-6 shadow-2xl backdrop-blur relative overflow-hidden">
       <div class="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-orange-500 via-amber-500 to-emerald-500"></div>
 
-      <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+      <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-5">
         <div>
           <div class="flex items-center gap-3">
-            <span class="p-3 bg-orange-500/10 border border-orange-500/20 text-orange-400 rounded-xl text-2xl font-bold">🏁</span>
+            <span class="p-2.5 sm:p-3 bg-orange-500/10 border border-orange-500/20 text-orange-400 rounded-xl text-xl sm:text-2xl font-bold">🏁</span>
             <div>
-              <div class="flex items-center gap-2">
-                <h1 class="text-2xl md:text-3xl font-black tracking-tight text-white">OBJECTIF : LILLE - HARDELOT</h1>
-                <span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-orange-500/20 text-orange-400 border border-orange-500/40">30 Mai 2027</span>
+              <div class="flex flex-wrap items-center gap-2">
+                <h1 class="text-xl sm:text-2xl md:text-3xl font-black tracking-tight text-white">OBJECTIF : LILLE - HARDELOT</h1>
+                <span class="px-2 py-0.5 rounded-full text-[10px] sm:text-xs font-bold bg-orange-500/20 text-orange-400 border border-orange-500/40">30 Mai 2027</span>
               </div>
-              <p class="text-slate-400 text-sm mt-1">
-                Athlète : <strong class="text-slate-200" id="athlete-name">Gabin</strong> · Vélo : <strong class="text-slate-200" id="bike-name">Trek</strong> · Programmation 3 Sorties / Semaine + <strong class="text-orange-400">Coach IA Interactif</strong>
+              <p class="text-slate-400 text-xs sm:text-sm mt-0.5">
+                Athlète : <strong class="text-slate-200" id="athlete-name">Gabin</strong> · Vélo : <strong class="text-slate-200" id="bike-name">Trek</strong> · 3 Sorties / Semaine
               </p>
             </div>
           </div>
         </div>
 
-        <!-- Badges Cibles & Compte à Rebours -->
-        <div class="flex flex-wrap items-center gap-3">
-          <div class="bg-slate-950/80 border border-slate-800 rounded-xl px-4 py-3 text-center min-w-[120px]">
-            <span class="text-[11px] uppercase tracking-wider text-slate-400 block font-semibold">Compte à Rebours</span>
-            <span class="text-2xl font-extrabold text-orange-400" id="days-count">-- <span class="text-xs font-normal text-slate-400">jours</span></span>
+        <!-- Badges Cibles & Compte à Rebours (Grille responsive 2 col mobile / 4 col desktop) -->
+        <div class="grid grid-cols-2 sm:grid-cols-4 lg:flex lg:flex-wrap items-center gap-2.5 sm:gap-3">
+          <div class="bg-slate-950/80 border border-slate-800 rounded-xl px-3 sm:px-4 py-2.5 text-center">
+            <span class="text-[10px] uppercase tracking-wider text-slate-400 block font-semibold">Compte à Rebours</span>
+            <span class="text-xl sm:text-2xl font-extrabold text-orange-400" id="days-count">-- <span class="text-xs font-normal text-slate-400">jours</span></span>
           </div>
 
-          <div class="bg-slate-950/80 border border-slate-800 rounded-xl px-4 py-3 text-center min-w-[120px]">
-            <span class="text-[11px] uppercase tracking-wider text-slate-400 block font-semibold">Cible Distance</span>
-            <span class="text-2xl font-extrabold text-white">160 <span class="text-xs font-normal text-slate-400">km</span></span>
+          <div class="bg-slate-950/80 border border-slate-800 rounded-xl px-3 sm:px-4 py-2.5 text-center">
+            <span class="text-[10px] uppercase tracking-wider text-slate-400 block font-semibold">Cible Distance</span>
+            <span class="text-xl sm:text-2xl font-extrabold text-white">160 <span class="text-xs font-normal text-slate-400">km</span></span>
           </div>
 
-          <div class="bg-slate-950/80 border border-slate-800 rounded-xl px-4 py-3 text-center min-w-[120px]">
-            <span class="text-[11px] uppercase tracking-wider text-slate-400 block font-semibold">Cible D+</span>
-            <span class="text-2xl font-extrabold text-white">1 450 <span class="text-xs font-normal text-slate-400">m</span></span>
+          <div class="bg-slate-950/80 border border-slate-800 rounded-xl px-3 sm:px-4 py-2.5 text-center">
+            <span class="text-[10px] uppercase tracking-wider text-slate-400 block font-semibold">Cible D+</span>
+            <span class="text-xl sm:text-2xl font-extrabold text-white">1 450 <span class="text-xs font-normal text-slate-400">m</span></span>
           </div>
 
-          <button onclick="toggleCoachChat()" class="bg-gradient-to-r from-orange-500 to-amber-600 hover:from-orange-600 hover:to-amber-700 text-white font-bold px-4 py-3 rounded-xl shadow-lg transition flex items-center gap-2">
-            <span>🤖</span> Poser une question au Coach
-          </button>
+          <!-- Bouton Desktop (Caché sur mobile pour désencombrer car présent dans le menu hamburger et en bouton flottant) -->
+          <div class="hidden md:block">
+            <button onclick="toggleCoachChat()" class="w-full bg-gradient-to-r from-orange-500 to-amber-600 hover:from-orange-600 hover:to-amber-700 text-white font-bold px-4 py-2.5 rounded-xl shadow-lg transition flex items-center justify-center gap-2 text-xs sm:text-sm">
+              <span>🤖</span> Poser une question
+            </button>
+          </div>
+
+          <!-- Badge Statut Sync Mobile -->
+          <div class="md:hidden bg-slate-950/80 border border-slate-800 rounded-xl px-3 py-2.5 text-center flex flex-col justify-center">
+            <span class="text-[10px] uppercase tracking-wider text-emerald-400 block font-semibold">Sync Strava</span>
+            <span class="text-xs font-bold text-emerald-400 flex items-center justify-center gap-1 mt-0.5">
+              <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span> Connecté
+            </span>
+          </div>
         </div>
       </div>
 
       <!-- Progression globale vers les 160 km et 1450m D+ -->
-      <div class="mt-6 pt-5 border-t border-slate-800/80 grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div class="mt-5 pt-4 border-t border-slate-800/80 grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
         <div>
-          <div class="flex justify-between text-xs font-semibold mb-1.5">
-            <span class="text-slate-300">Distance Max Réalisée : <strong class="text-white" id="max-dist-val">-- km</strong> / 160 km</span>
+          <div class="flex justify-between text-xs font-semibold mb-1">
+            <span class="text-slate-300">Distance Max : <strong class="text-white" id="max-dist-val">-- km</strong> / 160 km</span>
             <span class="text-orange-400 font-bold" id="max-dist-pct">--%</span>
           </div>
-          <div class="w-full bg-slate-950 h-3 rounded-full overflow-hidden p-0.5 border border-slate-800">
+          <div class="w-full bg-slate-950 h-2.5 sm:h-3 rounded-full overflow-hidden p-0.5 border border-slate-800">
             <div id="bar-dist" class="bg-gradient-to-r from-orange-600 to-amber-500 h-full rounded-full transition-all duration-700" style="width: 0%"></div>
           </div>
         </div>
 
         <div>
-          <div class="flex justify-between text-xs font-semibold mb-1.5">
-            <span class="text-slate-300">D+ Max Réalisé : <strong class="text-white" id="max-elev-val">-- m</strong> / 1 450 m D+</span>
+          <div class="flex justify-between text-xs font-semibold mb-1">
+            <span class="text-slate-300">D+ Max : <strong class="text-white" id="max-elev-val">-- m</strong> / 1 450 m D+</span>
             <span class="text-emerald-400 font-bold" id="max-elev-pct">--%</span>
           </div>
-          <div class="w-full bg-slate-950 h-3 rounded-full overflow-hidden p-0.5 border border-slate-800">
+          <div class="w-full bg-slate-950 h-2.5 sm:h-3 rounded-full overflow-hidden p-0.5 border border-slate-800">
             <div id="bar-elev" class="bg-gradient-to-r from-emerald-600 to-teal-400 h-full rounded-full transition-all duration-700" style="width: 0%"></div>
           </div>
         </div>
@@ -100,13 +172,13 @@
     </header>
 
     <!-- SECTION PRIORITAIRE : SORTIE À FAIRE MAINTENANT -->
-    <section class="bg-gradient-to-br from-slate-900 via-slate-900 to-orange-950/30 border-2 border-orange-500 rounded-2xl p-6 shadow-2xl relative">
+    <section id="sec-next-ride" class="bg-gradient-to-br from-slate-900 via-slate-900 to-orange-950/30 border-2 border-orange-500 rounded-2xl p-4 sm:p-6 shadow-2xl relative">
       <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-slate-800">
         <div class="flex items-center gap-3">
-          <span class="p-2.5 bg-orange-500 text-white rounded-xl text-2xl font-black animate-pulse">⚡</span>
+          <span class="p-2 sm:p-2.5 bg-orange-500 text-white rounded-xl text-xl sm:text-2xl font-black animate-pulse">⚡</span>
           <div>
-            <div class="flex items-center gap-2">
-              <h2 class="text-xl md:text-2xl font-black text-white" id="next-action-title">VOTRE PROCHAINE SORTIE À FAIRE MAINTENANT</h2>
+            <div class="flex flex-wrap items-center gap-2">
+              <h2 class="text-lg sm:text-xl md:text-2xl font-black text-white" id="next-action-title">SORTIE 2 (JEUDI / VENDREDI)</h2>
               <span id="next-context-badge" class="px-2.5 py-0.5 bg-orange-500/20 text-orange-400 border border-orange-500/40 rounded-full text-xs font-bold">Sortie 2/3</span>
             </div>
             <p class="text-xs text-slate-300 mt-0.5" id="next-week-theme">
@@ -115,32 +187,34 @@
           </div>
         </div>
 
-        <div class="flex items-center gap-4 bg-slate-950 px-5 py-3 rounded-xl border border-orange-500/40 shadow-inner">
-          <div>
-            <span class="text-[10px] text-slate-400 block font-semibold uppercase tracking-wider">DISTANCE CIBLE</span>
-            <span class="text-3xl font-black text-orange-400" id="next-dist-target">-- <span class="text-sm font-normal text-slate-300">km</span></span>
+        <!-- Cibles immédiates en gros caractères -->
+        <div class="flex items-center justify-around sm:justify-end gap-3 sm:gap-4 bg-slate-950 px-4 sm:px-5 py-3 rounded-xl border border-orange-500/40 shadow-inner">
+          <div class="text-center sm:text-left">
+            <span class="text-[9px] sm:text-[10px] text-slate-400 block font-semibold uppercase tracking-wider">DISTANCE CIBLE</span>
+            <span class="text-2xl sm:text-3xl font-black text-orange-400" id="next-dist-target">-- <span class="text-xs sm:text-sm font-normal text-slate-300">km</span></span>
           </div>
           <div class="h-8 w-px bg-slate-800"></div>
-          <div>
-            <span class="text-[10px] text-slate-400 block font-semibold uppercase tracking-wider">DÉNIVELÉ CIBLE</span>
-            <span class="text-3xl font-black text-emerald-400" id="next-elev-target">-- <span class="text-sm font-normal text-slate-300">m D+</span></span>
+          <div class="text-center sm:text-left">
+            <span class="text-[9px] sm:text-[10px] text-slate-400 block font-semibold uppercase tracking-wider">DÉNIVELÉ CIBLE</span>
+            <span class="text-2xl sm:text-3xl font-black text-emerald-400" id="next-elev-target">-- <span class="text-xs sm:text-sm font-normal text-slate-300">m D+</span></span>
           </div>
         </div>
       </div>
 
-      <div class="mt-4 grid grid-cols-1 lg:grid-cols-12 gap-4 items-center">
-        <div class="lg:col-span-8 bg-slate-950/60 p-4 rounded-xl border border-slate-800">
+      <!-- Briefing et conseils concrets -->
+      <div class="mt-4 grid grid-cols-1 lg:grid-cols-12 gap-3 sm:gap-4 items-center">
+        <div class="lg:col-span-8 bg-slate-950/60 p-3.5 sm:p-4 rounded-xl border border-slate-800">
           <h3 class="text-xs font-bold uppercase tracking-wider text-orange-400 mb-1 flex items-center gap-1.5">
             <span>💡</span> Consigne pour cette sortie précise
           </h3>
-          <p class="text-sm text-slate-200 leading-relaxed font-medium" id="next-briefing-text">
+          <p class="text-xs sm:text-sm text-slate-200 leading-relaxed font-medium" id="next-briefing-text">
             Chargement...
           </p>
         </div>
 
-        <div class="lg:col-span-4 bg-slate-950/60 p-4 rounded-xl border border-slate-800 space-y-2 text-xs">
+        <div class="lg:col-span-4 bg-slate-950/60 p-3.5 sm:p-4 rounded-xl border border-slate-800 space-y-1.5 text-xs">
           <div class="flex items-center gap-2 text-slate-300">
-            <span class="text-orange-400 font-bold">🥐 Ravitaillement :</span>
+            <span class="text-orange-400 font-bold">🥐 Ravito :</span>
             <span>1 bidon d'eau + 1 barre par heure</span>
           </div>
           <div class="flex items-center gap-2 text-slate-300">
@@ -155,34 +229,34 @@
       </div>
     </section>
 
-    <!-- NOUVEAU TABLEAU : ORDRE DES SORTIES À FAIRE (UNE PAR UNE) -->
-    <section class="bg-slate-900/90 border border-slate-800 rounded-2xl p-6 shadow-xl space-y-4">
-      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-slate-800">
+    <!-- TABLEAU DÉTAILLÉ : ORDRE DES SORTIES À FAIRE (UNE PAR UNE) -->
+    <section id="sec-upcoming" class="bg-slate-900/90 border border-slate-800 rounded-2xl p-4 sm:p-6 shadow-xl space-y-4">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 sm:gap-3 pb-3 sm:pb-4 border-b border-slate-800">
         <div>
           <div class="flex items-center gap-2">
-            <span class="text-2xl">📋</span>
-            <h2 class="text-xl font-extrabold text-white uppercase tracking-tight">MES PROCHAINES SORTIES À VENIR (UNE PAR UNE)</h2>
+            <span class="text-xl sm:text-2xl">📋</span>
+            <h2 class="text-lg sm:text-xl font-extrabold text-white uppercase tracking-tight">MES PROCHAINES SORTIES (UNE PAR UNE)</h2>
           </div>
           <p class="text-xs text-slate-400 mt-0.5">
-            Ordre chronologique exact de vos prochains entraînements avec les distances et D+ précis à respecter.
+            Ordre chronologique exact de vos prochains entraînements (glissez horizontalement sur mobile 👆).
           </p>
         </div>
-        <span class="text-xs text-slate-400 bg-slate-950 px-3 py-1.5 rounded-lg border border-slate-800">
+        <span class="text-xs text-slate-400 bg-slate-950 px-3 py-1 rounded-lg border border-slate-800 self-start sm:self-auto">
           Progression séquentielle
         </span>
       </div>
 
-      <div class="overflow-x-auto custom-scrollbar">
-        <table class="w-full text-left text-xs text-slate-300">
-          <thead class="bg-slate-950 text-slate-400 uppercase tracking-wider text-[11px]">
+      <div class="overflow-x-auto custom-scrollbar -mx-4 sm:mx-0 px-4 sm:px-0">
+        <table class="w-full text-left text-xs text-slate-300 min-w-[650px] sm:min-w-full">
+          <thead class="bg-slate-950 text-slate-400 uppercase tracking-wider text-[10px] sm:text-[11px]">
             <tr>
-              <th class="p-3 text-center">Étape</th>
-              <th class="p-3">Quand la faire (Créneau)</th>
-              <th class="p-3">Séance & Type</th>
-              <th class="p-3 text-center font-bold text-orange-400">Distance</th>
-              <th class="p-3 text-center font-bold text-emerald-400">Dénivelé D+</th>
-              <th class="p-3">Rôle & Consigne</th>
-              <th class="p-3 text-center">Statut d'Exécution</th>
+              <th class="p-2.5 sm:p-3 text-center">Étape</th>
+              <th class="p-2.5 sm:p-3">Quand la faire</th>
+              <th class="p-2.5 sm:p-3">Séance & Type</th>
+              <th class="p-2.5 sm:p-3 text-center font-bold text-orange-400">Distance</th>
+              <th class="p-2.5 sm:p-3 text-center font-bold text-emerald-400">Dénivelé</th>
+              <th class="p-2.5 sm:p-3">Rôle & Consigne</th>
+              <th class="p-2.5 sm:p-3 text-center">Statut</th>
             </tr>
           </thead>
           <tbody class="divide-y divide-slate-800/80" id="upcoming-rides-tbody">
@@ -193,40 +267,41 @@
     </section>
 
     <!-- SECTION : PROGRAMMATION DES 3 SORTIES DE LA SEMAINE EN COURS -->
-    <section class="bg-slate-900/90 border border-slate-800 rounded-2xl p-6 shadow-xl space-y-4">
-      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-slate-800">
+    <section id="sec-current-week" class="bg-slate-900/90 border border-slate-800 rounded-2xl p-4 sm:p-6 shadow-xl space-y-4">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 sm:pb-4 border-b border-slate-800">
         <div>
           <div class="flex items-center gap-2">
-            <span class="text-2xl">📅</span>
-            <h2 class="text-xl font-extrabold text-white uppercase tracking-tight">VOTRE SEMAINE EN COURS EN DÉTAIL (3 SORTIES)</h2>
+            <span class="text-xl sm:text-2xl">📅</span>
+            <h2 class="text-lg sm:text-xl font-extrabold text-white uppercase tracking-tight">VOTRE SEMAINE EN COURS (3 SORTIES)</h2>
           </div>
           <p class="text-xs text-slate-400 mt-0.5" id="current-week-header-subtitle">
             Semaine 1 · 2 sorties semaine (max 55 km) + 1 sortie clé week-end (sans limite)
           </p>
         </div>
-        <div class="flex items-center gap-2 text-xs bg-slate-950 px-3 py-1.5 rounded-lg border border-slate-800">
-          <span class="text-slate-400 font-semibold">Total Cible Semaine :</span>
+        <div class="flex items-center gap-2 text-xs bg-slate-950 px-3 py-1.5 rounded-lg border border-slate-800 self-start sm:self-auto">
+          <span class="text-slate-400 font-semibold">Total Semaine :</span>
           <span class="text-orange-400 font-extrabold" id="week-target-dist-total">-- km</span>
           <span class="text-slate-600">·</span>
           <span class="text-emerald-400 font-extrabold" id="week-target-elev-total">-- m D+</span>
         </div>
       </div>
 
-      <div class="mt-4 grid grid-cols-1 md:grid-cols-3 gap-5" id="weekly-3-rides-container">
+      <!-- Les 3 cartes de sorties (1 col mobile, 3 cols desktop) -->
+      <div class="mt-4 grid grid-cols-1 md:grid-cols-3 gap-3.5 sm:gap-5" id="weekly-3-rides-container">
         <!-- Rempli dynamiquement en JS -->
       </div>
     </section>
 
     <!-- SECTION : CALENDRIER GLOBAL DES 33 SEMAINES -->
-    <section class="bg-slate-900/90 border border-slate-800 rounded-2xl p-6 shadow-xl space-y-4">
-      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-800">
+    <section id="sec-calendar" class="bg-slate-900/90 border border-slate-800 rounded-2xl p-4 sm:p-6 shadow-xl space-y-4">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 sm:pb-4 border-b border-slate-800">
         <div>
-          <h2 class="text-xl font-bold text-white flex items-center gap-2">
+          <h2 class="text-lg sm:text-xl font-bold text-white flex items-center gap-2">
             <span>📊</span> Calendrier Global des 33 Semaines (Vers les 160 km)
           </h2>
           <p class="text-xs text-slate-400 mt-0.5">3 semaines de montée progressive + 1 semaine d'assimilation (Deload)</p>
         </div>
-        <div class="flex items-center gap-2 text-xs">
+        <div class="flex flex-wrap items-center gap-2 text-xs">
           <span class="flex items-center gap-1 text-emerald-400"><span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span> Validée</span>
           <span class="flex items-center gap-1 text-amber-400"><span class="w-2.5 h-2.5 rounded-full bg-amber-500"></span> Incomplète</span>
           <span class="flex items-center gap-1 text-blue-400"><span class="w-2.5 h-2.5 rounded-full bg-blue-500"></span> En cours</span>
@@ -234,19 +309,19 @@
         </div>
       </div>
 
-      <div class="overflow-x-auto custom-scrollbar">
-        <table class="w-full text-left text-xs text-slate-300">
-          <thead class="bg-slate-950 text-slate-400 uppercase tracking-wider text-[11px]">
+      <div class="overflow-x-auto custom-scrollbar -mx-4 sm:mx-0 px-4 sm:px-0">
+        <table class="w-full text-left text-xs text-slate-300 min-w-[700px] sm:min-w-full">
+          <thead class="bg-slate-950 text-slate-400 uppercase tracking-wider text-[10px] sm:text-[11px]">
             <tr>
-              <th class="p-3">Sem.</th>
-              <th class="p-3">Dates</th>
-              <th class="p-3">Thème</th>
-              <th class="p-3 text-center">Sortie 1 (Semaine)</th>
-              <th class="p-3 text-center">Sortie 2 (Semaine)</th>
-              <th class="p-3 text-center font-bold text-orange-400">Sortie 3 (Week-end)</th>
-              <th class="p-3 text-center">Total Prévu</th>
-              <th class="p-3 text-center">Réalisé (Strava)</th>
-              <th class="p-3 text-center">Statut</th>
+              <th class="p-2.5 sm:p-3">Sem.</th>
+              <th class="p-2.5 sm:p-3">Dates</th>
+              <th class="p-2.5 sm:p-3">Thème</th>
+              <th class="p-2.5 sm:p-3 text-center">Sortie 1 (Semaine)</th>
+              <th class="p-2.5 sm:p-3 text-center">Sortie 2 (Semaine)</th>
+              <th class="p-2.5 sm:p-3 text-center font-bold text-orange-400">Sortie 3 (Week-end)</th>
+              <th class="p-2.5 sm:p-3 text-center">Total Prévu</th>
+              <th class="p-2.5 sm:p-3 text-center">Réalisé (Strava)</th>
+              <th class="p-2.5 sm:p-3 text-center">Statut</th>
             </tr>
           </thead>
           <tbody class="divide-y divide-slate-800/80" id="plan-tbody">
@@ -257,18 +332,18 @@
     </section>
 
     <!-- SECTION : DERNIÈRES SORTIES STRAVA SYNCHRONISÉES -->
-    <section class="bg-slate-900/90 border border-slate-800 rounded-2xl p-6 shadow-xl space-y-4">
-      <div class="flex items-center justify-between pb-3 border-b border-slate-800">
+    <section id="sec-strava" class="bg-slate-900/90 border border-slate-800 rounded-2xl p-4 sm:p-6 shadow-xl space-y-4">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-slate-800">
         <div>
-          <h2 class="text-lg font-bold text-white flex items-center gap-2">
+          <h2 class="text-base sm:text-lg font-bold text-white flex items-center gap-2">
             <span>🚴</span> Dernières Sorties Enregistrées sur Strava
           </h2>
           <p class="text-xs text-slate-400 mt-0.5">Seules les métriques publiques (distance, D+, vitesse) sont affichées (aucune coordonnée GPS privée)</p>
         </div>
-        <span class="text-xs text-slate-400" id="last-sync-time">Dernière synchro : --</span>
+        <span class="text-xs text-slate-400 self-start sm:self-auto" id="last-sync-time">Dernière synchro : --</span>
       </div>
 
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="recent-rides-grid">
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5 sm:gap-4" id="recent-rides-grid">
         <!-- Rempli en JS -->
       </div>
     </section>
@@ -281,71 +356,68 @@
 
   </div>
 
-  <!-- BOUTON FLOTTANT DU COACH IA -->
-  <div class="fixed bottom-6 right-6 z-40">
-    <button onclick="toggleCoachChat()" class="bg-gradient-to-r from-orange-500 to-amber-600 hover:from-orange-600 hover:to-amber-700 text-white font-black px-5 py-3.5 rounded-full shadow-2xl transition-all duration-300 flex items-center gap-3 border-2 border-orange-400/50 hover:scale-105">
-      <span class="text-xl">🤖</span>
-      <span class="text-sm font-bold">Coach IA Lille-Hardelot</span>
+  <!-- BOUTON FLOTTANT DU COACH IA (Optimisé mobile avec tap target confortable) -->
+  <div class="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-40">
+    <button onclick="toggleCoachChat()" class="bg-gradient-to-r from-orange-500 to-amber-600 hover:from-orange-600 hover:to-amber-700 text-white font-black px-4 py-3 sm:px-5 sm:py-3.5 rounded-full shadow-2xl transition-all duration-300 flex items-center gap-2.5 sm:gap-3 border-2 border-orange-400/50 hover:scale-105 active:scale-95">
+      <span class="text-lg sm:text-xl">🤖</span>
+      <span class="text-xs sm:text-sm font-bold">Coach IA</span>
       <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-ping"></span>
     </button>
   </div>
 
-  <!-- TIROIR / FENÊTRE DE DISCUSSION AVEC LE COACH IA -->
-  <div id="coach-modal" class="fixed inset-0 z-50 flex items-end sm:items-center justify-end p-0 sm:p-6 bg-slate-950/70 backdrop-blur-sm hidden transition-opacity duration-300">
-    <div class="w-full sm:max-w-xl bg-slate-900 border border-slate-800 rounded-t-2xl sm:rounded-2xl shadow-2xl flex flex-col h-[85vh] sm:h-[650px] overflow-hidden">
+  <!-- TIROIR / MODAL DE DISCUSSION AVEC LE COACH IA (Plein écran sur smartphone pour confort absolu) -->
+  <div id="coach-modal" class="fixed inset-0 z-50 flex items-end sm:items-center justify-end p-0 sm:p-6 bg-slate-950/75 backdrop-blur-sm hidden transition-opacity duration-300">
+    <div class="w-full sm:max-w-xl bg-slate-900 border-t sm:border border-slate-800 rounded-t-2xl sm:rounded-2xl shadow-2xl flex flex-col h-[90vh] sm:h-[650px] overflow-hidden">
       
       <!-- Header Chat -->
-      <div class="p-4 bg-slate-950 border-b border-slate-800 flex items-center justify-between">
+      <div class="p-3.5 sm:p-4 bg-slate-950 border-b border-slate-800 flex items-center justify-between">
         <div class="flex items-center gap-3">
-          <div class="w-10 h-10 rounded-xl bg-orange-500/20 border border-orange-500/40 flex items-center justify-center text-xl">
+          <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-orange-500/20 border border-orange-500/40 flex items-center justify-center text-lg sm:text-xl">
             🚴
           </div>
           <div>
-            <h3 class="font-extrabold text-white text-sm flex items-center gap-2">
+            <h3 class="font-extrabold text-white text-xs sm:text-sm flex items-center gap-2">
               Coach IA · Lille - Hardelot
               <span class="w-2 h-2 rounded-full bg-emerald-400 inline-block"></span>
             </h3>
-            <p class="text-[11px] text-slate-400">Gabin · Vélo Trek · Focus Distance & D+</p>
+            <p class="text-[10px] sm:text-[11px] text-slate-400">Gabin · Vélo Trek · Focus Distance & D+</p>
           </div>
         </div>
 
-        <button onclick="toggleCoachChat()" class="text-slate-400 hover:text-white p-1.5 rounded-lg hover:bg-slate-800 transition text-lg">
+        <button onclick="toggleCoachChat()" class="text-slate-400 hover:text-white p-2 rounded-lg hover:bg-slate-800 transition text-lg active:scale-90">
           ✕
         </button>
       </div>
 
       <!-- Zone de messages -->
-      <div id="chat-messages" class="flex-1 p-4 overflow-y-auto space-y-3 custom-scrollbar text-xs">
-        
-        <!-- Message initial du Coach -->
+      <div id="chat-messages" class="flex-1 p-3.5 sm:p-4 overflow-y-auto space-y-3 custom-scrollbar text-xs">
         <div class="flex items-start gap-2.5">
           <div class="w-7 h-7 rounded-lg bg-orange-500/20 text-orange-400 flex items-center justify-center shrink-0 text-sm font-bold">
             🤖
           </div>
           <div class="chat-bubble-coach rounded-2xl p-3.5 text-slate-200 max-w-[85%] space-y-2 leading-relaxed">
             <p><strong>Salut Gabin !</strong> Je suis ton coach dédié pour préparer <strong>Lille - Hardelot (30 mai 2027 · 160 km · 1 450 m D+)</strong> sur ton vélo Trek.</p>
-            <p>Je connais ton plan à 3 sorties par semaine et ton historique Strava. Ta prochaine sortie cible est la <strong>Sortie 2 (40 km · 120 m D+)</strong>.</p>
-            <p>Pose-moi n'importe quelle question sur tes séances, ton ravitaillement, la gestion du vent, ton matériel ou la fatigue !</p>
+            <p>Ta prochaine sortie cible est la <strong>Sortie 2 (40 km · 120 m D+)</strong>.</p>
+            <p>Pose-moi n'importe quelle question sur tes séances, ton ravitaillement, la météo, ton matériel ou ta fatigue !</p>
           </div>
         </div>
-
       </div>
 
       <!-- Suggestions rapides de questions (Chips) -->
-      <div class="px-4 py-2 border-t border-slate-800/80 bg-slate-950/40 overflow-x-auto whitespace-nowrap custom-scrollbar flex gap-2">
-        <button onclick="sendQuickPrompt('Conseils pour ma sortie 2 (40 km) ?')" class="text-[11px] bg-slate-800 hover:bg-slate-700 text-slate-300 px-3 py-1.5 rounded-full border border-slate-700 shrink-0 transition">
+      <div class="px-3 sm:px-4 py-2 border-t border-slate-800/80 bg-slate-950/40 overflow-x-auto whitespace-nowrap custom-scrollbar flex gap-2">
+        <button onclick="sendQuickPrompt('Conseils pour ma sortie 2 (40 km) ?')" class="text-[10px] sm:text-[11px] bg-slate-800 hover:bg-slate-700 text-slate-300 px-3 py-1.5 rounded-full border border-slate-700 shrink-0 transition">
           ⚡ Sortie 2 (40 km) ?
         </button>
-        <button onclick="sendQuickPrompt('Que manger et boire pendant 40 à 55 km ?')" class="text-[11px] bg-slate-800 hover:bg-slate-700 text-slate-300 px-3 py-1.5 rounded-full border border-slate-700 shrink-0 transition">
+        <button onclick="sendQuickPrompt('Que manger et boire pendant 40 à 55 km ?')" class="text-[10px] sm:text-[11px] bg-slate-800 hover:bg-slate-700 text-slate-300 px-3 py-1.5 rounded-full border border-slate-700 shrink-0 transition">
           🥐 Ravitaillement ?
         </button>
-        <button onclick="sendQuickPrompt('Quel braquet pour le Mont Cassel et les bosses ?')" class="text-[11px] bg-slate-800 hover:bg-slate-700 text-slate-300 px-3 py-1.5 rounded-full border border-slate-700 shrink-0 transition">
+        <button onclick="sendQuickPrompt('Quel braquet pour le Mont Cassel et les bosses ?')" class="text-[10px] sm:text-[11px] bg-slate-800 hover:bg-slate-700 text-slate-300 px-3 py-1.5 rounded-full border border-slate-700 shrink-0 transition">
           🏔️ Braquet dans les monts ?
         </button>
-        <button onclick="sendQuickPrompt('Comment gérer le vent de face dans les Flandres ?')" class="text-[11px] bg-slate-800 hover:bg-slate-700 text-slate-300 px-3 py-1.5 rounded-full border border-slate-700 shrink-0 transition">
+        <button onclick="sendQuickPrompt('Comment gérer le vent de face dans les Flandres ?')" class="text-[10px] sm:text-[11px] bg-slate-800 hover:bg-slate-700 text-slate-300 px-3 py-1.5 rounded-full border border-slate-700 shrink-0 transition">
           💨 Vent de face ?
         </button>
-        <button onclick="sendQuickPrompt('J\'ai les jambes lourdes, je roule ou je me repose ?')" class="text-[11px] bg-slate-800 hover:bg-slate-700 text-slate-300 px-3 py-1.5 rounded-full border border-slate-700 shrink-0 transition">
+        <button onclick="sendQuickPrompt('J\'ai les jambes lourdes, je roule ou je me repose ?')" class="text-[10px] sm:text-[11px] bg-slate-800 hover:bg-slate-700 text-slate-300 px-3 py-1.5 rounded-full border border-slate-700 shrink-0 transition">
           🦵 Jambes lourdes ?
         </button>
       </div>
@@ -353,7 +425,7 @@
       <!-- Barre de saisie -->
       <div class="p-3 bg-slate-950 border-t border-slate-800 flex items-center gap-2">
         <input type="text" id="chat-input" onkeypress="handleChatKey(event)" placeholder="Pose ta question au coach..." class="flex-1 bg-slate-900 border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-orange-500 transition">
-        <button onclick="submitUserMessage()" class="bg-orange-500 hover:bg-orange-600 text-white p-2.5 rounded-xl font-bold transition flex items-center justify-center shrink-0">
+        <button onclick="submitUserMessage()" class="bg-orange-500 hover:bg-orange-600 text-white p-2.5 rounded-xl font-bold transition flex items-center justify-center shrink-0 active:scale-95">
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path></svg>
         </button>
       </div>
@@ -364,6 +436,21 @@
   <!-- SCRIPT DASHBOARD & MOTEUR DU COACH IA -->
   <script>
     let globalDashboardData = null;
+
+    // Gestion du menu hamburger mobile (EXCLUSIF MOBILE)
+    function toggleMobileMenu() {
+      const menu = document.getElementById('mobile-menu');
+      const iconOpen = document.getElementById('hamburger-icon-open');
+      const iconClose = document.getElementById('hamburger-icon-close');
+      
+      menu.classList.toggle('hidden');
+      const isHidden = menu.classList.contains('hidden');
+      iconOpen.classList.toggle('hidden', !isHidden);
+      iconClose.classList.toggle('hidden', isHidden);
+
+      // Bloquer le scroll d'arrière-plan quand le menu est ouvert
+      document.body.style.overflow = isHidden ? 'auto' : 'hidden';
+    }
 
     async function loadDashboardData() {
       try {
@@ -380,6 +467,10 @@
       document.getElementById('athlete-name').textContent = data.athlete.name;
       document.getElementById('bike-name').textContent = data.athlete.bike;
       document.getElementById('days-count').innerHTML = `${data.coach_advice.days_to_race} <span class="text-xs font-normal text-slate-400">jours</span>`;
+      
+      const mobileDays = document.getElementById('mobile-days-count');
+      if (mobileDays) mobileDays.textContent = `${data.coach_advice.days_to_race} jours restants`;
+
       document.getElementById('last-sync-time').textContent = `Dernière synchro : ${data.last_sync}`;
 
       const maxDist = data.coach_advice.max_distance_achieved_km;
@@ -396,10 +487,10 @@
       document.getElementById('bar-elev').style.width = `${elevPct}%`;
 
       const nw = data.coach_advice.next_workout;
-      document.getElementById('next-action-title').textContent = nw.title ? nw.title.toUpperCase() : "PROCHAINE SORTIE À FAIRE";
+      document.getElementById('next-action-title').textContent = nw.title ? nw.title.toUpperCase() : "SORTIE 2 (JEUDI / VENDREDI)";
       document.getElementById('next-context-badge').textContent = nw.context || "À faire";
-      document.getElementById('next-dist-target').innerHTML = `${nw.distance_km} <span class="text-sm font-normal text-slate-300">km</span>`;
-      document.getElementById('next-elev-target').innerHTML = `${nw.elevation_m} <span class="text-sm font-normal text-slate-300">m D+</span>`;
+      document.getElementById('next-dist-target').innerHTML = `${nw.distance_km} <span class="text-xs sm:text-sm font-normal text-slate-300">km</span>`;
+      document.getElementById('next-elev-target').innerHTML = `${nw.elevation_m} <span class="text-xs sm:text-sm font-normal text-slate-300">m D+</span>`;
       document.getElementById('next-briefing-text').textContent = nw.briefing;
       document.getElementById('next-week-theme').textContent = `Objectif immédiat : ${nw.title} (${nw.distance_km} km · ${nw.elevation_m}m D+) — ${nw.role}`;
 
@@ -409,29 +500,29 @@
         const isImmediate = r.is_immediate;
         const rowBg = isImmediate ? 'bg-orange-950/20 font-semibold border-l-4 border-orange-500' : 'hover:bg-slate-800/40';
         let statusBadge = isImmediate 
-          ? '<span class="px-3 py-1 rounded-full text-xs font-black bg-orange-500 text-white shadow-lg animate-pulse inline-block">👉 À FAIRE MAINTENANT</span>'
-          : (r.step === 2 ? '<span class="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-blue-500/20 text-blue-400 border border-blue-500/30">⏳ Ensuite</span>' : '<span class="px-2 py-0.5 rounded text-[11px] font-medium bg-slate-800 text-slate-400">📅 En attente</span>');
+          ? '<span class="px-2.5 py-1 rounded-full text-[10px] sm:text-xs font-black bg-orange-500 text-white shadow-lg animate-pulse inline-block">👉 À FAIRE MAINTENANT</span>'
+          : (r.step === 2 ? '<span class="px-2 py-0.5 rounded-full text-[10px] sm:text-[11px] font-bold bg-blue-500/20 text-blue-400 border border-blue-500/30">⏳ Ensuite</span>' : '<span class="px-2 py-0.5 rounded text-[10px] sm:text-[11px] font-medium bg-slate-800 text-slate-400">📅 En attente</span>');
 
         const typeTag = r.type.includes('max 55km') 
-          ? '<span class="text-[10px] font-semibold px-2 py-0.5 bg-slate-800 text-emerald-400 rounded">Semaine (max 55km)</span>' 
-          : '<span class="text-[10px] font-bold px-2 py-0.5 bg-orange-500/20 text-orange-400 rounded">Week-end (Sans limite)</span>';
+          ? '<span class="text-[9px] sm:text-[10px] font-semibold px-2 py-0.5 bg-slate-800 text-emerald-400 rounded">Semaine (max 55km)</span>' 
+          : '<span class="text-[9px] sm:text-[10px] font-bold px-2 py-0.5 bg-orange-500/20 text-orange-400 rounded">Week-end (Sans limite)</span>';
 
         return `
           <tr class="${rowBg} transition">
-            <td class="p-3 text-center font-bold text-slate-400">#${r.step}</td>
-            <td class="p-3 font-semibold text-slate-100">${r.timing}</td>
-            <td class="p-3"><span class="font-bold text-white block">${r.name}</span>${typeTag}</td>
-            <td class="p-3 text-center font-extrabold text-orange-400 text-sm">${r.distance_km} km</td>
-            <td class="p-3 text-center font-extrabold text-emerald-400 text-sm">${r.elevation_m} m D+</td>
-            <td class="p-3 text-slate-300 italic">${r.role}</td>
-            <td class="p-3 text-center">${statusBadge}</td>
+            <td class="p-2.5 sm:p-3 text-center font-bold text-slate-400">#${r.step}</td>
+            <td class="p-2.5 sm:p-3 font-semibold text-slate-100">${r.timing}</td>
+            <td class="p-2.5 sm:p-3"><span class="font-bold text-white block">${r.name}</span>${typeTag}</td>
+            <td class="p-2.5 sm:p-3 text-center font-extrabold text-orange-400 text-xs sm:text-sm">${r.distance_km} km</td>
+            <td class="p-2.5 sm:p-3 text-center font-extrabold text-emerald-400 text-xs sm:text-sm">${r.elevation_m} m D+</td>
+            <td class="p-2.5 sm:p-3 text-slate-300 italic">${r.role}</td>
+            <td class="p-2.5 sm:p-3 text-center">${statusBadge}</td>
           </tr>
         `;
       }).join('');
 
       const currentWeekNum = data.coach_advice.current_week_number;
       const currentTheme = data.coach_advice.current_week_theme;
-      document.getElementById('current-week-header-subtitle').textContent = `Semaine ${currentWeekNum} · 2 sorties semaine (max 55 km) + 1 sortie clé week-end (sans limite)`;
+      document.getElementById('current-week-header-subtitle').textContent = `Semaine ${currentWeekNum} · Thème : ${currentTheme} · 2 sorties semaine (max 55 km) + 1 sortie clé week-end (sans limite)`;
 
       const rides3 = data.coach_advice.current_week_rides_plan || [];
       const totalKmWeek = rides3.reduce((acc, r) => acc + r.distance_km, 0);
@@ -451,7 +542,7 @@
         if (status === 'completed') {
           badge = `<span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/40">Faite (${doneInfo.distance_km} km) ✅</span>`;
         } else if (i === 1) {
-          badge = `<span class="px-3 py-1 rounded-full text-[10px] font-black bg-orange-500 text-white shadow animate-pulse">👉 À FAIRE MAINTENANT</span>`;
+          badge = `<span class="px-2.5 sm:px-3 py-1 rounded-full text-[10px] font-black bg-orange-500 text-white shadow animate-pulse">👉 À FAIRE MAINTENANT</span>`;
           borderClass = 'border-2 border-orange-500 bg-gradient-to-br from-slate-950 via-slate-900 to-orange-950/20';
         } else if (isWeekend) {
           badge = `<span class="px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-blue-500/20 text-blue-400 border border-blue-500/30">⏳ Après la Sortie 2</span>`;
@@ -461,33 +552,33 @@
         }
 
         const icon = isWeekend ? '🏔️' : (i === 0 ? '🚴‍♂️' : '⚡');
-        const tag = isWeekend ? '<span class="text-[10px] font-bold px-2 py-0.5 bg-orange-500/20 text-orange-400 rounded">SANS LIMITE (CLÉ)</span>' : '<span class="text-[10px] font-semibold px-2 py-0.5 bg-slate-800 text-slate-400">MAX 55 KM</span>';
+        const tag = isWeekend ? '<span class="text-[9px] sm:text-[10px] font-bold px-2 py-0.5 bg-orange-500/20 text-orange-400 rounded">SANS LIMITE (CLÉ)</span>' : '<span class="text-[9px] sm:text-[10px] font-semibold px-2 py-0.5 bg-slate-800 text-slate-400">MAX 55 KM</span>';
 
         return `
-          <div class="rounded-xl border ${borderClass} p-5 shadow-lg flex flex-col justify-between hover:border-slate-600 transition">
+          <div class="rounded-xl border ${borderClass} p-4 sm:p-5 shadow-lg flex flex-col justify-between hover:border-slate-600 transition">
             <div>
               <div class="flex items-center justify-between gap-2 pb-2 border-b border-slate-800/80">
                 <div class="flex items-center gap-2">
-                  <span class="text-xl">${icon}</span>
-                  <h3 class="font-bold text-white text-sm">${r.name}</h3>
+                  <span class="text-lg sm:text-xl">${icon}</span>
+                  <h3 class="font-bold text-white text-xs sm:text-sm">${r.name}</h3>
                 </div>
                 ${badge}
               </div>
               <div class="mt-2 flex items-center justify-between">
-                <span class="text-[11px] text-slate-400">${r.type}</span>
+                <span class="text-[10px] sm:text-[11px] text-slate-400">${r.type}</span>
                 ${tag}
               </div>
-              <div class="mt-4 grid grid-cols-2 gap-3 bg-slate-900/60 p-3 rounded-lg text-center border border-slate-800/60">
+              <div class="mt-3 sm:mt-4 grid grid-cols-2 gap-2 sm:gap-3 bg-slate-900/60 p-2.5 sm:p-3 rounded-lg text-center border border-slate-800/60">
                 <div>
-                  <span class="text-[10px] text-slate-400 block font-semibold">DISTANCE CIBLE</span>
-                  <span class="text-xl font-extrabold text-orange-400">${r.distance_km} <span class="text-xs font-normal text-slate-400">km</span></span>
+                  <span class="text-[9px] sm:text-[10px] text-slate-400 block font-semibold">DISTANCE CIBLE</span>
+                  <span class="text-lg sm:text-xl font-extrabold text-orange-400">${r.distance_km} <span class="text-xs font-normal text-slate-400">km</span></span>
                 </div>
                 <div>
-                  <span class="text-[10px] text-slate-400 block font-semibold">DÉNIVELÉ CIBLE</span>
-                  <span class="text-xl font-extrabold text-emerald-400">${r.elevation_m} <span class="text-xs font-normal text-slate-400">m D+</span></span>
+                  <span class="text-[9px] sm:text-[10px] text-slate-400 block font-semibold">DÉNIVELÉ CIBLE</span>
+                  <span class="text-lg sm:text-xl font-extrabold text-emerald-400">${r.elevation_m} <span class="text-xs font-normal text-slate-400">m D+</span></span>
                 </div>
               </div>
-              <p class="text-xs text-slate-300 mt-3 italic leading-relaxed">
+              <p class="text-[11px] sm:text-xs text-slate-300 mt-2.5 sm:mt-3 italic leading-relaxed">
                 🎯 <strong>Rôle :</strong> ${r.role}
               </p>
             </div>
@@ -499,12 +590,12 @@
       tbody.innerHTML = data.weeks.map(w => {
         let statusBadge = '';
         const s = w.realized.status;
-        if (s === 'validated') statusBadge = '<span class="px-2 py-0.5 rounded text-[11px] font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">Validée ✅</span>';
-        else if (s === 'under') statusBadge = '<span class="px-2 py-0.5 rounded text-[11px] font-bold bg-amber-500/20 text-amber-400 border border-amber-500/30">Incomplète ⚠️</span>';
-        else if (s === 'over') statusBadge = '<span class="px-2 py-0.5 rounded text-[11px] font-bold bg-purple-500/20 text-purple-400 border border-purple-500/30">Sur-volume ⚡</span>';
-        else if (s === 'missed') statusBadge = '<span class="px-2 py-0.5 rounded text-[11px] font-bold bg-red-500/20 text-red-400 border border-red-500/30">Manquée ❌</span>';
-        else if (s === 'current') statusBadge = '<span class="px-2 py-0.5 rounded text-[11px] font-bold bg-blue-500/20 text-blue-400 border border-blue-500/30 animate-pulse">En cours 🚴</span>';
-        else statusBadge = '<span class="px-2 py-0.5 rounded text-[11px] font-medium bg-slate-800 text-slate-400">À venir</span>';
+        if (s === 'validated') statusBadge = '<span class="px-2 py-0.5 rounded text-[10px] sm:text-[11px] font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">Validée ✅</span>';
+        else if (s === 'under') statusBadge = '<span class="px-2 py-0.5 rounded text-[10px] sm:text-[11px] font-bold bg-amber-500/20 text-amber-400 border border-amber-500/30">Incomplète ⚠️</span>';
+        else if (s === 'over') statusBadge = '<span class="px-2 py-0.5 rounded text-[10px] sm:text-[11px] font-bold bg-purple-500/20 text-purple-400 border border-purple-500/30">Sur-volume ⚡</span>';
+        else if (s === 'missed') statusBadge = '<span class="px-2 py-0.5 rounded text-[10px] sm:text-[11px] font-bold bg-red-500/20 text-red-400 border border-red-500/30">Manquée ❌</span>';
+        else if (s === 'current') statusBadge = '<span class="px-2 py-0.5 rounded text-[10px] sm:text-[11px] font-bold bg-blue-500/20 text-blue-400 border border-blue-500/30 animate-pulse">En cours 🚴</span>';
+        else statusBadge = '<span class="px-2 py-0.5 rounded text-[10px] sm:text-[11px] font-medium bg-slate-800 text-slate-400">À venir</span>';
 
         const isDeload = w.is_deload;
         const rowBg = s === 'current' ? 'bg-blue-950/20 font-medium' : (isDeload ? 'bg-purple-950/10' : 'hover:bg-slate-800/40');
@@ -516,39 +607,38 @@
 
         return `
           <tr class="${rowBg} transition">
-            <td class="p-3 font-bold ${s === 'current' ? 'text-blue-400' : 'text-slate-400'}">S${w.week_number}</td>
-            <td class="p-3 text-slate-400">${w.start_date.substring(5)} au ${w.end_date.substring(5)}</td>
-            <td class="p-3 font-semibold text-slate-100 flex items-center gap-1.5">
+            <td class="p-2 sm:p-3 font-bold ${s === 'current' ? 'text-blue-400' : 'text-slate-400'}">S${w.week_number}</td>
+            <td class="p-2 sm:p-3 text-slate-400 whitespace-nowrap">${w.start_date.substring(5)} au ${w.end_date.substring(5)}</td>
+            <td class="p-2 sm:p-3 font-semibold text-slate-100 flex items-center gap-1">
               ${isDeload ? '<span class="text-purple-400 font-bold">[Deload]</span>' : ''}
               <span>${w.theme}</span>
             </td>
-            <td class="p-3 text-center text-slate-300">${r1Txt}</td>
-            <td class="p-3 text-center text-slate-300">${r2Txt}</td>
-            <td class="p-3 text-center text-orange-400 font-bold">${r3Txt}</td>
-            <td class="p-3 text-center font-bold text-white">${w.target.total_km} km (${w.target.total_dplus}m)</td>
-            <td class="p-3 text-center text-slate-200">${realizedTxt}</td>
-            <td class="p-3 text-center">${statusBadge}</td>
+            <td class="p-2 sm:p-3 text-center text-slate-300 whitespace-nowrap">${r1Txt}</td>
+            <td class="p-2 sm:p-3 text-center text-slate-300 whitespace-nowrap">${r2Txt}</td>
+            <td class="p-2 sm:p-3 text-center text-orange-400 font-bold whitespace-nowrap">${r3Txt}</td>
+            <td class="p-2 sm:p-3 text-center font-bold text-white whitespace-nowrap">${w.target.total_km} km (${w.target.total_dplus}m)</td>
+            <td class="p-2 sm:p-3 text-center text-slate-200 whitespace-nowrap">${realizedTxt}</td>
+            <td class="p-2 sm:p-3 text-center whitespace-nowrap">${statusBadge}</td>
           </tr>
         `;
       }).join('');
 
       const grid = document.getElementById('recent-rides-grid');
       grid.innerHTML = data.recent_rides.map(r => `
-        <div class="bg-slate-950/70 border border-slate-800 rounded-xl p-4 hover:border-slate-700 transition space-y-2">
+        <div class="bg-slate-950/70 border border-slate-800 rounded-xl p-3.5 sm:p-4 hover:border-slate-700 transition space-y-2">
           <div class="flex items-start justify-between">
-            <h4 class="font-bold text-white text-sm truncate max-w-[180px]">${r.name}</h4>
-            <span class="text-[11px] text-slate-400">${r.date}</span>
+            <h4 class="font-bold text-white text-xs sm:text-sm truncate max-w-[180px]">${r.name}</h4>
+            <span class="text-[10px] sm:text-[11px] text-slate-400">${r.date}</span>
           </div>
           <div class="grid grid-cols-3 gap-2 text-xs pt-1 border-t border-slate-800/60">
-            <div><span class="text-[10px] text-slate-500 block font-semibold">DISTANCE</span><span class="font-extrabold text-orange-400">${r.distance_km} km</span></div>
-            <div><span class="text-[10px] text-slate-500 block font-semibold">DÉNIVELÉ</span><span class="font-extrabold text-emerald-400">${r.elevation_m} m</span></div>
-            <div><span class="text-[10px] text-slate-500 block font-semibold">VITESSE</span><span class="font-extrabold text-slate-200">${r.speed_kmh} km/h</span></div>
+            <div><span class="text-[9px] sm:text-[10px] text-slate-500 block font-semibold">DISTANCE</span><span class="font-extrabold text-orange-400">${r.distance_km} km</span></div>
+            <div><span class="text-[9px] sm:text-[10px] text-slate-500 block font-semibold">DÉNIVELÉ</span><span class="font-extrabold text-emerald-400">${r.elevation_m} m</span></div>
+            <div><span class="text-[9px] sm:text-[10px] text-slate-500 block font-semibold">VITESSE</span><span class="font-extrabold text-slate-200">${r.speed_kmh} km/h</span></div>
           </div>
         </div>
       `).join('');
     }
 
-    // GESTION DU CHAT COACH IA
     function toggleCoachChat() {
       const modal = document.getElementById('coach-modal');
       modal.classList.toggle('hidden');
@@ -574,11 +664,10 @@
       appendChatMessage('user', text);
       input.value = '';
 
-      // Réponse du coach IA (Générateur cycliste intelligent contextualisé)
       setTimeout(() => {
         const reply = generateCoachReply(text);
         appendChatMessage('coach', reply);
-      }, 400);
+      }, 350);
     }
 
     function appendChatMessage(sender, text) {
@@ -590,19 +679,19 @@
 
       if (isUser) {
         div.innerHTML = `
-          <div class="chat-bubble-user text-white rounded-2xl p-3 max-w-[85%] leading-relaxed shadow">
+          <div class="chat-bubble-user text-white rounded-2xl p-3 max-w-[85%] leading-relaxed shadow text-xs">
             ${text}
           </div>
-          <div class="w-7 h-7 rounded-lg bg-orange-600 text-white flex items-center justify-center shrink-0 text-xs font-bold">
+          <div class="w-6 h-6 sm:w-7 sm:h-7 rounded-lg bg-orange-600 text-white flex items-center justify-center shrink-0 text-xs font-bold">
             G
           </div>
         `;
       } else {
         div.innerHTML = `
-          <div class="w-7 h-7 rounded-lg bg-orange-500/20 text-orange-400 flex items-center justify-center shrink-0 text-sm font-bold">
+          <div class="w-6 h-6 sm:w-7 sm:h-7 rounded-lg bg-orange-500/20 text-orange-400 flex items-center justify-center shrink-0 text-xs font-bold">
             🤖
           </div>
-          <div class="chat-bubble-coach rounded-2xl p-3.5 text-slate-200 max-w-[85%] leading-relaxed space-y-1.5 shadow">
+          <div class="chat-bubble-coach rounded-2xl p-3 sm:p-3.5 text-slate-200 max-w-[85%] leading-relaxed space-y-1.5 shadow text-xs">
             ${text}
           </div>
         `;
@@ -612,11 +701,9 @@
       container.scrollTop = container.scrollHeight;
     }
 
-    // Moteur de connaissances et d'analyse cycliste du Coach IA
     function generateCoachReply(q) {
       const query = q.toLowerCase();
 
-      // 1. Sortie 2 (40 km)
       if (query.includes('sortie 2') || query.includes('40 km') || query.includes('jeudi') || query.includes('vendredi')) {
         return `
           <p><strong>Directives pour ta Sortie 2 (40 km · 120m D+) :</strong></p>
@@ -629,80 +716,61 @@
         `;
       }
 
-      // 2. Ravitaillement & Alimentation
       if (query.includes('manger') || query.includes('boire') || query.includes('ravitaillement') || query.includes('nutrition') || query.includes('bidon')) {
         return `
           <p><strong>Stratégie Nutrition & Hydratation pour Lille-Hardelot :</strong></p>
           <ul class="list-disc pl-4 space-y-1 mt-1 text-slate-300">
-            <li><strong>Hydratation :</strong> Bois une gorgée toutes les 10 à 15 minutes (environ 500 à 650 ml par heure). En automne/hiver, on a moins soif mais la déshydratation plombe les jambes tout autant.</li>
+            <li><strong>Hydratation :</strong> Bois une gorgée toutes les 10 à 15 minutes (environ 500 à 650 ml par heure).</li>
             <li><strong>Sur les sorties semaine (< 55 km) :</strong> 1 bidon d'eau + 1 barre énergétique suffisent amplement.</li>
-            <li><strong>Sur les sorties week-end (> 60 km) :</strong> Vise 40 à 60g de glucides par heure (pâtes de fruits, bananes, barres céréales). C'est crucial pour habituer ton estomac à digérer sur le vélo en vue des 160 km le jour J !</li>
-            <li><strong>Après la sortie :</strong> Recharges en glucides et protéines dans les 30 min (un shaker, un bon repas avec féculents et eau gazeuse/magnésium).</li>
+            <li><strong>Sur les sorties week-end (> 60 km) :</strong> Vise 40 à 60g de glucides par heure pour habituer ton estomac aux 160 km le jour J !</li>
+            <li><strong>Après la sortie :</strong> Recharges en glucides et protéines dans les 30 min (un bon repas avec féculents et eau gazeuse/magnésium).</li>
           </ul>
         `;
       }
 
-      // 3. Monts, Dénivelé, Cassel, Haut Pichot
       if (query.includes('mont') || query.includes('cassel') || query.includes('dénivelé') || query.includes('d+') || query.includes('pichot') || query.includes('braquet') || query.includes('bosse')) {
         return `
           <p><strong>Gestion des Monts & Braquets pour Lille-Hardelot :</strong></p>
           <ul class="list-disc pl-4 space-y-1 mt-1 text-slate-300">
-            <li><strong>Le profil de Lille-Hardelot :</strong> Les 60 premiers kilomètres sont plats/roulants à travers la plaine des Flandres, puis les difficultés s'enchaînent dans le pays de Lumbres et le Haut Boulonnais (Mont Cassel, Mont des Cats, Haut Pichot) avec des pentes courtes mais raides à 8-12%.</li>
-            <li><strong>Braquet recommandé sur ton Trek :</strong> Un pédalier compact (50/34) avec une cassette 11-32 ou 11-34 est idéal pour monter assis à 75-80 rpm sans te cramer les cuisses.</li>
-            <li><strong>Règle d'or en montée :</strong> Ne te mets jamais dans le rouge au pied d'une bosse. Reste assis le plus longtemps possible, garde une dent de réserve et relance doucement au sommet.</li>
+            <li><strong>Le profil de Lille-Hardelot :</strong> Les 60 premiers kilomètres sont plats/roulants à travers la plaine des Flandres, puis les difficultés s'enchaînent dans le pays de Lumbres et le Haut Boulonnais (Mont Cassel, Mont des Cats, Haut Pichot) avec des pentes à 8-12%.</li>
+            <li><strong>Braquet recommandé sur ton Trek :</strong> Un pédalier compact (50/34) avec une cassette 11-32 ou 11-34 est idéal pour monter assis à 75-80 rpm sans cramer les cuisses.</li>
+            <li><strong>Règle d'or :</strong> Ne te mets jamais dans le rouge au pied d'une bosse. Reste assis le plus longtemps possible, garde une dent de réserve et relance au sommet.</li>
           </ul>
         `;
       }
 
-      // 4. Vent & Météo Flandres
       if (query.includes('vent') || query.includes('météo') || query.includes('pluie') || query.includes('flandres')) {
         return `
           <p><strong>Gérer le Vent dans les Flandres et vers la Côte :</strong></p>
           <ul class="list-disc pl-4 space-y-1 mt-1 text-slate-300">
             <li><strong>Le piège du vent d'Ouest :</strong> En allant vers Hardelot, le vent vient très souvent de face ou de trois-quarts face depuis la mer.</li>
-            <li><strong>Position sur le Trek :</strong> Mains sur les cocottes bras fléchis ou en bas du cintre pour réduire ta prise au vent de 25%. Ne lutte pas contre les rafales en tirant sur le guidon : baisse une dent et mouline à 90 rpm.</li>
-            <li><strong>En groupe :</strong> Abrites-toi toujours dans les roues et prends des relais courts (30s à 1 min max) sans à-coups.</li>
+            <li><strong>Position sur le Trek :</strong> Mains sur les cocottes bras fléchis ou en bas du cintre pour réduire ta prise au vent. Ne tire pas sur le guidon : baisse une dent et mouline à 90 rpm.</li>
+            <li><strong>En groupe :</strong> Abrites-toi toujours dans les roues et prends des relais courts (30s à 1 min max).</li>
           </ul>
         `;
       }
 
-      // 5. Fatigue, courbatures, jambes lourdes, blessure
       if (query.includes('mal') || query.includes('fatigue') || query.includes('jambe') || query.includes('lourde') || query.includes('genou') || query.includes('repos') || query.includes('courbature')) {
         return `
           <p><strong>Gestion de la Fatigue & Récupération :</strong></p>
           <ul class="list-disc pl-4 space-y-1 mt-1 text-slate-300">
-            <li><strong>Si c'est juste de la fatigue musculaire (jambes lourdes) :</strong> Pars faire ta sortie 2 en roulant très cool sur le petit plateau (30-35 km très souple). Le sang va circuler et éliminer les toxines.</li>
-            <li><strong>Si c'est une douleur articulaire (tendon, genou, rotule) :</strong> Stop immédiat. Prends 48h de repos complet, applique de la glace et bois beaucoup d'eau. On ne force jamais sur une douleur tendineuse.</li>
-            <li><strong>Sommeil :</strong> 80% de l'adaptation musculaire se fait pendant la nuit. Vise 8h de sommeil de qualité.</li>
+            <li><strong>Jambes lourdes (fatigue musculaire normale) :</strong> Pars faire ta sortie 2 en roulant très cool sur le petit plateau (30-35 km souple) pour activer la circulation.</li>
+            <li><strong>Douleur articulaire (tendon, genou, rotule) :</strong> Stop immédiat. Prends 48h de repos complet, applique de la glace et bois beaucoup d'eau.</li>
+            <li><strong>Sommeil :</strong> 8h de sommeil de qualité sont le meilleur dopage naturel !</li>
           </ul>
         `;
       }
 
-      // 6. Sortie loupée / décalée
       if (query.includes('loupe') || query.includes('rate') || query.includes('rattraper') || query.includes('décaler') || query.includes('retard')) {
         return `
           <p><strong>Que faire si tu as loupé ou décalé une séance ?</strong></p>
           <ul class="list-disc pl-4 space-y-1 mt-1 text-slate-300">
-            <li><strong>Règle d'or : On ne double jamais la séance suivante !</strong> Si tu as raté la sortie 2 de 40 km, ne fais surtout pas 95 km d'un coup le week-end, cela créerait un pic de fatigue dangereux.</li>
-            <li><strong>La stratégie intelligente :</strong> Concentre-toi simplement sur la sortie clé du week-end (55 km). Le plan adaptatif répartira automatiquement les kilomètres manquants de manière lissée sur les semaines suivantes.</li>
-            <li>Tu peux aussi décaler ta sortie au vendredi sans aucun problème.</li>
+            <li><strong>Règle d'or : On ne double jamais la séance suivante !</strong> Si tu as raté la sortie 2 de 40 km, ne fais surtout pas 95 km d'un coup le week-end.</li>
+            <li><strong>La stratégie intelligente :</strong> Fais ta sortie du week-end normalement (55 km). Le plan adaptatif répartira automatiquement les kilomètres manquants de manière lissée sur les semaines suivantes.</li>
           </ul>
         `;
       }
 
-      // 7. Vélo Trek & Matériel
-      if (query.includes('trek') || query.includes('pneu') || query.includes('pression') || query.includes('crevaison') || query.includes('matériel')) {
-        return `
-          <p><strong>Matériel & Réglages sur ton Trek :</strong></p>
-          <ul class="list-disc pl-4 space-y-1 mt-1 text-slate-300">
-            <li><strong>Pression des pneus :</strong> Si tu es en pneus de 28 mm, gonfle entre 5.5 et 6.2 bars selon ton poids. Trop gonfler fait rebondir le vélo sur les routes dégradées et fatigue les bras.</li>
-            <li><strong>Kit de secours obligatoire :</strong> 2 chambres à air, 2 démonte-pneus, 1 pompe ou 2 cartouches CO2, et un multi-outils.</li>
-            <li><strong>Nettoyage & Chaîne :</strong> Dégraisse et huile ta chaîne tous les 200 à 300 km. Une chaîne propre te fait économiser entre 5 et 10 Watts d'effort pur !</li>
-          </ul>
-        `;
-      }
-
-      // 8. Réponse générale contextualisée
       return `
         <p>Excellente question ! Pour ta préparation de <strong>Lille - Hardelot (160 km / 1450m D+)</strong> :</p>
         <p class="text-slate-300 mt-1">La clé absolue est la <strong>régularité des 3 sorties par semaine</strong>. Les sorties en semaine (comme ta prochaine sortie 2 de 40 km) te permettent de garder le coup de pédale et l'endurance musculaire, tandis que la sortie longue du week-end repousse progressivement ta limite kilométrique jusqu'aux 145 km en mai.</p>
