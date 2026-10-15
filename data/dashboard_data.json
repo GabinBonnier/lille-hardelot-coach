@@ -11,7 +11,7 @@
     "bike": "Trek"
   },
   "coach_advice": {
-    "days_to_race": 228,
+    "days_to_race": 227,
     "current_week_number": 1,
     "current_week_theme": "Reprise & R\u00e9gularit\u00e9 3 sorties",
     "current_week_rides_plan": [
@@ -2275,5 +2275,5 @@
       }
     }
   ],
-  "last_sync": "2026-10-14 21:15:22"
+  "last_sync": "2026-10-15 10:48:02"
 }
