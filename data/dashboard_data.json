@@ -36,9 +36,12 @@
         "distance_km": 40,
         "elevation_m": 120,
         "role": "Endurance & Faux-plats",
-        "status": "pending",
-        "done_info": null,
-        "context": "Sortie 2/3 de la semaine"
+        "status": "completed",
+        "done_info": {
+          "distance_km": 29.7,
+          "elevation_m": 62,
+          "date": "2026-10-15"
+        }
       },
       {
         "id": 3,
@@ -48,7 +51,8 @@
         "elevation_m": 200,
         "role": "Sortie Cl\u00e9 Lille-Hardelot (Volume & D+)",
         "status": "pending",
-        "done_info": null
+        "done_info": null,
+        "context": "Sortie 3/3 de la semaine"
       }
     ],
     "current_week_realized_rides": [
@@ -60,23 +64,20 @@
         "elevation_m": 109,
         "moving_time_min": 117,
         "speed_kmh": 27.6
+      },
+      {
+        "id": 20596570885,
+        "name": "Premier 30 de moyenne",
+        "date": "2026-10-15",
+        "distance_km": 29.7,
+        "elevation_m": 62,
+        "moving_time_min": 61,
+        "speed_kmh": 29.4
       }
     ],
     "upcoming_rides_sequence": [
       {
         "step": 1,
-        "week_number": 1,
-        "week_theme": "Reprise & R\u00e9gularit\u00e9 3 sorties",
-        "name": "Sortie 2 (Jeudi / Vendredi)",
-        "distance_km": 40,
-        "elevation_m": 120,
-        "type": "Semaine (max 55km)",
-        "timing": "Cette semaine (Jeudi / Vendredi)",
-        "role": "Endurance & Faux-plats",
-        "is_immediate": true
-      },
-      {
-        "step": 2,
         "week_number": 1,
         "week_theme": "Reprise & R\u00e9gularit\u00e9 3 sorties",
         "name": "Sortie 3 (Samedi / Dimanche)",
@@ -85,10 +86,10 @@
         "type": "Week-end (Sans limite)",
         "timing": "Ce week-end (Samedi / Dimanche)",
         "role": "Sortie Cl\u00e9 Lille-Hardelot (Volume & D+)",
-        "is_immediate": false
+        "is_immediate": true
       },
       {
-        "step": 3,
+        "step": 2,
         "week_number": 2,
         "week_theme": "Mont\u00e9e en distance 60 km le W-E",
         "name": "Sortie 1 (Mardi / Mercredi)",
@@ -100,7 +101,7 @@
         "is_immediate": false
       },
       {
-        "step": 4,
+        "step": 3,
         "week_number": 2,
         "week_theme": "Mont\u00e9e en distance 60 km le W-E",
         "name": "Sortie 2 (Jeudi / Vendredi)",
@@ -112,7 +113,7 @@
         "is_immediate": false
       },
       {
-        "step": 5,
+        "step": 4,
         "week_number": 2,
         "week_theme": "Mont\u00e9e en distance 60 km le W-E",
         "name": "Sortie 3 (Samedi / Dimanche)",
@@ -124,7 +125,7 @@
         "is_immediate": false
       },
       {
-        "step": 6,
+        "step": 5,
         "week_number": 3,
         "week_theme": "Cap des 65 km le W-E",
         "name": "Sortie 1 (Mardi / Mercredi)",
@@ -136,7 +137,7 @@
         "is_immediate": false
       },
       {
-        "step": 7,
+        "step": 6,
         "week_number": 3,
         "week_theme": "Cap des 65 km le W-E",
         "name": "Sortie 2 (Jeudi / Vendredi)",
@@ -148,7 +149,7 @@
         "is_immediate": false
       },
       {
-        "step": 8,
+        "step": 7,
         "week_number": 3,
         "week_theme": "Cap des 65 km le W-E",
         "name": "Sortie 3 (Samedi / Dimanche)",
@@ -160,7 +161,7 @@
         "is_immediate": false
       },
       {
-        "step": 9,
+        "step": 8,
         "week_number": 4,
         "week_theme": "Semaine d'assimilation (Deload)",
         "name": "Sortie 1 (Mardi / Mercredi)",
@@ -172,7 +173,7 @@
         "is_immediate": false
       },
       {
-        "step": 10,
+        "step": 9,
         "week_number": 4,
         "week_theme": "Semaine d'assimilation (Deload)",
         "name": "Sortie 2 (Jeudi / Vendredi)",
@@ -184,7 +185,7 @@
         "is_immediate": false
       },
       {
-        "step": 11,
+        "step": 10,
         "week_number": 4,
         "week_theme": "Semaine d'assimilation (Deload)",
         "name": "Sortie 3 (Samedi / Dimanche)",
@@ -196,7 +197,7 @@
         "is_immediate": false
       },
       {
-        "step": 12,
+        "step": 11,
         "week_number": 5,
         "week_theme": "Entr\u00e9e sur les 70 km le W-E",
         "name": "Sortie 1 (Mardi / Mercredi)",
@@ -208,7 +209,7 @@
         "is_immediate": false
       },
       {
-        "step": 13,
+        "step": 12,
         "week_number": 5,
         "week_theme": "Entr\u00e9e sur les 70 km le W-E",
         "name": "Sortie 2 (Jeudi / Vendredi)",
@@ -220,7 +221,7 @@
         "is_immediate": false
       },
       {
-        "step": 14,
+        "step": 13,
         "week_number": 5,
         "week_theme": "Entr\u00e9e sur les 70 km le W-E",
         "name": "Sortie 3 (Samedi / Dimanche)",
@@ -237,16 +238,24 @@
     "progress_distance_pct": 52.9,
     "progress_elev_pct": 32.3,
     "next_workout": {
-      "title": "Sortie 2 (Jeudi / Vendredi)",
-      "distance_km": 40,
-      "elevation_m": 120,
-      "role": "Endurance & Faux-plats",
-      "context": "Sortie 2/3 de la semaine",
-      "briefing": "S\u00e9ance imm\u00e9diate : 40 km et 120m D+. P\u00e9dalez au ressenti sans regarder la fr\u00e9quence cardiaque. Emportez 1 bidon et 1 barre."
+      "title": "Sortie 3 (Samedi / Dimanche)",
+      "distance_km": 55,
+      "elevation_m": 200,
+      "role": "Sortie Cl\u00e9 Lille-Hardelot (Volume & D+)",
+      "context": "Sortie 3/3 de la semaine",
+      "briefing": "S\u00e9ance imm\u00e9diate : 55 km et 200m D+. P\u00e9dalez au ressenti sans regarder la fr\u00e9quence cardiaque. Emportez 1 bidon et 1 barre."
     },
     "recent_alerts": []
   },
   "recent_rides": [
+    {
+      "date": "2026-10-15",
+      "name": "Premier 30 de moyenne",
+      "distance_km": 29.7,
+      "elevation_m": 62,
+      "moving_time_min": 61,
+      "speed_kmh": 29.4
+    },
     {
       "date": "2026-10-12",
       "name": "Afternoon Ride",
@@ -334,14 +343,6 @@
       "elevation_m": 113,
       "moving_time_min": 65,
       "speed_kmh": 28.8
-    },
-    {
-      "date": "2026-08-23",
-      "name": "Sortie 3j apr\u00e8s Cassel",
-      "distance_km": 84.6,
-      "elevation_m": 269,
-      "moving_time_min": 201,
-      "speed_kmh": 25.3
     }
   ],
   "weeks": [
@@ -378,9 +379,12 @@
             "distance_km": 40,
             "elevation_m": 120,
             "role": "Endurance & Faux-plats",
-            "status": "pending",
-            "done_info": null,
-            "context": "Sortie 2/3 de la semaine"
+            "status": "completed",
+            "done_info": {
+              "distance_km": 29.7,
+              "elevation_m": 62,
+              "date": "2026-10-15"
+            }
           },
           {
             "id": 3,
@@ -390,14 +394,15 @@
             "elevation_m": 200,
             "role": "Sortie Cl\u00e9 Lille-Hardelot (Volume & D+)",
             "status": "pending",
-            "done_info": null
+            "done_info": null,
+            "context": "Sortie 3/3 de la semaine"
           }
         ]
       },
       "realized": {
-        "total_km": 53.6,
-        "total_dplus": 109,
-        "rides_count": 1,
+        "total_km": 83.3,
+        "total_dplus": 171,
+        "rides_count": 2,
         "status": "current",
         "rides": [
           {
@@ -408,6 +413,15 @@
             "elevation_m": 109,
             "moving_time_min": 117,
             "speed_kmh": 27.6
+          },
+          {
+            "id": 20596570885,
+            "name": "Premier 30 de moyenne",
+            "date": "2026-10-15",
+            "distance_km": 29.7,
+            "elevation_m": 62,
+            "moving_time_min": 61,
+            "speed_kmh": 29.4
           }
         ]
       },
@@ -2275,5 +2289,5 @@
       }
     }
   ],
-  "last_sync": "2026-10-15 10:48:02"
+  "last_sync": "2026-10-15 20:53:54"
 }
