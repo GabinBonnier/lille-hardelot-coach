@@ -6,12 +6,15 @@ import {
   AlertCircle, 
   X, 
   FileText, 
-  Link, 
+  Link as LinkIcon, 
   ShieldCheck, 
   Info,
-  Sparkles
+  Sparkles,
+  RefreshCw,
+  Loader2
 } from 'lucide-react';
 import { parseICS, ParsedCalendarEvent } from '../services/icsParser';
+import { syncCalendarFromUrl } from '../services/calendarSubscription';
 
 interface CalendarImportModalProps {
   isOpen: boolean;
@@ -28,11 +31,39 @@ export const CalendarImportModal: React.FC<CalendarImportModalProps> = ({
 }) => {
   if (!isOpen) return null;
 
-  const [activeTab, setActiveTab] = useState<'file' | 'link'>('file');
-  const [webcalUrl, setWebcalUrl] = useState('');
+  const [activeTab, setActiveTab] = useState<'link' | 'file'>('link');
+  const [webcalUrl, setWebcalUrl] = useState(
+    localStorage.getItem('cap_hardelot_calendar_sub_url') || ''
+  );
   const [fileName, setFileName] = useState<string | null>(null);
   const [parsedCount, setParsedCount] = useState<number | null>(null);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const [isSyncingUrl, setIsSyncingUrl] = useState(false);
+
+  const handleSyncUrl = async () => {
+    if (!webcalUrl.trim()) {
+      setErrorMsg('Veuillez renseigner un lien de calendrier valide.');
+      return;
+    }
+
+    setIsSyncingUrl(true);
+    setErrorMsg(null);
+
+    const result = await syncCalendarFromUrl(webcalUrl);
+    setIsSyncingUrl(false);
+
+    if (result.error) {
+      setErrorMsg(result.error);
+    } else if (result.events.length > 0) {
+      setParsedCount(result.events.length);
+      setTimeout(() => {
+        onImportSuccess(result.events);
+        onClose();
+      }, 700);
+    } else {
+      setErrorMsg('Aucun événement trouvé dans ce calendrier.');
+    }
+  };
 
   const handleFileUpload = (file: File) => {
     setFileName(file.name);
@@ -123,10 +154,10 @@ END:VCALENDAR`;
             </div>
             <div>
               <h3 className="text-base font-black text-slate-800">
-                Importer mon Calendrier Apple
+                Calendrier d'Emploi du Temps
               </h3>
               <p className="text-xs text-slate-500">
-                Détection automatique de tes créneaux libres et occupés
+                Liaison en direct pour les mises à jour automatiques
               </p>
             </div>
           </div>
@@ -139,75 +170,159 @@ END:VCALENDAR`;
           </button>
         </div>
 
+        {/* Tab switch */}
+        <div className="px-6 pt-4 flex gap-2 border-b border-slate-100">
+          <button
+            type="button"
+            onClick={() => { setActiveTab('link'); setErrorMsg(null); }}
+            className={`pb-2.5 px-3 text-xs font-black transition-all border-b-2 flex items-center gap-1.5 ${
+              activeTab === 'link'
+                ? 'border-sky-500 text-sky-600'
+                : 'border-transparent text-slate-400 hover:text-slate-700'
+            }`}
+          >
+            <LinkIcon className="w-3.5 h-3.5" />
+            <span>Lien en Direct (Auto-Update)</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => { setActiveTab('file'); setErrorMsg(null); }}
+            className={`pb-2.5 px-3 text-xs font-black transition-all border-b-2 flex items-center gap-1.5 ${
+              activeTab === 'file'
+                ? 'border-sky-500 text-sky-600'
+                : 'border-transparent text-slate-400 hover:text-slate-700'
+            }`}
+          >
+            <Upload className="w-3.5 h-3.5" />
+            <span>Fichier .ics (Export Fixe)</span>
+          </button>
+        </div>
+
         {/* Body */}
         <div className="p-5 sm:p-6 space-y-4">
           
-          {/* Instructions how to export from Apple Calendar */}
-          <div className="p-3.5 rounded-2xl bg-sky-50/70 border border-sky-200 text-xs text-sky-900 space-y-1.5">
-            <span className="font-extrabold flex items-center gap-1.5 text-sky-950">
-              <Info className="w-4 h-4 text-sky-600" />
-              Comment exporter depuis l'application Calendrier d'Apple :
-            </span>
-            <ul className="list-disc list-inside space-y-1 text-[11px] text-sky-800">
-              <li><strong>Sur Mac :</strong> Ouvre Calendrier ➔ Menu <em>Fichier</em> ➔ <em>Exporter...</em> ➔ Sauvegarde le fichier <code>.ics</code>.</li>
-              <li><strong>Sur iPhone :</strong> Partage ton calendrier iCloud ou envoie le fichier <code>.ics</code> par AirDrop.</li>
-            </ul>
-          </div>
-
-          {/* Dropzone */}
-          <div
-            onDragOver={(e) => e.preventDefault()}
-            onDrop={handleDrop}
-            className="border-2 border-dashed border-sky-300 bg-sky-50/30 hover:bg-sky-50/70 transition-colors rounded-2xl p-6 text-center flex flex-col items-center justify-center cursor-pointer"
-          >
-            <Upload className="w-8 h-8 text-sky-500 mb-2" />
-            <div className="font-bold text-slate-800 text-xs sm:text-sm">
-              Glisse ton fichier .ics ici
-            </div>
-            <div className="text-[11px] text-slate-400 mt-0.5">
-              Fichier iCalendar (.ics) généré par Apple Calendar
-            </div>
-
-            <label className="mt-3 px-4 py-2 bg-white border border-slate-300 hover:border-slate-400 rounded-xl text-xs font-bold text-slate-700 shadow-sm cursor-pointer">
-              Parcourir mes fichiers
-              <input
-                type="file"
-                className="hidden"
-                accept=".ics,text/calendar"
-                onChange={(e) => {
-                  if (e.target.files && e.target.files[0]) {
-                    handleFileUpload(e.target.files[0]);
-                  }
-                }}
-              />
-            </label>
-
-            {fileName && (
-              <div className="mt-3 flex items-center gap-2 bg-emerald-100 text-emerald-800 text-xs px-3 py-1.5 rounded-xl font-bold">
-                <Check className="w-4 h-4 text-emerald-600" />
-                <span>{fileName} ({parsedCount} événements importés !)</span>
+          {/* TAB 1: Live Webcal / Subscription URL */}
+          {activeTab === 'link' && (
+            <div className="space-y-4">
+              <div className="p-3.5 rounded-2xl bg-sky-50 border border-sky-200 text-xs text-sky-900 space-y-1.5">
+                <span className="font-extrabold flex items-center gap-1.5 text-sky-950">
+                  <Sparkles className="w-4 h-4 text-sky-600" />
+                  Mises à jour automatiques de tes cours
+                </span>
+                <p className="text-[11px] leading-relaxed text-sky-800">
+                  En collant le lien d'abonnement de ton école/université (ADE, Celcat, Ent, iCloud ou Google), l'application <strong>se mettra à jour toute seule</strong> à chaque changement de salle, cours annulé ou décalé !
+                </p>
               </div>
-            )}
 
-            {errorMsg && (
-              <div className="mt-3 text-rose-600 text-xs font-bold">
-                ⚠️ {errorMsg}
+              <div className="space-y-1.5">
+                <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider">
+                  Lien d'abonnement (URL iCal / Webcal)
+                </label>
+                <input
+                  type="text"
+                  placeholder="https://planning.univ-lille.fr/...ics ou webcal://..."
+                  value={webcalUrl}
+                  onChange={(e) => setWebcalUrl(e.target.value)}
+                  className="w-full px-3.5 py-2.5 text-xs rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-sky-500"
+                />
+                <span className="text-[10px] text-slate-400 block">
+                  Astuce : dans ton planning de fac/IUT, clique sur « S’abonner » ou « Exporter iCal » et copie le lien d'abonnement URL.
+                </span>
               </div>
-            )}
-          </div>
 
-          {/* Shortcut: load 6 typical events */}
-          <div className="flex items-center justify-between p-3 bg-slate-50 rounded-2xl border border-slate-200 text-xs">
-            <span className="text-slate-600 font-medium">Pas de fichier .ics sous la main ?</span>
-            <button
-              type="button"
-              onClick={handleLoadDemo}
-              className="text-xs font-bold text-duo-green hover:underline flex items-center gap-1"
-            >
-              <Sparkles className="w-3.5 h-3.5" />
-              <span>Charger un exemple type</span>
-            </button>
-          </div>
+              <button
+                type="button"
+                onClick={handleSyncUrl}
+                disabled={isSyncingUrl}
+                className="w-full py-3 bg-sky-500 hover:bg-sky-600 text-white font-extrabold text-xs sm:text-sm rounded-xl shadow-md shadow-sky-500/20 flex items-center justify-center gap-2 transition-all active:scale-95 disabled:opacity-50"
+              >
+                {isSyncingUrl ? (
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    <span>Synchronisation avec ton école...</span>
+                  </>
+                ) : (
+                  <>
+                    <RefreshCw className="w-4 h-4" />
+                    <span>Activer la synchronisation automatique</span>
+                  </>
+                )}
+              </button>
+
+              {parsedCount && (
+                <div className="flex items-center gap-2 bg-emerald-100 text-emerald-800 text-xs px-3 py-2 rounded-xl font-bold">
+                  <Check className="w-4 h-4 text-emerald-600" />
+                  <span>Calendrier synchronisé en direct ({parsedCount} créneaux trouvés) !</span>
+                </div>
+              )}
+
+              {errorMsg && (
+                <div className="p-2.5 bg-rose-50 border border-rose-200 text-rose-700 text-xs rounded-xl font-bold">
+                  ⚠️ {errorMsg}
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* TAB 2: Static .ics file upload */}
+          {activeTab === 'file' && (
+            <div className="space-y-4">
+              <div
+                onDragOver={(e) => e.preventDefault()}
+                onDrop={handleDrop}
+                className="border-2 border-dashed border-sky-300 bg-sky-50/30 hover:bg-sky-50/70 transition-colors rounded-2xl p-6 text-center flex flex-col items-center justify-center cursor-pointer"
+              >
+                <Upload className="w-8 h-8 text-sky-500 mb-2" />
+                <div className="font-bold text-slate-800 text-xs sm:text-sm">
+                  Glisse ton fichier .ics ici
+                </div>
+                <div className="text-[11px] text-slate-400 mt-0.5">
+                  Export ponctuel depuis Apple Calendar
+                </div>
+
+                <label className="mt-3 px-4 py-2 bg-white border border-slate-300 hover:border-slate-400 rounded-xl text-xs font-bold text-slate-700 shadow-sm cursor-pointer">
+                  Parcourir mes fichiers
+                  <input
+                    type="file"
+                    className="hidden"
+                    accept=".ics,text/calendar"
+                    onChange={(e) => {
+                      if (e.target.files && e.target.files[0]) {
+                        handleFileUpload(e.target.files[0]);
+                      }
+                    }}
+                  />
+                </label>
+
+                {fileName && (
+                  <div className="mt-3 flex items-center gap-2 bg-emerald-100 text-emerald-800 text-xs px-3 py-1.5 rounded-xl font-bold">
+                    <Check className="w-4 h-4 text-emerald-600" />
+                    <span>{fileName} ({parsedCount} événements importés !)</span>
+                  </div>
+                )}
+
+                {errorMsg && (
+                  <div className="mt-3 text-rose-600 text-xs font-bold">
+                    ⚠️ {errorMsg}
+                  </div>
+                )}
+              </div>
+
+              <div className="flex items-center justify-between p-3 bg-slate-50 rounded-2xl border border-slate-200 text-xs">
+                <span className="text-slate-600 font-medium">Exemple de démonstration ?</span>
+                <button
+                  type="button"
+                  onClick={handleLoadDemo}
+                  className="text-xs font-bold text-duo-green hover:underline flex items-center gap-1"
+                >
+                  <Sparkles className="w-3.5 h-3.5" />
+                  <span>Charger un exemple</span>
+                </button>
+              </div>
+            </div>
+          )}
+
         </div>
 
         {/* Footer */}
@@ -216,6 +331,7 @@ END:VCALENDAR`;
             type="button"
             onClick={() => {
               onClearCalendar();
+              localStorage.removeItem('cap_hardelot_calendar_sub_url');
               localStorage.removeItem('cap_hardelot_raw_ics');
               setFileName(null);
               setParsedCount(null);
@@ -223,7 +339,7 @@ END:VCALENDAR`;
             }}
             className="text-xs font-bold text-rose-600 hover:text-rose-800 hover:underline"
           >
-            Effacer les événements importés
+            Effacer mon calendrier
           </button>
 
           <button

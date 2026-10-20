@@ -4,6 +4,7 @@ import { POPULAR_LOCATIONS, searchFrenchCities } from '../data/cities';
 import { WorkoutDetailModal } from './WorkoutDetailModal';
 import { CalendarImportModal } from './CalendarImportModal';
 import { ParsedCalendarEvent, parseICS } from '../services/icsParser';
+import { syncCalendarFromUrl } from '../services/calendarSubscription';
 import { 
   Calendar as CalendarIcon, 
   MapPin, 
@@ -57,6 +58,43 @@ export const WeeklyCalendar: React.FC<WeeklyCalendarProps> = ({
   const [isCalendarModalOpen, setIsCalendarModalOpen] = useState(false);
   const [selectedWorkoutModal, setSelectedWorkoutModal] = useState<ScheduledWorkout | null>(null);
   const [expandedCalendarDays, setExpandedCalendarDays] = useState<Record<number, boolean>>({});
+  const [calendarSubUrl, setCalendarSubUrl] = useState<string>(
+    () => localStorage.getItem('cap_hardelot_calendar_sub_url') || ''
+  );
+  const [isRefreshingCalendar, setIsRefreshingCalendar] = useState(false);
+
+  // Auto-refresh calendar on load if live subscription URL is configured
+  useEffect(() => {
+    if (calendarSubUrl) {
+      setIsRefreshingCalendar(true);
+      syncCalendarFromUrl(calendarSubUrl)
+        .then((res) => {
+          setIsRefreshingCalendar(false);
+          if (res.events && res.events.length > 0) {
+            setImportedEvents(res.events);
+            localStorage.setItem('cap_hardelot_apple_events_v1', JSON.stringify(res.events));
+          }
+        })
+        .catch(() => {
+          setIsRefreshingCalendar(false);
+        });
+    }
+  }, [calendarSubUrl]);
+
+  const handleManualCalendarRefresh = async () => {
+    if (!calendarSubUrl) return;
+    setIsRefreshingCalendar(true);
+    try {
+      const res = await syncCalendarFromUrl(calendarSubUrl);
+      setIsRefreshingCalendar(false);
+      if (res.events && res.events.length > 0) {
+        setImportedEvents(res.events);
+        localStorage.setItem('cap_hardelot_apple_events_v1', JSON.stringify(res.events));
+      }
+    } catch {
+      setIsRefreshingCalendar(false);
+    }
+  };
 
   // Apple Calendar imported events
   const [importedEvents, setImportedEvents] = useState<ParsedCalendarEvent[]>(() => {
@@ -120,6 +158,18 @@ export const WeeklyCalendar: React.FC<WeeklyCalendarProps> = ({
   const handleImportCalendarSuccess = (events: ParsedCalendarEvent[]) => {
     setImportedEvents(events);
     localStorage.setItem('cap_hardelot_apple_events_v1', JSON.stringify(events));
+    const savedUrl = localStorage.getItem('cap_hardelot_calendar_sub_url');
+    if (savedUrl) {
+      setCalendarSubUrl(savedUrl);
+    }
+  };
+
+  const handleClearCalendar = () => {
+    setImportedEvents([]);
+    setCalendarSubUrl('');
+    localStorage.removeItem('cap_hardelot_apple_events_v1');
+    localStorage.removeItem('cap_hardelot_raw_ics');
+    localStorage.removeItem('cap_hardelot_calendar_sub_url');
   };
 
   const dayNamesShort = ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'];
@@ -144,18 +194,38 @@ export const WeeklyCalendar: React.FC<WeeklyCalendarProps> = ({
 
           {/* Action buttons */}
           <div className="flex flex-wrap items-center gap-2">
-            {/* Apple Calendar Import Button */}
-            <button
-              type="button"
-              onClick={() => setIsCalendarModalOpen(true)}
-              className="flex items-center gap-2 bg-sky-50 hover:bg-sky-100 text-sky-800 border border-sky-300 px-3.5 py-2 rounded-2xl text-xs font-bold transition-all shadow-sm"
-            >
-              <Upload className="w-3.5 h-3.5 text-sky-600" />
-              <span>Importer Calendrier Apple (.ics)</span>
-              {importedEvents.length > 0 && (
-                <span className="w-2 h-2 rounded-full bg-sky-500" />
+            {/* Apple Calendar Import & Sync Button */}
+            <div className="flex items-center gap-1.5">
+              <button
+                type="button"
+                onClick={() => setIsCalendarModalOpen(true)}
+                className="flex items-center gap-2 bg-sky-50 hover:bg-sky-100 text-sky-800 border border-sky-300 px-3.5 py-2 rounded-2xl text-xs font-bold transition-all shadow-sm"
+              >
+                <CalendarIcon className="w-3.5 h-3.5 text-sky-600" />
+                <span>
+                  {calendarSubUrl 
+                    ? 'Calendrier en Direct (Actif)' 
+                    : importedEvents.length > 0 
+                      ? 'Calendrier Importé' 
+                      : 'Lier mon Calendrier'}
+                </span>
+                {importedEvents.length > 0 && (
+                  <span className={`w-2 h-2 rounded-full ${calendarSubUrl ? 'bg-emerald-500 animate-pulse' : 'bg-sky-500'}`} />
+                )}
+              </button>
+
+              {calendarSubUrl && (
+                <button
+                  type="button"
+                  onClick={handleManualCalendarRefresh}
+                  disabled={isRefreshingCalendar}
+                  title="Rafraîchir les cours maintenant"
+                  className="p-2 bg-sky-50 hover:bg-sky-100 border border-sky-300 rounded-2xl text-sky-700 transition-all disabled:opacity-50 flex items-center justify-center"
+                >
+                  <RefreshCw className={`w-3.5 h-3.5 ${isRefreshingCalendar ? 'animate-spin text-sky-500' : ''}`} />
+                </button>
               )}
-            </button>
+            </div>
 
             {/* Global location changer */}
             <div className="relative">
@@ -565,10 +635,7 @@ export const WeeklyCalendar: React.FC<WeeklyCalendarProps> = ({
         isOpen={isCalendarModalOpen}
         onClose={() => setIsCalendarModalOpen(false)}
         onImportSuccess={handleImportCalendarSuccess}
-        onClearCalendar={() => {
-          setImportedEvents([]);
-          localStorage.removeItem('cap_hardelot_apple_events_v1');
-        }}
+        onClearCalendar={handleClearCalendar}
       />
     </div>
   );
