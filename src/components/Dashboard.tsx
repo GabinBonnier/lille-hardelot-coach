@@ -85,6 +85,15 @@ export const Dashboard: React.FC<DashboardProps> = ({
         let intensity: ScheduledWorkout['intensity'] = 'Endurance Fondamentale';
         let departureHour = '14:00';
         let reliefCategory: ScheduledWorkout['reliefCategory'] = 'Plaine & Faux-plat';
+        let workoutDetails: ScheduledWorkout['workoutDetails'] = {
+          warmup: '15 min progressif en Zone 1/2 en montant tranquillement en température.',
+          mainSet: 'Endurance de base rythmée en Zone 2 avec quelques accélérations de 30 secondes pour dynamiser les jambes.',
+          cooldown: '10 min retour au calme souple pour éliminer les toxines.',
+          targetCadenceRpm: '85-90 rpm',
+          nutritionHydration: '1 bidon de 500ml d’eau ou électrolytes légers.',
+          zones: 'Zone 2 (Endurance fondamentale)',
+          difficulty: 'Modéré'
+        };
 
         if (idx === 2) {
           // Mercredi
@@ -92,24 +101,60 @@ export const Dashboard: React.FC<DashboardProps> = ({
           intensity = 'Rythme & Seuil';
           departureHour = '14:30';
           reliefCategory = 'Vallonné';
+          workoutDetails = {
+            warmup: '15 min progressif avec 3 relances courtes pour débloquer les poumons.',
+            mainSet: '3 séries de 10 min en Sweet-Spot (88-92% FTP ou 82-87% FC Max) avec 4 min de récupération souple entre chaque bloc. Vitesse cible : 28-30 km/h.',
+            cooldown: '12 min sur le petit plateau en tournant les jambes.',
+            targetCadenceRpm: '88-92 rpm',
+            nutritionHydration: '1 bidon d’électrolytes + 1 pâte de fruits au milieu de séance.',
+            zones: 'Zone 3 (Tempo) & Zone 4 (Sweet-Spot)',
+            difficulty: 'Exigeant'
+          };
         } else if (idx === 5) {
           // Samedi
           targetDistanceKm = 85;
           intensity = 'Dénivelé & Monts';
           departureHour = '09:00';
           reliefCategory = 'Monts & Côtes';
+          workoutDetails = {
+            warmup: '20 min en Zone 2 en quittant l’agglomération et en affrontant le vent de face.',
+            mainSet: '6 montées de bosses ou côtes (4% à 8%) réalisées assis à 55-65 rpm pour développer la force musculaire, puis relance immédiate sur le grand plateau au sommet.',
+            cooldown: '15 min de pédalage souple pour faire tourner les jambes.',
+            targetCadenceRpm: '55-65 rpm en côte, 85-90 rpm sur le plat',
+            nutritionHydration: '2 bidons (1 eau, 1 boisson d’effort) + 2 barres énergétiques (50g glucides/heure).',
+            zones: 'Zone 2, Zone 4 en montée & Force sous-max',
+            difficulty: 'Exigeant'
+          };
         } else if (idx === 6) {
           // Dimanche
           targetDistanceKm = 105;
           intensity = 'Endurance Fondamentale';
           departureHour = '08:30';
           reliefCategory = 'Vallonné';
+          workoutDetails = {
+            warmup: '25 min en endurance basse pour se mettre en jambes sans forcer.',
+            mainSet: 'Sortie longue simulation Hardelot : première moitié vent de face en restant profilé mains aux cocottes, seconde moitié poussé par le vent avec maintien de vitesse constante.',
+            cooldown: '15 min récupération active.',
+            targetCadenceRpm: '85-92 rpm constante',
+            nutritionHydration: 'Test nutrition officielle : 60g de glucides par heure (barres, gels, pâte d’amande) + 1 bidon toutes les 1h15.',
+            zones: 'Zone 2 pure (Aérobie & optimisation lipidique)',
+            difficulty: 'Intense'
+          };
         } else if (idx === 1) {
           // Mardi
           targetDistanceKm = 40;
           intensity = 'Récupération Active';
           departureHour = '17:30';
           reliefCategory = 'Plaine & Faux-plat';
+          workoutDetails = {
+            warmup: '10 min tout souple en moulinant à 95 rpm.',
+            mainSet: '3x 5 min de vélocité à 100-105 rpm sans forcer sur les pédales. Objectif : drainer les toxines et assouplir les fibres musculaires.',
+            cooldown: '10 min très léger.',
+            targetCadenceRpm: '95-105 rpm',
+            nutritionHydration: '1 bidon d’eau claire.',
+            zones: 'Zone 1 (Récupération active)',
+            difficulty: 'Accessible'
+          };
         }
 
         const estDurationMinutes = Math.round((targetDistanceKm / 27) * 60);
@@ -132,6 +177,8 @@ export const Dashboard: React.FC<DashboardProps> = ({
           estimatedDurationMinutes: estDurationMinutes,
           intensity,
           targetDepartureHour: departureHour,
+          departureLocation: location,
+          workoutDetails,
           weather,
           windRoute: rec,
           daylightStatus: daylight,
@@ -173,12 +220,55 @@ export const Dashboard: React.FC<DashboardProps> = ({
     });
   };
 
+  const handleUpdateDayLocation = async (dayIndex: number, loc: TrainingLocation) => {
+    try {
+      const dayWeather = await fetchLiveWeather(loc.lat, loc.lng);
+      const dayWind = calculateWindRecommendation(dayWeather.windDirectionDeg, loc.city);
+
+      setWorkouts((prev) =>
+        prev.map((w, idx) => {
+          if (idx === dayIndex) {
+            const estDuration = Math.round((w.targetDistanceKm / 27) * 60);
+            const daylight = checkDaylightSafety(w.targetDepartureHour, estDuration, dayWeather.sunset);
+            return {
+              ...w,
+              departureLocation: loc,
+              weather: dayWeather,
+              windRoute: dayWind,
+              daylightStatus: daylight
+            };
+          }
+          return w;
+        })
+      );
+    } catch (err) {
+      console.error('Erreur mise à jour météo du jour:', err);
+    }
+  };
+
+  const handleUpdateWorkout = (updated: ScheduledWorkout) => {
+    setWorkouts((prev) =>
+      prev.map((w) => (w.id === updated.id ? updated : w))
+    );
+  };
+
   const currentSelectedWorkout = workouts[selectedDayIndex] || workouts[0];
 
   // Dynamic mascot speech in dashboard
   const getDashboardMascotSpeech = (): { mood: MascotMood; speech: string } => {
     if (!currentWeather) {
       return { mood: 'happy', speech: 'Chargement des données météo en temps réel...' };
+    }
+
+    // Contrôle de la règle des +10% max par semaine
+    const activeKm = workouts.filter((w) => w.isPlannedByCyclist).reduce((acc, w) => acc + w.targetDistanceKm, 0);
+    const prevKm = Number(localStorage.getItem('cap_hardelot_prev_week_km') || 90);
+    if (activeKm > prevKm * 1.10) {
+      const overloadPct = Math.round(((activeKm - prevKm) / prevKm) * 100);
+      return {
+        mood: 'warning',
+        speech: `Attention ${profile.firstName} ! Tu prévois ${activeKm} km cette semaine (+${overloadPct}%). La règle de progression sécurisée recommande +10% max (${Math.round(prevKm * 1.1)} km) pour éviter les blessures musculaires avant Hardelot 2027 !`
+      };
     }
 
     if (currentSelectedWorkout?.daylightStatus?.nightRisk) {
@@ -329,15 +419,36 @@ export const Dashboard: React.FC<DashboardProps> = ({
               onSelectDay={(idx) => setSelectedDayIndex(idx)}
               onToggleRideDay={handleToggleRideDay}
               onChangeLocation={handleChangeLocation}
+              onUpdateDayLocation={handleUpdateDayLocation}
+              onUpdateWorkout={handleUpdateWorkout}
               onRegenerateWorkouts={() => loadWeatherAndBuildSchedule(profile.location)}
             />
 
-            {/* Smart Wind & Heading Map */}
-            {currentWeather && windRec && currentSelectedWorkout && (
+            {/* Smart Wind & Heading Map (adapté au jour et à la commune choisie ce jour) */}
+            {currentSelectedWorkout && (
               <WindHeadingMap
-                location={profile.location}
-                weather={currentWeather}
-                windRec={windRec}
+                location={currentSelectedWorkout.departureLocation || profile.location}
+                weather={currentSelectedWorkout.weather || currentWeather || {
+                  tempC: 15,
+                  weatherCode: 1,
+                  weatherDescription: 'Ciel voilé',
+                  isRainy: false,
+                  isFoggy: false,
+                  windSpeedKmh: 20,
+                  windGustsKmh: 30,
+                  windDirectionDeg: 220,
+                  windDirectionCardinal: 'Sud-Ouest (SO)',
+                  sunrise: '07:30',
+                  sunset: '18:40'
+                }}
+                windRec={currentSelectedWorkout.windRoute || windRec || {
+                  outboundHeadingDeg: 220,
+                  outboundHeadingName: 'Sud-Ouest (SO)',
+                  returnHeadingDeg: 40,
+                  returnHeadingName: 'Nord-Est (NE)',
+                  explanation: 'Face au vent à l’aller',
+                  reliefComment: 'Relief varié'
+                }}
                 targetDistanceKm={currentSelectedWorkout.targetDistanceKm}
                 departureHour={currentSelectedWorkout.targetDepartureHour}
                 estimatedArrivalHour={currentSelectedWorkout.daylightStatus.estimatedArrivalHour}

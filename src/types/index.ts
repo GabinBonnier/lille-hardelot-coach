@@ -88,6 +88,16 @@ export interface WindRouteRecommendation {
   reliefComment: string;
 }
 
+export interface WorkoutDetails {
+  warmup: string;
+  mainSet: string;
+  cooldown: string;
+  targetCadenceRpm: string;
+  nutritionHydration: string;
+  zones: string;
+  difficulty: 'Accessible' | 'Modéré' | 'Exigeant' | 'Intense';
+}
+
 export interface ScheduledWorkout {
   id: string;
   dayIndex: number; // 0 to 6 (Lundi à Dimanche)
@@ -98,6 +108,8 @@ export interface ScheduledWorkout {
   estimatedDurationMinutes: number;
   intensity: 'Endurance Fondamentale' | 'Dénivelé & Monts' | 'Rythme & Seuil' | 'Récupération Active';
   targetDepartureHour: string; // '14:00'
+  departureLocation: TrainingLocation; // Localisation spécifique au jour !
+  workoutDetails: WorkoutDetails; // Déroulé détaillé de la séance
   weather?: WeatherCondition;
   windRoute?: WindRouteRecommendation;
   daylightStatus: {

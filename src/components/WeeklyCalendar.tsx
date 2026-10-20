@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { UserProfile, ScheduledWorkout, TrainingLocation, WeatherCondition } from '../types';
 import { POPULAR_LOCATIONS, searchFrenchCities } from '../data/cities';
+import { WorkoutDetailModal } from './WorkoutDetailModal';
+import { CalendarImportModal } from './CalendarImportModal';
+import { ParsedCalendarEvent } from '../services/icsParser';
 import { 
   Calendar as CalendarIcon, 
   MapPin, 
@@ -12,10 +15,14 @@ import {
   Clock, 
   Bike, 
   Plus, 
-  ChevronRight,
-  ShieldAlert,
-  Sparkles,
-  RefreshCw
+  ChevronRight, 
+  Sparkles, 
+  RefreshCw,
+  TrendingUp,
+  ShieldCheck,
+  Upload,
+  Info,
+  ChevronDown
 } from 'lucide-react';
 
 interface WeeklyCalendarProps {
@@ -25,6 +32,8 @@ interface WeeklyCalendarProps {
   onSelectDay: (index: number) => void;
   onToggleRideDay: (dayIndex: number) => void;
   onChangeLocation: (location: TrainingLocation) => void;
+  onUpdateDayLocation: (dayIndex: number, location: TrainingLocation) => void;
+  onUpdateWorkout: (updated: ScheduledWorkout) => void;
   onRegenerateWorkouts: () => void;
 }
 
@@ -35,12 +44,53 @@ export const WeeklyCalendar: React.FC<WeeklyCalendarProps> = ({
   onSelectDay,
   onToggleRideDay,
   onChangeLocation,
+  onUpdateDayLocation,
+  onUpdateWorkout,
   onRegenerateWorkouts
 }) => {
   const [showLocationSelect, setShowLocationSelect] = useState(false);
   const [calendarLocationSearch, setCalendarLocationSearch] = useState('');
   const [calendarCityResults, setCalendarCityResults] = useState<TrainingLocation[]>(POPULAR_LOCATIONS);
   const [isCalendarCityLoading, setIsCalendarCityLoading] = useState(false);
+
+  // Modals state
+  const [isCalendarModalOpen, setIsCalendarModalOpen] = useState(false);
+  const [selectedWorkoutModal, setSelectedWorkoutModal] = useState<ScheduledWorkout | null>(null);
+
+  // Apple Calendar imported events
+  const [importedEvents, setImportedEvents] = useState<ParsedCalendarEvent[]>(() => {
+    const saved = localStorage.getItem('cap_hardelot_apple_events_v1');
+    if (saved) {
+      try {
+        return JSON.parse(saved);
+      } catch (e) {}
+    }
+    return [
+      { id: '1', title: 'Réunion d’équipe', startHour: '09:00', endHour: '10:30', dayOfWeek: 0, dateStr: '2026-10-19' },
+      { id: '2', title: 'Présentation client', startHour: '14:00', endHour: '16:00', dayOfWeek: 1, dateStr: '2026-10-20' },
+      { id: '3', title: 'Déjeuner pro', startHour: '12:30', endHour: '14:00', dayOfWeek: 2, dateStr: '2026-10-21' },
+      { id: '4', title: 'Bilan de projet', startHour: '10:00', endHour: '11:30', dayOfWeek: 3, dateStr: '2026-10-22' },
+      { id: '5', title: 'Foot enfants', startHour: '09:00', endHour: '11:00', dayOfWeek: 5, dateStr: '2026-10-24' },
+      { id: '6', title: 'Repas de famille', startHour: '12:30', endHour: '15:30', dayOfWeek: 6, dateStr: '2026-10-25' }
+    ];
+  });
+
+  // Previous week volume for progressive overload calculation (+10% rule)
+  const [previousWeekKm, setPreviousWeekKm] = useState<number>(() => {
+    const saved = localStorage.getItem('cap_hardelot_prev_week_km');
+    return saved ? Number(saved) : 90;
+  });
+
+  // Calculate current week active distance
+  const currentWeekKm = workouts
+    .filter((w) => w.isPlannedByCyclist)
+    .reduce((sum, w) => sum + w.targetDistanceKm, 0);
+
+  // Progressive volume calculation
+  const maxAllowedKm = Math.round(previousWeekKm * 1.10); // +10% max rule!
+  const volumeDiffKm = currentWeekKm - previousWeekKm;
+  const volumePercent = previousWeekKm > 0 ? Math.round((volumeDiffKm / previousWeekKm) * 100) : 0;
+  const isOverload = currentWeekKm > maxAllowedKm;
 
   useEffect(() => {
     let cancel = false;
@@ -59,39 +109,47 @@ export const WeeklyCalendar: React.FC<WeeklyCalendarProps> = ({
     };
   }, [calendarLocationSearch]);
 
-  const dayNamesShort = ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'];
-
-  // Mock Apple Calendar events for the week to demonstrate calendar sync
-  const appleCalendarMockEvents: Record<number, Array<{ title: string; hours: string; type: 'busy' }>> = {
-    0: [{ title: 'Réunion d’équipe', hours: '09:00 - 10:30', type: 'busy' }],
-    1: [{ title: 'Présentation client', hours: '14:00 - 16:00', type: 'busy' }],
-    2: [{ title: 'Déjeuner pro', hours: '12:30 - 14:00', type: 'busy' }],
-    3: [{ title: 'Bilan de projet', hours: '10:00 - 11:30', type: 'busy' }],
-    4: [{ title: 'Point direction', hours: '15:00 - 16:30', type: 'busy' }],
-    5: [{ title: 'Course enfants / Foot', hours: '09:00 - 11:00', type: 'busy' }],
-    6: [{ title: 'Repas de famille', hours: '12:30 - 15:30', type: 'busy' }]
+  const handleImportCalendarSuccess = (events: ParsedCalendarEvent[]) => {
+    setImportedEvents(events);
+    localStorage.setItem('cap_hardelot_apple_events_v1', JSON.stringify(events));
   };
+
+  const dayNamesShort = ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'];
 
   return (
     <div className="bg-white rounded-3xl border border-slate-200/90 shadow-sm overflow-hidden space-y-4">
-      {/* Top Bar: Availability & Departure Location controls */}
+      
+      {/* Top Bar: Controls & Actions */}
       <div className="p-6 border-b border-slate-100 bg-gradient-to-r from-emerald-50/70 via-sky-50/40 to-white">
         <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4">
-          {/* Title & subtitle */}
           <div>
             <div className="flex items-center gap-2">
               <CalendarIcon className="w-5 h-5 text-duo-green" />
               <h3 className="text-xl font-black text-slate-800 tracking-tight">
-                Planning Hebdomadaire & Synchronisation Calendrier Apple
+                Planning Hebdomadaire & Synchronisation Apple
               </h3>
             </div>
             <p className="text-xs text-slate-500 mt-1">
-              Positionne tes sorties selon tes disponibilités réelles. Le moteur adapte la direction face au vent, la météo et évite la nuit.
+              Positionne tes sorties selon tes disponibilités réelles. Chaque jour peut avoir son propre lieu de départ !
             </p>
           </div>
 
-          {/* Location changer */}
+          {/* Action buttons */}
           <div className="flex flex-wrap items-center gap-2">
+            {/* Apple Calendar Import Button */}
+            <button
+              type="button"
+              onClick={() => setIsCalendarModalOpen(true)}
+              className="flex items-center gap-2 bg-sky-50 hover:bg-sky-100 text-sky-800 border border-sky-300 px-3.5 py-2 rounded-2xl text-xs font-bold transition-all shadow-sm"
+            >
+              <Upload className="w-3.5 h-3.5 text-sky-600" />
+              <span>Importer Calendrier Apple (.ics)</span>
+              {importedEvents.length > 0 && (
+                <span className="w-2 h-2 rounded-full bg-sky-500" />
+              )}
+            </button>
+
+            {/* Global location changer */}
             <div className="relative">
               <button
                 type="button"
@@ -99,14 +157,14 @@ export const WeeklyCalendar: React.FC<WeeklyCalendarProps> = ({
                 className="flex items-center gap-2 bg-white px-3.5 py-2 rounded-2xl border border-slate-200 shadow-sm hover:border-duo-green text-xs font-bold text-slate-700 transition-all"
               >
                 <MapPin className="w-4 h-4 text-emerald-600" />
-                <span>Départ : {profile.location.city} ({profile.location.postalCode})</span>
+                <span>Base : {profile.location.city} ({profile.location.postalCode})</span>
               </button>
 
               {showLocationSelect && (
                 <div className="absolute right-0 mt-2 w-80 bg-white rounded-2xl shadow-2xl border border-slate-200 p-3 z-30 space-y-2">
                   <div className="flex items-center justify-between">
                     <span className="text-[11px] font-black text-slate-800 uppercase tracking-wider">
-                      Changer de commune de départ
+                      Changer la commune de base
                     </span>
                     <button
                       type="button"
@@ -164,21 +222,81 @@ export const WeeklyCalendar: React.FC<WeeklyCalendarProps> = ({
               className="flex items-center gap-1.5 bg-duo-green hover:bg-duo-darkGreen text-white px-3.5 py-2 rounded-2xl shadow-sm text-xs font-black transition-all active:scale-95"
             >
               <RefreshCw className="w-3.5 h-3.5" />
-              <span>Optimiser Sorties & Vent</span>
+              <span>Réaligner Vent</span>
             </button>
           </div>
         </div>
 
-        {/* Days selector bar ("Quels jours voulez-vous rouler ?") */}
-        <div className="mt-5 pt-4 border-t border-slate-200/60 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+        {/* PROGRESSIVE OVERLOAD BAR (RÈGLE DES 10% MAX PAR SEMAINE) */}
+        <div className="mt-5 p-4 rounded-2xl border transition-all bg-white shadow-sm space-y-2">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
+            <div className="flex items-center gap-2">
+              <TrendingUp className="w-4 h-4 text-duo-green" />
+              <span className="text-xs font-black uppercase tracking-wider text-slate-800">
+                Progression du Volume Hebdomadaire (Règle des +10% max)
+              </span>
+            </div>
+
+            <div className="flex items-center gap-3 text-xs">
+              <span className="text-slate-500 font-medium">
+                Semaine passée : <strong>{previousWeekKm} km</strong>
+              </span>
+              <span className="font-extrabold text-slate-800">
+                Cette semaine : <strong className={isOverload ? 'text-rose-600' : 'text-duo-green'}>{currentWeekKm} km</strong>
+              </span>
+              <span
+                className={`px-2 py-0.5 rounded-full font-black text-[11px] ${
+                  isOverload
+                    ? 'bg-rose-100 text-rose-700'
+                    : volumePercent >= 0
+                    ? 'bg-emerald-100 text-emerald-800'
+                    : 'bg-slate-100 text-slate-700'
+                }`}
+              >
+                {volumePercent >= 0 ? `+${volumePercent}%` : `${volumePercent}%`}
+              </span>
+            </div>
+          </div>
+
+          {/* Progress visual bar */}
+          <div className="w-full bg-slate-100 h-2.5 rounded-full overflow-hidden relative">
+            <div
+              className={`h-full transition-all duration-500 rounded-full ${
+                isOverload ? 'bg-rose-500' : 'bg-duo-green'
+              }`}
+              style={{ width: `${Math.min((currentWeekKm / (previousWeekKm * 1.3 || 1)) * 100, 100)}%` }}
+            />
+          </div>
+
+          {/* Informative / Warning message */}
+          <div className="text-xs">
+            {isOverload ? (
+              <div className="flex items-start gap-2 text-rose-700 bg-rose-50 p-2.5 rounded-xl border border-rose-200 font-semibold">
+                <AlertTriangle className="w-4 h-4 text-rose-600 flex-shrink-0 mt-0.5" />
+                <span>
+                  <strong>Alerte Surcharge (+{volumePercent}%) :</strong> Vous prévoyez {currentWeekKm} km contre {previousWeekKm} km la semaine dernière. La règle de progression sécurisée recommande un maximum de <strong>{maxAllowedKm} km (+10%)</strong> pour protéger vos tendons et éviter la fatigue avant Lille-Hardelot 2027 !
+                </span>
+              </div>
+            ) : (
+              <div className="flex items-center gap-2 text-emerald-800 bg-emerald-50/70 p-2 rounded-xl text-[11px] font-medium border border-emerald-200">
+                <ShieldCheck className="w-4 h-4 text-emerald-600 flex-shrink-0" />
+                <span>
+                  <strong>Progression idéale :</strong> Votre volume augmente de façon sécurisée (max recommandé : {maxAllowedKm} km). Vos muscles s'adaptent parfaitement.
+                </span>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Days selector bar */}
+        <div className="mt-4 pt-4 border-t border-slate-200/60 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
           <div className="text-xs font-extrabold text-slate-700">
-            Quels jours roulez-vous cette semaine ? (cliquez pour activer/désactiver) :
+            Jours cochés cette semaine (cliquez pour activer/désactiver) :
           </div>
 
           <div className="flex flex-wrap gap-1.5">
             {workouts.map((workout, idx) => {
               const isSelected = workout.isPlannedByCyclist;
-              const isCurrentView = selectedDayIndex === idx;
               return (
                 <button
                   key={workout.id}
@@ -190,7 +308,6 @@ export const WeeklyCalendar: React.FC<WeeklyCalendarProps> = ({
                       : 'bg-white border border-slate-200 text-slate-500 hover:border-slate-300'
                   }`}
                 >
-                  <span className="w-2 h-2 rounded-full bg-current opacity-70" />
                   <span>{dayNamesShort[idx]}</span>
                   {isSelected && <CheckCircle2 className="w-3.5 h-3.5" />}
                 </button>
@@ -205,7 +322,10 @@ export const WeeklyCalendar: React.FC<WeeklyCalendarProps> = ({
         {workouts.map((workout, idx) => {
           const isSelected = selectedDayIndex === idx;
           const isRideDay = workout.isPlannedByCyclist;
-          const appleEvents = appleCalendarMockEvents[idx] || [];
+          
+          // Filter imported Apple events for this day
+          const dayAppleEvents = importedEvents.filter((e) => e.dayOfWeek === idx);
+          const dayLoc = workout.departureLocation || profile.location;
 
           return (
             <div
@@ -228,16 +348,30 @@ export const WeeklyCalendar: React.FC<WeeklyCalendarProps> = ({
                   </span>
                 </div>
 
-                {/* Apple Calendar events badge (demonstrating integration) */}
-                {profile.appleCalendarLinked && appleEvents.length > 0 && (
+                {/* Specific Location Pin for this Day */}
+                <div
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setSelectedWorkoutModal(workout);
+                  }}
+                  className="mt-1.5 inline-flex items-center gap-1 bg-slate-100 hover:bg-emerald-50 hover:text-emerald-800 text-slate-700 px-2 py-0.5 rounded-lg text-[10px] font-bold border border-slate-200 transition-colors w-full truncate"
+                  title="Cliquez pour changer le lieu de ce jour ou voir le détail"
+                >
+                  <MapPin className="w-3 h-3 text-emerald-600 flex-shrink-0" />
+                  <span className="truncate">{dayLoc.city} ({dayLoc.postalCode})</span>
+                </div>
+
+                {/* Apple Calendar events badge */}
+                {dayAppleEvents.length > 0 && (
                   <div className="mt-2 space-y-1">
-                    {appleEvents.map((evt, i) => (
+                    {dayAppleEvents.map((evt, i) => (
                       <div
                         key={i}
-                        className="text-[10px] font-medium bg-slate-100 text-slate-600 rounded-lg px-2 py-1 flex items-center justify-between"
+                        className="text-[10px] font-medium bg-sky-50 text-sky-800 border border-sky-100 rounded-lg px-2 py-1 flex items-center justify-between"
+                        title={evt.title}
                       >
-                        <span className="truncate max-w-[85px]">• {evt.title}</span>
-                        <span className="text-slate-400 text-[9px]">{evt.hours}</span>
+                        <span className="truncate max-w-[80px]">• {evt.title}</span>
+                        <span className="text-sky-600 font-mono text-[9px]">{evt.startHour}</span>
                       </div>
                     ))}
                   </div>
@@ -279,7 +413,7 @@ export const WeeklyCalendar: React.FC<WeeklyCalendarProps> = ({
                             : 'bg-sky-50 text-sky-800 border border-sky-200'
                         }`}
                       >
-                        <span className="flex items-center gap-1 truncate max-w-[90px]">
+                        <span className="flex items-center gap-1 truncate max-w-[95px]">
                           {workout.weather.isRainy ? (
                             <CloudRain className="w-3 h-3 text-rose-500" />
                           ) : (
@@ -298,13 +432,18 @@ export const WeeklyCalendar: React.FC<WeeklyCalendarProps> = ({
                       </div>
                     )}
 
-                    {/* Daylight Alert if risks dark */}
-                    {workout.daylightStatus.nightRisk && (
-                      <div className="text-[9px] font-bold bg-amber-100 text-amber-900 px-2 py-1 rounded-lg flex items-center gap-1">
-                        <AlertTriangle className="w-3 h-3 text-amber-600 flex-shrink-0" />
-                        <span>Alerte nuit : départ avant {workout.targetDepartureHour}</span>
-                      </div>
-                    )}
+                    {/* Button: View workout details */}
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setSelectedWorkoutModal(workout);
+                      }}
+                      className="w-full mt-1 py-1.5 px-2 bg-emerald-50 hover:bg-emerald-100 text-duo-green font-bold rounded-lg text-[10px] border border-emerald-200 transition-colors flex items-center justify-center gap-1"
+                    >
+                      <span>Séance détaillée & Lieu</span>
+                      <ChevronRight className="w-3 h-3" />
+                    </button>
                   </div>
                 ) : (
                   <div className="mt-4 py-6 border-2 border-dashed border-slate-200 rounded-xl text-center text-slate-400">
@@ -334,6 +473,33 @@ export const WeeklyCalendar: React.FC<WeeklyCalendarProps> = ({
           );
         })}
       </div>
+
+      {/* MODAL: Detailed Workout & Day Location */}
+      <WorkoutDetailModal
+        workout={selectedWorkoutModal}
+        isOpen={!!selectedWorkoutModal}
+        onClose={() => setSelectedWorkoutModal(null)}
+        onUpdateWorkout={(updated) => {
+          onUpdateWorkout(updated);
+          setSelectedWorkoutModal(null);
+        }}
+        onUpdateLocation={(dayIdx, loc) => {
+          onUpdateDayLocation(dayIdx, loc);
+          if (selectedWorkoutModal) {
+            setSelectedWorkoutModal({
+              ...selectedWorkoutModal,
+              departureLocation: loc
+            });
+          }
+        }}
+      />
+
+      {/* MODAL: Apple Calendar Import */}
+      <CalendarImportModal
+        isOpen={isCalendarModalOpen}
+        onClose={() => setIsCalendarModalOpen(false)}
+        onImportSuccess={handleImportCalendarSuccess}
+      />
     </div>
   );
 };
