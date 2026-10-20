@@ -8,13 +8,12 @@ export async function syncCalendarFromUrl(rawUrl: string): Promise<{ events: Par
 
   // Tenter plusieurs méthodes pour contourner les blocages CORS éventuels
   const methods = [
-    // 1. Notre fonction Serverless Vercel
+    // 1. Notre fonction Serverless Vercel / Vite dev middleware
     `/api/calendar?url=${encodeURIComponent(cleanUrl)}`,
-    // 2. Fetch direct (si l'université autorise CORS)
-    cleanUrl,
-    // 3. Proxy de secours public
-    `https://corsproxy.io/?${encodeURIComponent(cleanUrl)}`,
-    `https://api.allorigins.win/raw?url=${encodeURIComponent(cleanUrl)}`
+    // 2. Fallback direct vers Vercel si exécuté hors du domaine de prod
+    `https://lille-hardelot-coach.vercel.app/api/calendar?url=${encodeURIComponent(cleanUrl)}`,
+    // 3. Fetch direct (si l'université autorise CORS)
+    cleanUrl
   ];
 
   for (const endpoint of methods) {
