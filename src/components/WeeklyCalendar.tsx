@@ -5,6 +5,8 @@ import { WorkoutDetailModal } from './WorkoutDetailModal';
 import { CalendarImportModal } from './CalendarImportModal';
 import { ParsedCalendarEvent, parseICS } from '../services/icsParser';
 import { syncCalendarFromUrl } from '../services/calendarSubscription';
+import { balanceWeeklyVolume } from '../services/smartCoachScheduler';
+import { checkDaylightSafety } from '../services/weatherService';
 import { 
   Calendar as CalendarIcon, 
   MapPin, 
@@ -53,6 +55,12 @@ export const WeeklyCalendar: React.FC<WeeklyCalendarProps> = ({
   const [calendarLocationSearch, setCalendarLocationSearch] = useState('');
   const [calendarCityResults, setCalendarCityResults] = useState<TrainingLocation[]>(POPULAR_LOCATIONS);
   const [isCalendarCityLoading, setIsCalendarCityLoading] = useState(false);
+
+  // Per-day location selector state
+  const [editingLocationDayIndex, setEditingLocationDayIndex] = useState<number | null>(null);
+  const [dayLocationSearch, setDayLocationSearch] = useState('');
+  const [dayCityResults, setDayCityResults] = useState<TrainingLocation[]>(POPULAR_LOCATIONS);
+  const [isDayLocationLoading, setIsDayLocationLoading] = useState(false);
 
   // Modals state
   const [isCalendarModalOpen, setIsCalendarModalOpen] = useState(false);
@@ -154,6 +162,50 @@ export const WeeklyCalendar: React.FC<WeeklyCalendarProps> = ({
       clearTimeout(timer);
     };
   }, [calendarLocationSearch]);
+
+  // Debounced search for per-day location picker
+  useEffect(() => {
+    let cancel = false;
+    const timer = setTimeout(() => {
+      setIsDayLocationLoading(true);
+      searchFrenchCities(dayLocationSearch).then((res) => {
+        if (!cancel) {
+          setDayCityResults(res);
+          setIsDayLocationLoading(false);
+        }
+      });
+    }, 200);
+    return () => {
+      cancel = true;
+      clearTimeout(timer);
+    };
+  }, [dayLocationSearch]);
+
+  const handleAdjustWorkoutKm = (w: ScheduledWorkout, delta: number) => {
+    const newKm = Math.max(15, Math.min(160, w.targetDistanceKm + delta));
+    const durationMinutes = Math.round((newKm / 26) * 60);
+    const sunset = w.weather?.sunset || '18:48';
+    const daylight = checkDaylightSafety(w.targetDepartureHour, durationMinutes, sunset);
+
+    const updated: ScheduledWorkout = {
+      ...w,
+      targetDistanceKm: newKm,
+      estimatedDurationMinutes: durationMinutes,
+      daylightStatus: daylight
+    };
+    onUpdateWorkout(updated);
+  };
+
+  const handleAutoBalanceVolume = () => {
+    const balanced = balanceWeeklyVolume(workouts, previousWeekKm, 26);
+    balanced.forEach((w) => onUpdateWorkout(w));
+  };
+
+  const handleChangePreviousWeekKm = (newVal: number) => {
+    const clamped = Math.max(20, Math.min(250, newVal));
+    setPreviousWeekKm(clamped);
+    localStorage.setItem('cap_hardelot_prev_week_km', clamped.toString());
+  };
 
   const handleImportCalendarSuccess = (events: ParsedCalendarEvent[]) => {
     setImportedEvents(events);
@@ -315,13 +367,37 @@ export const WeeklyCalendar: React.FC<WeeklyCalendarProps> = ({
               </span>
             </div>
 
-            <div className="flex items-center gap-3 text-xs">
-              <span className="text-slate-500 font-medium">
-                Semaine passée : <strong>{previousWeekKm} km</strong>
-              </span>
+            <div className="flex flex-wrap items-center gap-3 text-xs">
+              {/* Stepper Semaine N-1 */}
+              <div className="flex items-center gap-1.5 bg-slate-50 border border-slate-200 px-2.5 py-1 rounded-xl">
+                <span className="text-slate-500 font-medium">Semaine passée :</span>
+                <button
+                  type="button"
+                  onClick={() => handleChangePreviousWeekKm(previousWeekKm - 5)}
+                  className="w-5 h-5 rounded bg-white hover:bg-slate-200 text-slate-700 font-black text-xs flex items-center justify-center border border-slate-200"
+                  title="Diminuer"
+                >
+                  -
+                </button>
+                <strong className="font-extrabold text-slate-800">{previousWeekKm} km</strong>
+                <button
+                  type="button"
+                  onClick={() => handleChangePreviousWeekKm(previousWeekKm + 5)}
+                  className="w-5 h-5 rounded bg-white hover:bg-slate-200 text-slate-700 font-black text-xs flex items-center justify-center border border-slate-200"
+                  title="Augmenter"
+                >
+                  +
+                </button>
+              </div>
+
               <span className="font-extrabold text-slate-800">
                 Cette semaine : <strong className={isOverload ? 'text-rose-600' : 'text-duo-green'}>{currentWeekKm} km</strong>
               </span>
+
+              <span className="text-slate-500 font-medium hidden sm:inline">
+                (Plafond +10% : <strong>{maxAllowedKm} km</strong>)
+              </span>
+
               <span
                 className={`px-2 py-0.5 rounded-full font-black text-[11px] ${
                   isOverload
@@ -342,28 +418,54 @@ export const WeeklyCalendar: React.FC<WeeklyCalendarProps> = ({
               className={`h-full transition-all duration-500 rounded-full ${
                 isOverload ? 'bg-rose-500' : 'bg-duo-green'
               }`}
-              style={{ width: `${Math.min((currentWeekKm / (previousWeekKm * 1.3 || 1)) * 100, 100)}%` }}
+              style={{ width: `${Math.min((currentWeekKm / (maxAllowedKm * 1.15 || 1)) * 100, 100)}%` }}
             />
           </div>
 
-          {/* Informative / Warning message */}
-          <div className="text-xs">
-            {isOverload ? (
-              <div className="flex items-start gap-2 text-rose-700 bg-rose-50 p-2.5 rounded-xl border border-rose-200 font-semibold">
-                <AlertTriangle className="w-4 h-4 text-rose-600 flex-shrink-0 mt-0.5" />
-                <span>
-                  <strong>Alerte Surcharge (+{volumePercent}%) :</strong> Vous prévoyez {currentWeekKm} km contre {previousWeekKm} km la semaine dernière. La règle de progression sécurisée recommande un maximum de <strong>{maxAllowedKm} km (+10%)</strong> pour protéger vos tendons et éviter la fatigue avant Lille-Hardelot 2027 !
-                </span>
+          {/* Smart volume budget details & overload alert */}
+          {(() => {
+            const otherDaysKm = workouts
+              .filter((w) => w.isPlannedByCyclist && w.dayIndex !== 6)
+              .reduce((sum, w) => sum + w.targetDistanceKm, 0);
+            const remainingBudgetForSunday = Math.max(0, maxAllowedKm - otherDaysKm);
+
+            return (
+              <div className="space-y-2">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 p-2.5 bg-slate-50 rounded-xl border border-slate-200 text-xs">
+                  <div className="text-slate-700">
+                    💡 <strong>Règle d'or :</strong> Avec <strong>{otherDaysKm} km</strong> prévus en semaine, ton dimanche est plafonné à <strong>{remainingBudgetForSunday} km max</strong> pour ne pas dépasser les <strong>{maxAllowedKm} km</strong> (+10% max).
+                  </div>
+
+                  {isOverload && (
+                    <button
+                      type="button"
+                      onClick={handleAutoBalanceVolume}
+                      className="px-3 py-1.5 bg-rose-600 hover:bg-rose-700 text-white rounded-xl font-black text-xs shadow-sm transition-all flex items-center gap-1.5 active:scale-95 flex-shrink-0"
+                    >
+                      <Sparkles className="w-3.5 h-3.5" />
+                      <span>Ajuster le dimanche à {remainingBudgetForSunday} km</span>
+                    </button>
+                  )}
+                </div>
+
+                {isOverload ? (
+                  <div className="flex items-start gap-2 text-rose-700 bg-rose-50 p-2.5 rounded-xl border border-rose-200 font-semibold text-xs">
+                    <AlertTriangle className="w-4 h-4 text-rose-600 flex-shrink-0 mt-0.5" />
+                    <span>
+                      <strong>Alerte Surcharge (+{volumePercent}%) :</strong> Vous prévoyez {currentWeekKm} km alors que votre plafond sécuritaire est de <strong>{maxAllowedKm} km (+10%)</strong>. Risque accru de tendinite ou de fatigue !
+                    </span>
+                  </div>
+                ) : (
+                  <div className="flex items-center gap-2 text-emerald-800 bg-emerald-50/70 p-2 rounded-xl text-[11px] font-medium border border-emerald-200">
+                    <ShieldCheck className="w-4 h-4 text-emerald-600 flex-shrink-0" />
+                    <span>
+                      <strong>Volume parfaitement équilibré :</strong> La progression respecte le plafond de {maxAllowedKm} km (+10% max).
+                    </span>
+                  </div>
+                )}
               </div>
-            ) : (
-              <div className="flex items-center gap-2 text-emerald-800 bg-emerald-50/70 p-2 rounded-xl text-[11px] font-medium border border-emerald-200">
-                <ShieldCheck className="w-4 h-4 text-emerald-600 flex-shrink-0" />
-                <span>
-                  <strong>Progression idéale :</strong> Votre volume augmente de façon sécurisée (max recommandé : {maxAllowedKm} km). Vos muscles s'adaptent parfaitement.
-                </span>
-              </div>
-            )}
-          </div>
+            );
+          })()}
         </div>
 
         {/* Days selector bar */}
@@ -438,17 +540,80 @@ export const WeeklyCalendar: React.FC<WeeklyCalendarProps> = ({
                   </span>
                 </div>
 
-                {/* Specific Location Pin for this Day */}
-                <div
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setSelectedWorkoutModal(workout);
-                  }}
-                  className="mt-1.5 inline-flex items-center gap-1 bg-slate-100 hover:bg-emerald-50 hover:text-emerald-800 text-slate-700 px-2 py-0.5 rounded-lg text-[10px] font-bold border border-slate-200 transition-colors w-full truncate"
-                  title="Cliquez pour changer le lieu de ce jour ou voir le détail"
-                >
-                  <MapPin className="w-3 h-3 text-emerald-600 flex-shrink-0" />
-                  <span className="truncate">{dayLoc.city} ({dayLoc.postalCode})</span>
+                {/* Per-Day Departure Location Selector */}
+                <div className="relative mt-1.5" onClick={(e) => e.stopPropagation()}>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setEditingLocationDayIndex(editingLocationDayIndex === idx ? null : idx);
+                      setDayLocationSearch('');
+                    }}
+                    className="w-full flex items-center justify-between gap-1 bg-slate-50 hover:bg-emerald-50 hover:text-emerald-900 text-slate-700 px-2 py-1 rounded-lg text-[10px] font-bold border border-slate-200 hover:border-emerald-300 transition-all shadow-2xs group"
+                    title={`Lieu de départ pour ce ${workout.dayName}`}
+                  >
+                    <span className="flex items-center gap-1 truncate">
+                      <MapPin className="w-3 h-3 text-emerald-600 flex-shrink-0" />
+                      <span className="truncate">{dayLoc.city} ({dayLoc.postalCode})</span>
+                    </span>
+                    <span className="text-[9px] text-emerald-600 font-extrabold flex-shrink-0 group-hover:underline">
+                      Changer ▾
+                    </span>
+                  </button>
+
+                  {/* Inline Dropdown for this specific day */}
+                  {editingLocationDayIndex === idx && (
+                    <div className="absolute left-0 top-full mt-1.5 w-64 sm:w-72 bg-white rounded-2xl shadow-2xl border border-slate-200 p-2.5 z-40 space-y-2 animate-in fade-in zoom-in-95 duration-150">
+                      <div className="flex items-center justify-between pb-1 border-b border-slate-100">
+                        <span className="text-[10px] font-black text-slate-800 uppercase tracking-wider flex items-center gap-1">
+                          <MapPin className="w-3 h-3 text-emerald-600" />
+                          Lieu du {workout.dayName}
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() => setEditingLocationDayIndex(null)}
+                          className="w-4 h-4 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 text-[10px] flex items-center justify-center"
+                        >
+                          ✕
+                        </button>
+                      </div>
+
+                      <input
+                        type="text"
+                        placeholder="Tape une commune ou code postal..."
+                        value={dayLocationSearch}
+                        onChange={(e) => setDayLocationSearch(e.target.value)}
+                        className="w-full px-2.5 py-1 text-xs rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-duo-green"
+                        autoFocus
+                      />
+
+                      <div className="max-h-36 overflow-y-auto space-y-0.5 bg-slate-50/50 rounded-lg p-1 border border-slate-100">
+                        {isDayLocationLoading ? (
+                          <div className="p-2 text-center text-[10px] text-slate-400">Recherche...</div>
+                        ) : dayCityResults.length === 0 ? (
+                          <div className="p-2 text-center text-[10px] text-slate-400">Aucune commune trouvée</div>
+                        ) : (
+                          dayCityResults.map((loc, cityIdx) => (
+                            <button
+                              key={`${loc.city}-${loc.postalCode}-${cityIdx}`}
+                              type="button"
+                              onClick={() => {
+                                onUpdateDayLocation(idx, loc);
+                                setEditingLocationDayIndex(null);
+                              }}
+                              className={`w-full text-left px-2 py-1 rounded text-[11px] hover:bg-emerald-100 flex items-center justify-between transition-all ${
+                                dayLoc.postalCode === loc.postalCode && dayLoc.city === loc.city
+                                  ? 'bg-emerald-100 font-bold text-emerald-900'
+                                  : 'text-slate-700'
+                              }`}
+                            >
+                              <span className="truncate font-semibold">{loc.city} ({loc.postalCode})</span>
+                              <span className="text-[9px] text-slate-400 ml-1">{loc.department}</span>
+                            </button>
+                          ))
+                        )}
+                      </div>
+                    </div>
+                  )}
                 </div>
 
                 {/* Apple Calendar Events Compact & Collapsible Badge */}
@@ -527,16 +692,59 @@ export const WeeklyCalendar: React.FC<WeeklyCalendarProps> = ({
                     </div>
 
                     {/* Distance & Time */}
-                    <div className="flex items-center justify-between text-xs font-bold text-slate-700">
-                      <span className="flex items-center gap-1">
+                    {/* Quick Distance Stepper */}
+                    <div 
+                      className="flex items-center justify-between bg-emerald-50/70 p-1 rounded-lg border border-emerald-200" 
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      <button
+                        type="button"
+                        onClick={() => handleAdjustWorkoutKm(workout, -5)}
+                        className="w-5 h-5 rounded bg-white hover:bg-emerald-100 text-emerald-800 font-black text-xs flex items-center justify-center border border-emerald-200 shadow-2xs active:scale-95 transition-all"
+                        title="Diminuer de 5 km"
+                      >
+                        -
+                      </button>
+                      <span className="font-extrabold text-xs text-slate-800 flex items-center gap-1">
                         <Bike className="w-3.5 h-3.5 text-duo-green" />
                         {workout.targetDistanceKm} km
                       </span>
-                      <span className="flex items-center gap-1 text-[11px] text-slate-500">
-                        <Clock className="w-3 h-3" />
-                        {Math.floor(workout.estimatedDurationMinutes / 60)}h{workout.estimatedDurationMinutes % 60 ? workout.estimatedDurationMinutes % 60 : ''}
-                      </span>
+                      <button
+                        type="button"
+                        onClick={() => handleAdjustWorkoutKm(workout, 5)}
+                        className="w-5 h-5 rounded bg-white hover:bg-emerald-100 text-emerald-800 font-black text-xs flex items-center justify-center border border-emerald-200 shadow-2xs active:scale-95 transition-all"
+                        title="Augmenter de 5 km"
+                      >
+                        +
+                      </button>
                     </div>
+
+                    {/* Auto-calculated Duration & Time slots */}
+                    <div className="space-y-1 text-[10px]">
+                      <div className="flex items-center justify-between text-slate-600 font-medium">
+                        <span className="flex items-center gap-1">
+                          <Clock className="w-3 h-3 text-sky-600" />
+                          Durée : {Math.floor(workout.estimatedDurationMinutes / 60)}h{workout.estimatedDurationMinutes % 60 ? workout.estimatedDurationMinutes % 60 : ''} (à 26 km/h)
+                        </span>
+                      </div>
+                      <div className="font-mono text-slate-700 bg-slate-50 px-2 py-0.5 rounded border border-slate-200 text-[9px] flex items-center justify-between">
+                        <span>Départ {workout.targetDepartureHour}</span>
+                        <span>➔</span>
+                        <span className="font-bold">Arrivée {workout.daylightStatus.estimatedArrivalHour}</span>
+                      </div>
+                    </div>
+
+                    {/* Daylight Alert / Sunset verification */}
+                    {workout.daylightStatus.nightRisk ? (
+                      <div className="p-1.5 rounded-lg bg-amber-50 border border-amber-300 text-amber-900 text-[9px] font-bold leading-tight">
+                        ⚠️ Arrivée à {workout.daylightStatus.estimatedArrivalHour} (coucher à {workout.weather?.sunset || '18:48'}). Feux puissants requis !
+                      </div>
+                    ) : (
+                      <div className="p-1 rounded-lg bg-emerald-50/70 border border-emerald-200 text-emerald-800 text-[9px] font-semibold flex items-center gap-1">
+                        <Sun className="w-3 h-3 text-amber-500 flex-shrink-0" />
+                        <span>100% de jour (coucher {workout.weather?.sunset || '18:48'})</span>
+                      </div>
+                    )}
 
                     {/* Weather badge */}
                     {workout.weather && (
@@ -577,7 +785,7 @@ export const WeeklyCalendar: React.FC<WeeklyCalendarProps> = ({
                       }}
                       className="w-full mt-1 py-1.5 px-2 bg-emerald-50 hover:bg-emerald-100 text-duo-green font-bold rounded-lg text-[10px] border border-emerald-200 transition-colors flex items-center justify-center gap-1"
                     >
-                      <span>Séance détaillée & Lieu</span>
+                      <span>Séance détaillée & Vitesse</span>
                       <ChevronRight className="w-3 h-3" />
                     </button>
                   </div>

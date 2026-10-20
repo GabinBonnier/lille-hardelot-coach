@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { ScheduledWorkout, TrainingLocation } from '../types';
 import { searchFrenchCities } from '../data/cities';
+import { checkDaylightSafety } from '../services/weatherService';
 import { 
   X, 
   Bike, 
@@ -61,12 +62,17 @@ export const WorkoutDetailModal: React.FC<WorkoutDetailModalProps> = ({
     setCitySearchQuery('');
   };
 
+  const liveDurationMinutes = Math.round((Number(targetDistance) / 26) * 60);
+  const liveSunset = workout.weather?.sunset || '18:48';
+  const liveDaylight = checkDaylightSafety(departureHour, liveDurationMinutes, liveSunset);
+
   const handleSave = () => {
     onUpdateWorkout({
       ...workout,
       targetDistanceKm: Number(targetDistance),
       targetDepartureHour: departureHour,
-      estimatedDurationMinutes: Math.round((Number(targetDistance) / 27) * 60)
+      estimatedDurationMinutes: liveDurationMinutes,
+      daylightStatus: liveDaylight
     });
     onClose();
   };
@@ -165,7 +171,7 @@ export const WorkoutDetailModal: React.FC<WorkoutDetailModalProps> = ({
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div className="p-3.5 bg-emerald-50/50 rounded-2xl border border-emerald-200">
               <label className="block text-xs font-bold text-emerald-900 mb-1">
-                Distance de la séance : <span className="text-sm font-black">{targetDistance} km</span>
+                Distance de la séance : <span className="text-sm font-black text-emerald-800">{targetDistance} km</span>
               </label>
               <input
                 type="range"
@@ -178,12 +184,12 @@ export const WorkoutDetailModal: React.FC<WorkoutDetailModalProps> = ({
               />
               <div className="flex justify-between text-[10px] text-emerald-700 font-semibold mt-1">
                 <span>20 km</span>
-                <span>Durée estimée : {Math.floor(workout.estimatedDurationMinutes / 60)}h{workout.estimatedDurationMinutes % 60 ? workout.estimatedDurationMinutes % 60 : ''}</span>
+                <span className="font-extrabold">Durée calculée : {Math.floor(liveDurationMinutes / 60)}h{liveDurationMinutes % 60 ? liveDurationMinutes % 60 : ''} (à 26 km/h)</span>
                 <span>160 km</span>
               </div>
             </div>
 
-            <div className="p-3.5 bg-sky-50/50 rounded-2xl border border-sky-200">
+            <div className="p-3.5 bg-sky-50/50 rounded-2xl border border-sky-200 space-y-1.5">
               <label className="block text-xs font-bold text-sky-900 mb-1">
                 Heure de départ conseillée :
               </label>
@@ -193,11 +199,29 @@ export const WorkoutDetailModal: React.FC<WorkoutDetailModalProps> = ({
                 onChange={(e) => setDepartureHour(e.target.value)}
                 className="w-full px-3 py-1.5 text-xs rounded-xl border border-sky-200 bg-white font-bold text-slate-800"
               />
-              <div className="text-[10px] text-sky-700 font-medium mt-1">
-                Coucher de soleil : {workout.weather?.sunset || '18:40'}
+              <div className="text-[10px] text-sky-700 font-medium flex items-center justify-between">
+                <span>Arrivée estimée : <strong>{liveDaylight.estimatedArrivalHour}</strong></span>
+                <span>Coucher soleil : <strong>{liveSunset}</strong></span>
               </div>
             </div>
           </div>
+
+          {/* Live Daylight Warning */}
+          {liveDaylight.nightRisk ? (
+            <div className="p-3 rounded-2xl bg-amber-50 border border-amber-300 text-amber-900 text-xs font-bold flex items-start gap-2">
+              <AlertTriangle className="w-4 h-4 text-amber-600 flex-shrink-0 mt-0.5" />
+              <span>
+                {liveDaylight.warningMessage || `Arrivée à ${liveDaylight.estimatedArrivalHour} après le coucher du soleil (${liveSunset}). Feux puissants requis ou réduis la distance !`}
+              </span>
+            </div>
+          ) : (
+            <div className="p-2.5 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-semibold flex items-center gap-2">
+              <Sun className="w-4 h-4 text-amber-500 flex-shrink-0" />
+              <span>
+                100% de jour : Départ {departureHour} ➔ Retour à {liveDaylight.estimatedArrivalHour} avant le coucher du soleil ({liveSunset}).
+              </span>
+            </div>
+          )}
 
           {/* Detailed Structure (Échauffement, Corps de séance, Retour au calme) */}
           <div className="space-y-3">
