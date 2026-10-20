@@ -3,7 +3,7 @@ import { UserProfile, ScheduledWorkout, TrainingLocation, WeatherCondition } fro
 import { POPULAR_LOCATIONS, searchFrenchCities } from '../data/cities';
 import { WorkoutDetailModal } from './WorkoutDetailModal';
 import { CalendarImportModal } from './CalendarImportModal';
-import { ParsedCalendarEvent } from '../services/icsParser';
+import { ParsedCalendarEvent, parseICS } from '../services/icsParser';
 import { 
   Calendar as CalendarIcon, 
   MapPin, 
@@ -60,6 +60,13 @@ export const WeeklyCalendar: React.FC<WeeklyCalendarProps> = ({
 
   // Apple Calendar imported events
   const [importedEvents, setImportedEvents] = useState<ParsedCalendarEvent[]>(() => {
+    const rawIcs = localStorage.getItem('cap_hardelot_raw_ics');
+    if (rawIcs) {
+      try {
+        const reParsed = parseICS(rawIcs);
+        if (reParsed.length > 0) return reParsed;
+      } catch (e) {}
+    }
     const saved = localStorage.getItem('cap_hardelot_apple_events_v1');
     if (saved) {
       try {

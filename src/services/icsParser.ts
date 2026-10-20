@@ -9,6 +9,7 @@ export interface ParsedCalendarEvent {
 
 /**
  * Analyseur de fichier .ics (iCalendar Apple / Google / Outlook)
+ * Gère automatiquement le décalage horaire UTC vs Heure Française (UTC+2 été / UTC+1 hiver)
  */
 export function parseICS(icsContent: string): ParsedCalendarEvent[] {
   const events: ParsedCalendarEvent[] = [];
@@ -21,26 +22,47 @@ export function parseICS(icsContent: string): ParsedCalendarEvent[] {
   let uid = '';
 
   const parseIcsDate = (val: string): { dateStr: string; timeStr: string; dayOfWeek: number } | null => {
-    // Format attendu: 20261020T143000Z ou 20261020T143000 ou TZID=...:20261020T143000
-    const clean = val.includes(':') ? val.split(':').pop()! : val;
+    // Exemples courants:
+    // DTSTART:20261020T063000Z (UTC)
+    // DTSTART;TZID=Europe/Paris:20261020T083000 (Local)
+    // DTSTART:20261020
+    const isUtc = val.trim().endsWith('Z');
+    const clean = val.includes(':') ? val.split(':').pop()!.trim() : val.trim();
     if (clean.length < 8) return null;
 
-    const year = clean.substring(0, 4);
-    const month = clean.substring(4, 6);
-    const day = clean.substring(6, 8);
-    const dateStr = `${year}-${month}-${day}`;
+    const year = parseInt(clean.substring(0, 4), 10);
+    const month = parseInt(clean.substring(4, 6), 10) - 1; // 0-indexé
+    const day = parseInt(clean.substring(6, 8), 10);
 
-    let timeStr = '09:00';
+    let hour = 9;
+    let min = 0;
+    let sec = 0;
+
     if (clean.includes('T')) {
-      const timePart = clean.split('T')[1];
-      const hour = timePart.substring(0, 2);
-      const min = timePart.substring(2, 4);
-      timeStr = `${hour}:${min}`;
+      const timePart = clean.split('T')[1].replace('Z', '');
+      hour = parseInt(timePart.substring(0, 2), 10) || 0;
+      min = parseInt(timePart.substring(2, 4), 10) || 0;
+      sec = parseInt(timePart.substring(4, 6), 10) || 0;
     }
 
-    const d = new Date(`${dateStr}T${timeStr}:00`);
-    // getDay() renvoie 0 pour Dimanche, on convertit en 0 = Lundi ... 6 = Dimanche
-    const rawDay = d.getDay();
+    let dateObj: Date;
+    if (isUtc) {
+      // Conversion automatique UTC -> Heure locale de l'appareil (ex: UTC+2 en France)
+      dateObj = new Date(Date.UTC(year, month, day, hour, min, sec));
+    } else {
+      dateObj = new Date(year, month, day, hour, min, sec);
+    }
+
+    const localYear = dateObj.getFullYear();
+    const localMonth = String(dateObj.getMonth() + 1).padStart(2, '0');
+    const localDay = String(dateObj.getDate()).padStart(2, '0');
+    const dateStr = `${localYear}-${localMonth}-${localDay}`;
+
+    const localHour = String(dateObj.getHours()).padStart(2, '0');
+    const localMin = String(dateObj.getMinutes()).padStart(2, '0');
+    const timeStr = `${localHour}:${localMin}`;
+
+    const rawDay = dateObj.getDay();
     const dayOfWeek = rawDay === 0 ? 6 : rawDay - 1;
 
     return { dateStr, timeStr, dayOfWeek };
@@ -73,8 +95,10 @@ export function parseICS(icsContent: string): ParsedCalendarEvent[] {
       }
       inEvent = false;
     } else if (inEvent) {
-      if (line.startsWith('SUMMARY:')) {
-        summary = line.substring(8).replace(/\\,/g, ',').replace(/\\;/g, ';');
+      if (line.startsWith('SUMMARY')) {
+        const parts = line.split(':');
+        parts.shift();
+        summary = parts.join(':').replace(/\\,/g, ',').replace(/\\;/g, ';');
       } else if (line.startsWith('DTSTART')) {
         dtstart = line;
       } else if (line.startsWith('DTEND')) {

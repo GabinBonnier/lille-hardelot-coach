@@ -43,6 +43,7 @@ export const CalendarImportModal: React.FC<CalendarImportModalProps> = ({
         const text = e.target?.result as string;
         const events = parseICS(text);
         if (events.length > 0) {
+          localStorage.setItem('cap_hardelot_raw_ics', text);
           setParsedCount(events.length);
           setTimeout(() => {
             onImportSuccess(events);
@@ -215,6 +216,7 @@ END:VCALENDAR`;
             type="button"
             onClick={() => {
               onClearCalendar();
+              localStorage.removeItem('cap_hardelot_raw_ics');
               setFileName(null);
               setParsedCount(null);
               onClose();
