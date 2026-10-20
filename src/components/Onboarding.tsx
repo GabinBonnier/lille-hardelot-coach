@@ -112,12 +112,9 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
   }, []);
 
   const handleConnectOfficialStrava = () => {
-    if (!stravaConfig.clientId || !stravaConfig.clientSecret) {
-      setShowStravaModal(true);
-      return;
-    }
+    const clientId = stravaConfig.clientId || '287437';
     const redirectUri = window.location.origin + window.location.pathname;
-    redirectToStravaAuth(stravaConfig.clientId, redirectUri);
+    redirectToStravaAuth(clientId, redirectUri);
   };
 
   // Dynamic mascot speech based on step & inputs

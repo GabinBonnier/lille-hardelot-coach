@@ -5,10 +5,16 @@ export interface StravaConfig {
   clientSecret: string;
 }
 
-// Retrieve from Vite env or localStorage
+// Retrieve from Vite env or fallback to official app credentials
 export function getStravaConfig(): StravaConfig {
-  const clientId = ((import.meta as any).env?.VITE_STRAVA_CLIENT_ID as string) || localStorage.getItem('cap_hardelot_strava_client_id') || '';
-  const clientSecret = ((import.meta as any).env?.VITE_STRAVA_CLIENT_SECRET as string) || localStorage.getItem('cap_hardelot_strava_client_secret') || '';
+  const clientId =
+    ((import.meta as any).env?.VITE_STRAVA_CLIENT_ID as string) ||
+    localStorage.getItem('cap_hardelot_strava_client_id') ||
+    '287437';
+  const clientSecret =
+    ((import.meta as any).env?.VITE_STRAVA_CLIENT_SECRET as string) ||
+    localStorage.getItem('cap_hardelot_strava_client_secret') ||
+    'f54b0443b8f14b10697e2bbc76137e5cb691a4be';
   return { clientId, clientSecret };
 }
 
