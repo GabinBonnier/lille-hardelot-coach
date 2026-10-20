@@ -421,19 +421,12 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
                         <button
                           type="button"
                           onClick={handleConnectOfficialStrava}
-                          className="w-full sm:w-auto px-6 py-3 bg-[#fc4c02] hover:bg-[#e03d00] text-white font-extrabold text-xs sm:text-sm rounded-xl shadow-md shadow-orange-500/30 flex items-center justify-center gap-2 transition-all transform active:scale-95"
+                          className="w-full sm:w-auto px-8 py-3.5 bg-[#fc4c02] hover:bg-[#e03d00] text-white font-black text-sm rounded-2xl shadow-lg shadow-orange-500/30 flex items-center justify-center gap-2.5 transition-all transform active:scale-95"
                         >
-                          <span>Se connecter via Strava (Page Officielle)</span>
-                          <ExternalLink className="w-4 h-4" />
-                        </button>
-
-                        <button
-                          type="button"
-                          onClick={() => setShowStravaModal(true)}
-                          className="text-xs text-slate-500 hover:text-slate-800 font-semibold underline flex items-center gap-1"
-                        >
-                          <Key className="w-3.5 h-3.5 text-orange-500" />
-                          <span>Configurer mes clés API Strava</span>
+                          <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24">
+                            <path d="M15.387 17.944l-2.089-4.116h-3.065L15.387 24l5.15-10.172h-3.066m-7.008-5.599l2.836 5.598h4.172L10.463 0l-7.01 13.828h4.172" />
+                          </svg>
+                          <span>Se connecter avec Strava</span>
                         </button>
                       </div>
 
