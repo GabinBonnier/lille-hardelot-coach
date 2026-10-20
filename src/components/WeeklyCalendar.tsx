@@ -56,6 +56,7 @@ export const WeeklyCalendar: React.FC<WeeklyCalendarProps> = ({
   // Modals state
   const [isCalendarModalOpen, setIsCalendarModalOpen] = useState(false);
   const [selectedWorkoutModal, setSelectedWorkoutModal] = useState<ScheduledWorkout | null>(null);
+  const [expandedCalendarDays, setExpandedCalendarDays] = useState<Record<number, boolean>>({});
 
   // Apple Calendar imported events
   const [importedEvents, setImportedEvents] = useState<ParsedCalendarEvent[]>(() => {
@@ -323,9 +324,21 @@ export const WeeklyCalendar: React.FC<WeeklyCalendarProps> = ({
           const isSelected = selectedDayIndex === idx;
           const isRideDay = workout.isPlannedByCyclist;
           
-          // Filter imported Apple events for this day
-          const dayAppleEvents = importedEvents.filter((e) => e.dayOfWeek === idx);
+          // Filter imported Apple events strictly for this day (date matching or dayOfWeek)
+          const rawDayEvents = importedEvents.filter((e) => {
+            if (e.dateStr && e.dateStr.length >= 8) {
+              return e.dateStr === workout.dayDate;
+            }
+            return e.dayOfWeek === idx;
+          });
+
+          // Deduplicate if identical title and startHour
+          const dayAppleEvents = rawDayEvents.filter((evt, i, arr) => 
+            arr.findIndex((x) => x.title === evt.title && x.startHour === evt.startHour) === i
+          );
+
           const dayLoc = workout.departureLocation || profile.location;
+          const isExpanded = !!expandedCalendarDays[idx];
 
           return (
             <div
@@ -361,21 +374,67 @@ export const WeeklyCalendar: React.FC<WeeklyCalendarProps> = ({
                   <span className="truncate">{dayLoc.city} ({dayLoc.postalCode})</span>
                 </div>
 
-                {/* Apple Calendar events badge */}
-                {dayAppleEvents.length > 0 && (
-                  <div className="mt-2 space-y-1">
-                    {dayAppleEvents.map((evt, i) => (
-                      <div
-                        key={i}
-                        className="text-[10px] font-medium bg-sky-50 text-sky-800 border border-sky-100 rounded-lg px-2 py-1 flex items-center justify-between"
-                        title={evt.title}
-                      >
-                        <span className="truncate max-w-[80px]">• {evt.title}</span>
-                        <span className="text-sky-600 font-mono text-[9px]">{evt.startHour}</span>
+                {/* Apple Calendar Events Compact & Collapsible Badge */}
+                {dayAppleEvents.length > 0 && (() => {
+                  const sorted = [...dayAppleEvents].sort((a, b) => a.startHour.localeCompare(b.startHour));
+                  const earliest = sorted[0].startHour;
+                  const latest = sorted[sorted.length - 1].endHour || sorted[sorted.length - 1].startHour;
+
+                  return (
+                    <div className="mt-2 bg-sky-50/90 border border-sky-200/80 rounded-xl p-2 text-xs space-y-1.5 transition-all">
+                      <div className="flex items-center justify-between">
+                        <span className="text-[10px] font-black text-sky-900 flex items-center gap-1">
+                          <span className="w-1.5 h-1.5 rounded-full bg-sky-500 animate-pulse" />
+                          {sorted.length} {sorted.length > 1 ? 'cours / créneaux' : 'créneau'}
+                        </span>
+                        <span className="text-[9px] font-mono font-bold text-sky-700 bg-white/90 px-1.5 py-0.5 rounded border border-sky-200">
+                          {earliest} - {latest}
+                        </span>
                       </div>
-                    ))}
-                  </div>
-                )}
+
+                      {/* Availability Hint */}
+                      <div className="text-[9px] text-sky-800 font-medium leading-tight">
+                        {latest <= '17:00' ? (
+                          <span className="text-emerald-700 font-bold">✨ Libre dès {latest}</span>
+                        ) : earliest >= '13:00' ? (
+                          <span className="text-emerald-700 font-bold">✨ Matin libre avant {earliest}</span>
+                        ) : (
+                          <span className="text-sky-700">Journée chargée</span>
+                        )}
+                      </div>
+
+                      {/* Toggle button */}
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setExpandedCalendarDays((prev) => ({ ...prev, [idx]: !prev[idx] }));
+                        }}
+                        className="text-[9px] font-bold text-sky-600 hover:text-sky-900 hover:underline flex items-center justify-between w-full pt-1 border-t border-sky-200/60"
+                      >
+                        <span>{isExpanded ? 'Masquer la liste ▴' : 'Voir les créneaux ▾'}</span>
+                      </button>
+
+                      {/* Collapsible scrollable list */}
+                      {isExpanded && (
+                        <div className="max-h-28 overflow-y-auto space-y-1 pt-1">
+                          {sorted.map((evt, i) => (
+                            <div
+                              key={i}
+                              className="text-[9px] font-medium bg-white text-slate-700 border border-sky-100 rounded-lg px-2 py-1 flex items-center justify-between gap-1 shadow-2xs"
+                              title={evt.title}
+                            >
+                              <span className="truncate max-w-[85px] font-semibold">• {evt.title}</span>
+                              <span className="text-sky-600 font-mono text-[8px] whitespace-nowrap">
+                                {evt.startHour}
+                              </span>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  );
+                })()}
 
                 {/* Workout Card or Rest Day */}
                 {isRideDay ? (
@@ -499,6 +558,10 @@ export const WeeklyCalendar: React.FC<WeeklyCalendarProps> = ({
         isOpen={isCalendarModalOpen}
         onClose={() => setIsCalendarModalOpen(false)}
         onImportSuccess={handleImportCalendarSuccess}
+        onClearCalendar={() => {
+          setImportedEvents([]);
+          localStorage.removeItem('cap_hardelot_apple_events_v1');
+        }}
       />
     </div>
   );

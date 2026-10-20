@@ -17,12 +17,14 @@ interface CalendarImportModalProps {
   isOpen: boolean;
   onClose: () => void;
   onImportSuccess: (events: ParsedCalendarEvent[]) => void;
+  onClearCalendar: () => void;
 }
 
 export const CalendarImportModal: React.FC<CalendarImportModalProps> = ({
   isOpen,
   onClose,
-  onImportSuccess
+  onImportSuccess,
+  onClearCalendar
 }) => {
   if (!isOpen) return null;
 
@@ -208,11 +210,24 @@ END:VCALENDAR`;
         </div>
 
         {/* Footer */}
-        <div className="p-4 border-t border-slate-100 bg-slate-50 flex justify-end">
+        <div className="p-4 border-t border-slate-100 bg-slate-50 flex items-center justify-between">
+          <button
+            type="button"
+            onClick={() => {
+              onClearCalendar();
+              setFileName(null);
+              setParsedCount(null);
+              onClose();
+            }}
+            className="text-xs font-bold text-rose-600 hover:text-rose-800 hover:underline"
+          >
+            Effacer les événements importés
+          </button>
+
           <button
             type="button"
             onClick={onClose}
-            className="px-5 py-2 text-xs font-bold text-slate-600 hover:text-slate-900"
+            className="px-5 py-2 text-xs font-bold text-slate-600 hover:text-slate-900 bg-white border border-slate-200 rounded-xl"
           >
             Fermer
           </button>
