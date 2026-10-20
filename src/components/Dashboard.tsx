@@ -5,6 +5,8 @@ import { RideHistory } from './RideHistory';
 import { WeeklyCalendar } from './WeeklyCalendar';
 import { WindHeadingMap } from './WindHeadingMap';
 import { LilleHardelotPlan } from './LilleHardelotPlan';
+import { SupabaseModal } from './SupabaseModal';
+import { isSupabaseConnected } from '../services/supabaseClient';
 import { fetchLiveWeather, calculateWindRecommendation, checkDaylightSafety } from '../services/weatherService';
 import { 
   Bike, 
@@ -21,7 +23,9 @@ import {
   ShieldCheck,
   AlertTriangle,
   User,
-  Sliders
+  Sliders,
+  Database,
+  Cloud
 } from 'lucide-react';
 
 interface DashboardProps {
@@ -38,6 +42,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
   onResetOnboarding
 }) => {
   const [activeTab, setActiveTab] = useState<'cockpit' | 'plan2027' | 'profile'>('cockpit');
+  const [isSupabaseModalOpen, setIsSupabaseModalOpen] = useState<boolean>(false);
   const [selectedDayIndex, setSelectedDayIndex] = useState<number>(5); // Default to Samedi (Index 5)
   const [workouts, setWorkouts] = useState<ScheduledWorkout[]>([]);
   const [currentWeather, setCurrentWeather] = useState<WeatherCondition | null>(null);
@@ -270,6 +275,22 @@ export const Dashboard: React.FC<DashboardProps> = ({
               <User className="w-4 h-4" />
               <span className="hidden sm:inline">Mon Profil</span>
             </button>
+
+            {/* Cloud BDD sync status button */}
+            <button
+              type="button"
+              onClick={() => setIsSupabaseModalOpen(true)}
+              className={`px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-xl text-xs font-black transition-all flex items-center gap-1.5 border ${
+                isSupabaseConnected()
+                  ? 'bg-emerald-50 text-emerald-800 border-emerald-300 hover:bg-emerald-100'
+                  : 'bg-amber-50 text-amber-800 border-amber-300 hover:bg-amber-100'
+              }`}
+            >
+              <Database className="w-3.5 h-3.5" />
+              <span className="hidden md:inline">
+                {isSupabaseConnected() ? 'BDD Connectée' : 'Lier BDD (Cloud)'}
+              </span>
+            </button>
           </div>
         </div>
       </header>
@@ -454,6 +475,15 @@ export const Dashboard: React.FC<DashboardProps> = ({
           </div>
         )}
       </main>
+
+      {/* Supabase Cloud Database Sync Modal */}
+      <SupabaseModal
+        isOpen={isSupabaseModalOpen}
+        onClose={() => setIsSupabaseModalOpen(false)}
+        onConnectionSuccess={() => {
+          // Re-render and notify
+        }}
+      />
     </div>
   );
 };
