@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { UserProfile, ScheduledWorkout, TrainingLocation, WeatherCondition } from '../types';
-import { POPULAR_LOCATIONS } from '../data/cities';
+import { POPULAR_LOCATIONS, searchFrenchCities } from '../data/cities';
 import { 
   Calendar as CalendarIcon, 
   MapPin, 
@@ -38,6 +38,26 @@ export const WeeklyCalendar: React.FC<WeeklyCalendarProps> = ({
   onRegenerateWorkouts
 }) => {
   const [showLocationSelect, setShowLocationSelect] = useState(false);
+  const [calendarLocationSearch, setCalendarLocationSearch] = useState('');
+  const [calendarCityResults, setCalendarCityResults] = useState<TrainingLocation[]>(POPULAR_LOCATIONS);
+  const [isCalendarCityLoading, setIsCalendarCityLoading] = useState(false);
+
+  useEffect(() => {
+    let cancel = false;
+    const timer = setTimeout(() => {
+      setIsCalendarCityLoading(true);
+      searchFrenchCities(calendarLocationSearch).then((res) => {
+        if (!cancel) {
+          setCalendarCityResults(res);
+          setIsCalendarCityLoading(false);
+        }
+      });
+    }, 200);
+    return () => {
+      cancel = true;
+      clearTimeout(timer);
+    };
+  }, [calendarLocationSearch]);
 
   const dayNamesShort = ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'];
 
@@ -83,22 +103,57 @@ export const WeeklyCalendar: React.FC<WeeklyCalendarProps> = ({
               </button>
 
               {showLocationSelect && (
-                <div className="absolute right-0 mt-2 w-64 bg-white rounded-2xl shadow-xl border border-slate-200 p-2 z-20 max-h-56 overflow-y-auto">
-                  <div className="text-[11px] font-bold text-slate-400 px-2 py-1 uppercase">Commune de départ</div>
-                  {POPULAR_LOCATIONS.map((loc) => (
+                <div className="absolute right-0 mt-2 w-80 bg-white rounded-2xl shadow-2xl border border-slate-200 p-3 z-30 space-y-2">
+                  <div className="flex items-center justify-between">
+                    <span className="text-[11px] font-black text-slate-800 uppercase tracking-wider">
+                      Changer de commune de départ
+                    </span>
                     <button
-                      key={loc.postalCode}
                       type="button"
-                      onClick={() => {
-                        onChangeLocation(loc);
-                        setShowLocationSelect(false);
-                      }}
-                      className="w-full text-left px-2.5 py-1.5 rounded-lg text-xs hover:bg-slate-100 flex items-center justify-between"
+                      onClick={() => setShowLocationSelect(false)}
+                      className="text-xs text-slate-400 hover:text-slate-700"
                     >
-                      <span className="font-semibold text-slate-800">{loc.city}</span>
-                      <span className="text-slate-400 text-[10px]">{loc.postalCode}</span>
+                      ✕
                     </button>
-                  ))}
+                  </div>
+
+                  <input
+                    type="text"
+                    placeholder="Ville ou code postal (ex: Cassel, 62152, Hardelot...)"
+                    value={calendarLocationSearch}
+                    onChange={(e) => setCalendarLocationSearch(e.target.value)}
+                    className="w-full px-3 py-1.5 text-xs rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-duo-green"
+                    autoFocus
+                  />
+
+                  <div className="text-[10px] text-slate-400 font-semibold px-1">
+                    {isCalendarCityLoading ? 'Recherche...' : `${calendarCityResults.length} commune(s) trouvée(s)`}
+                  </div>
+
+                  <div className="max-h-56 overflow-y-auto space-y-1 p-1 bg-slate-50/50 rounded-xl border border-slate-100">
+                    {calendarCityResults.map((loc, idx) => (
+                      <button
+                        key={`${loc.city}-${loc.postalCode}-${idx}`}
+                        type="button"
+                        onClick={() => {
+                          onChangeLocation(loc);
+                          setShowLocationSelect(false);
+                          setCalendarLocationSearch('');
+                        }}
+                        className={`w-full text-left px-2.5 py-1.5 rounded-lg text-xs hover:bg-white hover:shadow-sm flex items-center justify-between transition-all ${
+                          profile.location.postalCode === loc.postalCode && profile.location.city === loc.city
+                            ? 'bg-emerald-100 text-emerald-900 font-bold'
+                            : 'text-slate-700'
+                        }`}
+                      >
+                        <div>
+                          <span className="font-extrabold">{loc.city}</span>{' '}
+                          <span className="text-slate-400 font-mono text-[10px]">({loc.postalCode})</span>
+                        </div>
+                        <span className="text-[10px] text-slate-400 truncate max-w-[100px]">{loc.department}</span>
+                      </button>
+                    ))}
+                  </div>
                 </div>
               )}
             </div>

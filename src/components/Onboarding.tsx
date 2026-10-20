@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Mascot, MascotMood } from './Mascot';
 import { UserProfile, AuthMethod, TrainingLocation, RideActivity } from '../types';
-import { POPULAR_LOCATIONS, searchLocations } from '../data/cities';
+import { POPULAR_LOCATIONS, searchFrenchCities } from '../data/cities';
 import { SAMPLE_CYCLING_ACTIVITIES } from '../data/defaultActivities';
 import { 
   getStravaConfig, 
@@ -57,6 +57,27 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
   const [locationSearch, setLocationSearch] = useState<string>('');
   const [selectedLocation, setSelectedLocation] = useState<TrainingLocation>(POPULAR_LOCATIONS[0]); // Lille 59000
   const [isSearchingLocation, setIsSearchingLocation] = useState<boolean>(false);
+  const [citySearchResults, setCitySearchResults] = useState<TrainingLocation[]>(POPULAR_LOCATIONS);
+  const [isCityLoading, setIsCityLoading] = useState<boolean>(false);
+
+  // Recherche dynamique des 35 000 communes de France (API Gouv)
+  useEffect(() => {
+    let cancel = false;
+    const timer = setTimeout(() => {
+      setIsCityLoading(true);
+      searchFrenchCities(locationSearch).then((results) => {
+        if (!cancel) {
+          setCitySearchResults(results);
+          setIsCityLoading(false);
+        }
+      });
+    }, 200);
+
+    return () => {
+      cancel = true;
+      clearTimeout(timer);
+    };
+  }, [locationSearch]);
 
   const [appleCalendarLinked, setAppleCalendarLinked] = useState<boolean>(true);
   const [cyclingLevel, setCyclingLevel] = useState<UserProfile['level']>('regulier');
@@ -601,34 +622,58 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
                 {/* Search / Selection input */}
                 {isSearchingLocation && (
                   <div className="space-y-2 pt-2 border-t border-slate-200">
-                    <input
-                      type="text"
-                      placeholder="Tape une ville ou un code postal (ex: 59000, Cassel, Arras, 62400...)"
-                      value={locationSearch}
-                      onChange={(e) => setLocationSearch(e.target.value)}
-                      className="w-full px-3 py-2 text-sm rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-duo-green"
-                    />
+                    <div className="relative">
+                      <input
+                        type="text"
+                        placeholder="Tape n'importe quelle commune ou code postal (ex: Cassel, 62152, Hardelot, Wambrechies, 75001...)"
+                        value={locationSearch}
+                        onChange={(e) => setLocationSearch(e.target.value)}
+                        className="w-full px-3.5 py-2.5 text-xs rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-duo-green pr-8"
+                        autoFocus
+                      />
+                      {isCityLoading && (
+                        <div className="absolute right-2.5 top-2.5">
+                          <Loader2 className="w-4 h-4 animate-spin text-duo-green" />
+                        </div>
+                      )}
+                    </div>
 
-                    <div className="max-h-40 overflow-y-auto space-y-1 bg-white rounded-xl border border-slate-200 p-1">
-                      {searchLocations(locationSearch).map((loc) => (
-                        <button
-                          key={`${loc.city}-${loc.postalCode}`}
-                          type="button"
-                          onClick={() => {
-                            setSelectedLocation(loc);
-                            setIsSearchingLocation(false);
-                            setLocationSearch('');
-                          }}
-                          className={`w-full text-left px-3 py-1.5 rounded-lg text-xs flex items-center justify-between transition-colors ${
-                            selectedLocation.postalCode === loc.postalCode
-                              ? 'bg-duo-green text-white font-bold'
-                              : 'hover:bg-slate-100 text-slate-700'
-                          }`}
-                        >
-                          <span>{loc.city} ({loc.postalCode})</span>
-                          <span className="opacity-80 text-[10px]">{loc.department}</span>
-                        </button>
-                      ))}
+                    <div className="flex items-center justify-between text-[11px] text-slate-500 px-1 font-semibold">
+                      <span>Base de données officielle : 35 000+ communes</span>
+                      <span>{citySearchResults.length} résultat{citySearchResults.length > 1 ? 's' : ''}</span>
+                    </div>
+
+                    <div className="max-h-60 overflow-y-auto space-y-1 bg-white rounded-xl border border-slate-200 p-1.5 shadow-inner">
+                      {citySearchResults.length === 0 ? (
+                        <div className="p-4 text-center text-xs text-slate-400">
+                          Aucune commune trouvée pour « {locationSearch} ». Vérifiez l'orthographe ou le code postal.
+                        </div>
+                      ) : (
+                        citySearchResults.map((loc, idx) => (
+                          <button
+                            key={`${loc.city}-${loc.postalCode}-${idx}`}
+                            type="button"
+                            onClick={() => {
+                              setSelectedLocation(loc);
+                              setIsSearchingLocation(false);
+                              setLocationSearch('');
+                            }}
+                            className={`w-full text-left px-3 py-2 rounded-xl text-xs flex items-center justify-between transition-colors ${
+                              selectedLocation.postalCode === loc.postalCode && selectedLocation.city === loc.city
+                                ? 'bg-duo-green text-white font-bold shadow-sm'
+                                : 'hover:bg-slate-100 text-slate-700'
+                            }`}
+                          >
+                            <div>
+                              <span className="font-extrabold">{loc.city}</span>{' '}
+                              <span className="opacity-80 font-mono text-[11px]">({loc.postalCode})</span>
+                            </div>
+                            <span className="opacity-75 text-[10px] whitespace-nowrap ml-2">
+                              {loc.department} • {loc.region}
+                            </span>
+                          </button>
+                        ))
+                      )}
                     </div>
                   </div>
                 )}
