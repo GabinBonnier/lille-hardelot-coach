@@ -1,0 +1,38 @@
+import { TrainingLocation } from '../types';
+
+export const POPULAR_LOCATIONS: TrainingLocation[] = [
+  { city: 'Lille', postalCode: '59000', lat: 50.6292, lng: 3.0573, department: 'Nord (59)', region: 'Hauts-de-France' },
+  { city: 'Lille Centre / Wazemmes', postalCode: '59800', lat: 50.6333, lng: 3.0667, department: 'Nord (59)', region: 'Hauts-de-France' },
+  { city: 'Villeneuve-d’Ascq', postalCode: '59650', lat: 50.6233, lng: 3.1444, department: 'Nord (59)', region: 'Hauts-de-France' },
+  { city: 'Marcq-en-Barœul', postalCode: '59700', lat: 50.6722, lng: 3.0972, department: 'Nord (59)', region: 'Hauts-de-France' },
+  { city: 'Roubaix', postalCode: '59100', lat: 50.6927, lng: 3.1778, department: 'Nord (59)', region: 'Hauts-de-France' },
+  { city: 'Tourcoing', postalCode: '59200', lat: 50.7239, lng: 3.1612, department: 'Nord (59)', region: 'Hauts-de-France' },
+  { city: 'Seclin', postalCode: '59113', lat: 50.5486, lng: 3.0306, department: 'Nord (59)', region: 'Hauts-de-France' },
+  { city: 'Armentières', postalCode: '59280', lat: 50.6878, lng: 2.8822, department: 'Nord (59)', region: 'Hauts-de-France' },
+  { city: 'Béthune', postalCode: '62400', lat: 50.5303, lng: 2.6408, department: 'Pas-de-Calais (62)', region: 'Hauts-de-France' },
+  { city: 'Lens', postalCode: '62300', lat: 50.4322, lng: 2.8333, department: 'Pas-de-Calais (62)', region: 'Hauts-de-France' },
+  { city: 'Arras', postalCode: '62000', lat: 50.2920, lng: 2.7800, department: 'Pas-de-Calais (62)', region: 'Hauts-de-France' },
+  { city: 'Saint-Omer', postalCode: '62500', lat: 50.7500, lng: 2.2500, department: 'Pas-de-Calais (62)', region: 'Hauts-de-France' },
+  { city: 'Bailleul (Pied des Monts)', postalCode: '59270', lat: 50.7408, lng: 2.7347, department: 'Nord (59)', region: 'Hauts-de-France' },
+  { city: 'Cassel (Mont Cassel)', postalCode: '59670', lat: 50.8000, lng: 2.4861, department: 'Nord (59)', region: 'Hauts-de-France' },
+  { city: 'Hazebrouck', postalCode: '59190', lat: 50.7242, lng: 2.5386, department: 'Nord (59)', region: 'Hauts-de-France' },
+  { city: 'Boulogne-sur-Mer', postalCode: '62200', lat: 50.7264, lng: 1.6147, department: 'Pas-de-Calais (62)', region: 'Hauts-de-France' },
+  { city: 'Neufchâtel-Hardelot (Arrivée)', postalCode: '62152', lat: 50.6347, lng: 1.6069, department: 'Pas-de-Calais (62)', region: 'Hauts-de-France' },
+  { city: 'Dunkerque', postalCode: '59140', lat: 51.0343, lng: 2.3768, department: 'Nord (59)', region: 'Hauts-de-France' },
+  { city: 'Valenciennes', postalCode: '59300', lat: 50.3580, lng: 3.5233, department: 'Nord (59)', region: 'Hauts-de-France' },
+  { city: 'Douai', postalCode: '59500', lat: 50.3714, lng: 3.0800, department: 'Nord (59)', region: 'Hauts-de-France' },
+  { city: 'Amiens', postalCode: '80000', lat: 49.8941, lng: 2.2957, department: 'Somme (80)', region: 'Hauts-de-France' },
+  { city: 'Paris', postalCode: '75001', lat: 48.8566, lng: 2.3522, department: 'Paris (75)', region: 'Île-de-France' },
+  { city: 'Rouen', postalCode: '76000', lat: 49.4432, lng: 1.0999, department: 'Seine-Maritime (76)', region: 'Normandie' }
+];
+
+export function searchLocations(query: string): TrainingLocation[] {
+  const clean = query.trim().toLowerCase();
+  if (!clean) return POPULAR_LOCATIONS.slice(0, 8);
+  return POPULAR_LOCATIONS.filter(
+    (loc) =>
+      loc.postalCode.startsWith(clean) ||
+      loc.city.toLowerCase().includes(clean) ||
+      loc.department.toLowerCase().includes(clean)
+  );
+}

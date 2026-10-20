@@ -1,0 +1,25 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  }
+}
+
+/* Custom leaflet marker fixes */
+.leaflet-container {
+  font-family: inherit;
+  z-index: 10;
+}
+
+.custom-user-marker {
+  background: transparent;
+  border: none;
+}
+
+.heading-out-label, .heading-in-label {
+  background: transparent;
+  border: none;
+}
